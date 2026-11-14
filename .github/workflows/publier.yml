@@ -1,0 +1,44 @@
+name: Publier Crypto Desk
+
+# Publie le dossier site/ sur GitHub Pages et régénère site/news.json
+# (flux RSS des médias crypto) à chaque envoi de fichiers et toutes les 30 minutes.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Récupérer les actualités crypto
+        run: python3 scripts/fetch_news.py site/news.json
+
+      - name: Préparer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empaqueter le site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Publier
+        id: deploiement
+        uses: actions/deploy-pages@v4
