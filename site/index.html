@@ -119,6 +119,17 @@ h1, h2, h3 { text-wrap: balance; }
 .live[data-state="delayed"] i { background: var(--warn); }
 .live[data-state="offline"] i { background: var(--down); }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--up-soft); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.lang-btn { font: 800 12.5px/1 var(--font-mono); letter-spacing: .02em; }
+@media (max-width: 399px) {
+  /* Téléphones étroits : le voyant « Direct » garde sa pastille, le texte reste dans l'info-bulle. */
+  .live { padding: 0 9px; height: 32px; }
+  .live-txt { display: none; }
+  .topbar .icon-btn { width: 37px; height: 37px; border-radius: 11px; }
+  .top-actions { gap: 4px; }
+  .brand { gap: 8px; }
+  .brand svg { width: 28px; height: 28px; }
+  .brand b { font-size: 15.5px; }
+}
 
 /* ---------- Structure ---------- */
 .app {
@@ -279,7 +290,10 @@ body[data-view="news"] #news { display: block; }
 .pools { list-style: none; margin: 0; padding: 0; }
 .pool { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; grid-template-areas: "ic name rate" "ic meta meta"; gap: 5px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
 .pool-ic { grid-area: ic; width: 22px; height: 22px; border-radius: 7px; align-self: start; margin-top: 1px; background: var(--raise); }
-.pool-name { grid-area: name; min-width: 0; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pool-name { grid-area: name; min-width: 0; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
+a.pool-name:hover, .wm-head a:hover, .line .nm a:hover { color: var(--aave); text-decoration: underline; }
+.wm-head a, .line .nm a { text-decoration: none; }
+.pool-meta b { font-weight: 600; }
 .pool-name small { margin-left: 6px; font: 500 11.5px var(--font-mono); color: var(--muted); }
 .pool-rate { grid-area: rate; display: flex; align-items: baseline; gap: 7px; font: 600 15px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .pool-rate small { font-size: 11px; font-weight: 500; }
@@ -360,6 +374,31 @@ body[data-view="news"] #news { display: block; }
 .wc-foot a { color: var(--fg-2); font-weight: 700; }
 .btn.sm { height: 34px; padding: 0 11px; font-size: 12.5px; }
 .btn.danger { color: var(--down); background: transparent; border-color: var(--down-soft); }
+.minis.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.nearest { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--fg-2); }
+.nearest b { font-family: var(--font-mono); font-weight: 600; }
+.wc-toggle { justify-content: center; width: 100%; }
+.hfgauge { display: flex; flex-direction: column; gap: 4px; }
+.hfg-bar { position: relative; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--down) 0%, var(--warn) 22%, var(--up) 50%, var(--up) 100%); }
+.hfg-bar i { position: absolute; top: 50%; width: 13px; height: 13px; border-radius: 50%; background: var(--fg); border: 2px solid var(--surface-2); transform: translate(-50%, -50%); }
+.hfg-scale { display: flex; justify-content: space-between; font: 500 10px/1 var(--font-mono); color: var(--muted); }
+.risk-sum { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.shock, .liq { display: inline-block; padding: 5px 8px; border-radius: 8px; font: 500 12px/1.4 var(--font-mono); }
+.shock b, .liq b { font-weight: 700; }
+.shock.hot, .liq.hot { color: var(--down); background: var(--down-soft); }
+.shock.warn, .liq.warn { color: var(--warn); background: var(--warn-soft); }
+.shock.ok, .liq.ok { color: var(--fg-2); background: var(--raise); }
+.liq.none { padding: 0; color: var(--muted); background: transparent; font-size: 11.5px; }
+.line .liq { grid-column: 2 / -1; justify-self: start; margin-top: 5px; white-space: normal; }
+.simhf { font: 500 12px/1.4 var(--font-mono); color: var(--fg-2); }
+.simhf:empty { display: none; }
+.sim { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.sim label { font: 700 10.5px/1.2 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sim-row { display: flex; align-items: center; gap: 12px; }
+.sim input[type="range"] { flex: 1; min-width: 0; height: 30px; accent-color: var(--accent); }
+.sim output { min-width: 58px; text-align: right; font-weight: 600; font-size: 15px; }
+.sim .hint { font-size: 11.5px; }
+@media (min-width: 700px) { .minis.four { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* ---------- Whales Hyperliquid ---------- */
 .whale-panel { padding: 16px; container: whales / inline-size; }
@@ -388,7 +427,7 @@ body[data-view="news"] #news { display: block; }
 .wr-id { grid-area: id; min-width: 0; display: flex; flex-direction: column; }
 .wr-id b { font: 700 14.5px/1.35 var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .wr-id b.named { font-family: var(--font-display); }
-.wr-id small, .wr-pnl small { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.wr-id small, .wr-pnl small { display: block; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .wr-pnl { grid-area: pnl; display: flex; flex-direction: column; align-items: flex-end; }
 .wr-pnl b { font: 600 14.5px/1.35 var(--font-mono); white-space: nowrap; }
 .wr-pos { grid-area: pos; display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
@@ -423,6 +462,9 @@ body[data-view="news"] #news { display: block; }
 .side.flat { color: var(--muted); background: var(--raise); }
 .wd-links { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; }
 .wd-links a { color: var(--fg-2); font-weight: 700; }
+.ah-links { grid-column: 1 / -1; margin-top: 10px; font-size: 12.5px; }
+.prow .p-l b a { text-decoration: none; }
+.prow .p-l b a:hover { color: var(--accent-strong); text-decoration: underline; }
 
 /* ---------- Navigation basse (téléphone) ---------- */
 .bottom-nav {
@@ -537,6 +579,7 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
       <button class="icon-btn" id="btn-refresh" type="button" aria-label="Tout actualiser" title="Tout actualiser">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
       </button>
+      <button class="icon-btn lang-btn" id="btn-lang" type="button" data-noi18n></button>
       <button class="icon-btn" id="btn-theme" type="button" aria-label="Basculer clair / sombre" title="Basculer clair / sombre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 0 0 17z" fill="currentColor" stroke="none"/></svg>
       </button>
@@ -599,11 +642,23 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
               <p class="sub" id="aave-sub">Taux variables d'emprunt, en direct de l'API Aave</p>
             </div>
           </div>
+          <a class="btn sm" href="https://app.aave.com/" target="_blank" rel="noopener">Ouvrir Aave ↗</a>
         </div>
         <div class="alert" id="aave-alert" role="alert" hidden></div>
         <div class="seg seg-wide mode-bar" role="group" aria-label="Affichage Aave">
-          <button type="button" data-amode="rates" aria-pressed="true">Taux d'emprunt</button>
+          <button type="button" data-amode="rates" aria-pressed="true">Taux</button>
           <button type="button" data-amode="wallets" aria-pressed="false">Mes adresses</button>
+          <button type="button" data-amode="risk" aria-pressed="false">À risque</button>
+        </div>
+
+        <div id="aave-risk" hidden>
+          <div class="chips" id="ar-filter" role="group" aria-label="Type de position">
+            <button class="chip" type="button" data-arf="market" aria-pressed="true">Risque de prix</button>
+            <button class="chip" type="button" data-arf="emode" aria-pressed="false">Boucles E-Mode</button>
+          </div>
+          <p class="hint" id="ar-intro" style="margin:10px 0 4px"></p>
+          <ol class="wlist" id="ar-list"></ol>
+          <p class="sec-foot" id="ar-foot"></p>
         </div>
 
         <div id="aave-wallets" hidden>
@@ -650,15 +705,19 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
               <p class="sub">Plus gros traders : positions, spot et ordres en direct</p>
             </div>
           </div>
-          <button class="btn" id="btn-follow-add" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Suivre une adresse
-          </button>
+          <div class="btn-row" style="flex-wrap:wrap">
+            <button class="btn sm" id="btn-follow-add" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Suivre une adresse
+            </button>
+            <a class="btn sm" href="https://app.hyperliquid.xyz/leaderboard" target="_blank" rel="noopener">Classement officiel ↗</a>
+          </div>
         </div>
-        <div class="seg seg-wide" role="group" aria-label="Classement des whales">
-          <button type="button" data-wrank="value" aria-pressed="true">Plus gros</button>
-          <button type="button" data-wrank="month" aria-pressed="false">Top 30 j</button>
-          <button type="button" data-wrank="week" aria-pressed="false">Top 7 j</button>
-          <button type="button" data-wrank="follow" aria-pressed="false">Suivis</button>
+        <div class="chips" role="group" aria-label="Classement des whales">
+          <button class="chip" type="button" data-wrank="value" aria-pressed="true">Plus gros</button>
+          <button class="chip" type="button" data-wrank="risk" aria-pressed="false">Liquidation proche</button>
+          <button class="chip" type="button" data-wrank="month" aria-pressed="false">Top 30 j</button>
+          <button class="chip" type="button" data-wrank="week" aria-pressed="false">Top 7 j</button>
+          <button class="chip" type="button" data-wrank="follow" aria-pressed="false">Suivis</button>
         </div>
         <div class="expo" id="w-expo"></div>
         <ol class="wlist" id="w-list"></ol>
@@ -753,6 +812,16 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
   </div>
 </dialog>
 
+<dialog class="sheet" id="aave-dlg" aria-labelledby="ad-title">
+  <div class="sheet-in wide">
+    <div class="sheet-head">
+      <h2 id="ad-title">Position Aave</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="sheet-body" id="ad-body"></div>
+  </div>
+</dialog>
+
 <dialog class="sheet" id="follow-dlg" aria-labelledby="follow-title">
   <form class="sheet-in" id="follow-form" autocomplete="off">
     <div class="sheet-head">
@@ -797,9 +866,272 @@ async function getJSON(url, opt = {}) {
   } finally { clearTimeout(timer); }
 }
 
-/* ================= Formats (fr-FR) ================= */
+/* ================= Langue : français ou anglais =================
+ * La page est écrite en français. En anglais, une couche de traduction remplace les textes affichés
+ * (nœuds de texte et attributs aria-label, title, placeholder) : correspondance exacte, puis motifs pour
+ * les phrases qui contiennent des valeurs, segment par segment autour des « · ». Les titres et résumés
+ * d'articles portent data-noi18n et ne sont jamais traduits. Changer de langue recharge la page.
+ */
+const LANG = (() => {
+  try { const l = localStorage.getItem('cd.lang'); if (l === 'fr' || l === 'en') return l; } catch {}
+  return /^fr\b/i.test(navigator.language || 'fr') ? 'fr' : 'en';
+})();
+document.documentElement.lang = LANG;
+const LOCALE = () => (LANG === 'en' ? 'en-US' : 'fr-FR');
+const PCT = () => (LANG === 'en' ? '%' : ' %');
+
+const EN = {
+  // En-tête, navigation, pied de page
+  'Kryptopsy, accueil': 'Kryptopsy, home', 'Connexion': 'Connecting', 'Tout actualiser': 'Refresh all',
+  'Basculer clair / sombre': 'Toggle light / dark', 'Sections': 'Sections', 'Marchés': 'Markets', 'Graphique': 'Chart', 'Actus': 'News',
+  'Direct': 'Live', 'Différé': 'Delayed', 'Hors ligne': 'Offline', 'Pas de connexion internet.': 'No internet connection.',
+  'Prix en direct (Binance).': 'Live prices (Binance).', 'Prix CoinGecko, mis à jour chaque minute.': 'CoinGecko prices, updated every minute.',
+  'Connexion aux sources de prix…': 'Connecting to price sources…', 'Actualisation…': 'Refreshing…',
+  "Données : graphiques, bandeau, signal et fil d'actus": 'Data: charts, ticker, rating and news feed',
+  'prix en direct Binance': 'live prices from Binance', 'marché CoinGecko': 'market data from CoinGecko', 'taux et positions': 'rates and positions',
+  'articles des médias cités. Informations de marché, pas un conseil en investissement.': 'articles from the outlets listed. Market information, not investment advice.',
+  // Marchés
+  'Capitalisation': 'Market cap', 'Marché crypto': 'Crypto market', '24 h': '24h', 'Volume 24 h': '24h volume', 'Dominance BTC': 'BTC dominance',
+  'Peur extrême': 'Extreme fear', 'Peur': 'Fear', 'Neutre': 'Neutral', 'Avidité': 'Greed', 'Avidité extrême': 'Extreme greed',
+  'Liste de suivi': 'Watchlist', 'Touchez une crypto pour ouvrir son graphique.': 'Tap a coin to open its chart.',
+  'Modifier': 'Edit', 'Terminé': 'Done', 'Ajouter': 'Add', 'Retirer': 'Remove', 'Retire les cryptos dont tu n\'as plus besoin.': 'Remove the coins you no longer need.',
+  'Revenir à la liste d\'origine': 'Restore the default list', 'Liste d’origine rétablie': 'Default list restored',
+  'Ta liste est vide. Touche « Ajouter » pour suivre une crypto.': 'Your list is empty. Tap “Add” to track a coin.',
+  '1 h': '1h', '7 jours': '7d', 'Cap.': 'Mcap', 'Prix en direct via Binance': 'Live prices via Binance',
+  'Prix CoinGecko, rafraîchis chaque minute': 'CoinGecko prices, refreshed every minute',
+  'CoinGecko limite les appels : nouvel essai dans 2 minutes.': 'CoinGecko is rate-limiting: retrying in 2 minutes.',
+  'Données CoinGecko indisponibles pour le moment.': 'CoinGecko data unavailable for now.',
+  // Ajout d'une crypto, symbole TradingView
+  'Ajouter une crypto': 'Add a coin', 'Fermer': 'Close', 'Nom ou symbole': 'Name or ticker', 'Nom ou symbole : LINK, Sui, Aave…': 'Name or ticker: LINK, Sui, Aave…',
+  'Le graphique TradingView est cherché sur Binance, puis sur Bybit. Tu pourras changer le symbole ensuite.': 'The TradingView chart is looked up on Binance, then Bybit. You can change the symbol afterwards.',
+  'Suggestions': 'Suggestions', 'déjà suivi': 'already tracked', 'Recherche…': 'Searching…', 'Aucun résultat.': 'No results.',
+  'Recherche indisponible (CoinGecko). Réessaie dans un instant.': 'Search unavailable (CoinGecko). Try again in a moment.',
+  'Symbole TradingView': 'TradingView symbol', 'Enregistrer': 'Save',
+  'Format PLACE:PAIRE, par exemple BINANCE:BTCUSDT ou COINBASE:BTCUSD.': 'Format EXCHANGE:PAIR, e.g. BINANCE:BTCUSDT or COINBASE:BTCUSD.',
+  'Format attendu : PLACE:PAIRE, par exemple BINANCE:BTCUSDT': 'Expected format: EXCHANGE:PAIR, e.g. BINANCE:BTCUSDT',
+  // Graphique
+  'Choisir la crypto': 'Choose a coin', 'Signal technique TradingView': 'TradingView technical rating', 'Graphique et signal fournis par': 'Chart and rating provided by',
+  '. Le symbole TradingView se change avec le bouton en pointillés.': '. Change the TradingView symbol with the dashed button.',
+  'Ajoute une crypto pour afficher son graphique.': 'Add a coin to show its chart.', 'Haut 24 h': '24h high', 'Bas 24 h': '24h low', 'Écart au record': 'From ATH',
+  // Aave : taux
+  'Taux': 'Rates', 'Mes adresses': 'My addresses', 'À risque': 'At risk', 'Affichage Aave': 'Aave view', 'Ouvrir Aave ↗': 'Open Aave ↗',
+  'Taux variables d\'emprunt, en direct de l\'API Aave': 'Variable borrow rates, live from the Aave API',
+  'Dépôts, emprunts et santé des adresses que tu suis': 'Supplies, borrows and health of the addresses you track',
+  'Plus gros emprunteurs proches de la liquidation': 'Largest borrowers close to liquidation',
+  'Filtrer par chaîne': 'Filter by chain', 'Trier les pools': 'Sort pools', 'Les plus gros': 'Largest', 'Les moins chers': 'Cheapest',
+  'Toutes les chaînes': 'All chains', 'Chargement des pools…': 'Loading pools…', 'sur 7 jours': 'over 7 days',
+  'Le moins cher avec au moins 1 M$ disponible :': 'Cheapest with at least $1M available:',
+  'Le pool principal est aussi le moins cher avec au moins 1 M$ disponible.': 'The main pool is also the cheapest with at least $1M available.',
+  'Dépôt': 'Supply', 'Réduire': 'Collapse', 'Les taux Aave sont indisponibles pour le moment.': 'Aave rates are unavailable for now.', 'Réessayer': 'Retry',
+  'Taux d\'utilisation du pool': 'Pool utilization rate', 'Variation sur 7 jours, en points': '7-day change, in points',
+  'courbe et écart 7 jours du pool principal': '7-day curve and change for the main pool',
+  '80 à 92 %': '80 to 92%', '> 92 % : le taux peut grimper vite': '> 92%: the rate can jump fast', 'Utilisation < 80 %': 'Utilization < 80%',
+  // Aave : adresses suivies
+  'Adresse à suivre': 'Address to track', 'Adresse 0x…': '0x… address', 'Nom de l\'adresse': 'Address name', 'Nom (facultatif)': 'Name (optional)', 'Suivre': 'Track',
+  'Ajoute une adresse 0x pour suivre ses dépôts, ses emprunts et son health factor sur Aave v3, toutes chaînes confondues. Les adresses restent enregistrées sur ce téléphone.':
+    'Add a 0x address to track its supplies, borrows and health factor on Aave v3 across all chains. Addresses stay saved on this phone.',
+  'Adresse suivie': 'Tracked address', 'Valeur nette': 'Net worth', 'Chargement des positions sur toutes les chaînes Aave…': 'Loading positions across all Aave chains…',
+  'Positions Aave indisponibles pour le moment.': 'Aave positions unavailable for now.', 'Dernières données affichées.': 'Showing the last data.',
+  'Tout son DeFi sur DeBank': 'All its DeFi on DeBank', 'Ne plus suivre': 'Stop tracking', 'Suivre cette adresse': 'Track this address',
+  'Adresse suivie dans « Mes adresses »': 'Tracked in “My addresses”', 'Position Aave': 'Aave position',
+  'Déposé': 'Supplied', 'Emprunté': 'Borrowed', 'Santé (HF)': 'Health (HF)', 'Choc toléré': 'Tolerated shock', 'Aucun': 'None',
+  'Health factor le plus bas, liquidation sous 1': 'Lowest health factor, liquidation below 1',
+  'Mouvement commun des actifs non stables qui déclencherait une liquidation': 'Joint move of non-stable assets that would trigger a liquidation',
+  'Liquidation la plus proche :': 'Nearest liquidation:', 'à': 'at',
+  'Simuler un mouvement des actifs non stables': 'Simulate a move of non-stable assets',
+  'ETH, BTC et les autres actifs volatils bougent ensemble ; les stablecoins restent à 1 $. Le HF simulé s\'affiche sous chaque marché.':
+    'ETH, BTC and other volatile assets move together; stablecoins stay at $1. The simulated HF shows under each market.',
+  'Masquer le détail': 'Hide details', 'Pas de dette': 'No debt', 'Ouvrir ce marché sur Aave': 'Open this market on Aave',
+  'Mode efficacité : seuils relevés entre actifs corrélés': 'Efficiency mode: higher thresholds between correlated assets',
+  'Liquidation si les actifs non stables baissent ensemble de': 'Liquidation if non-stable assets drop together by',
+  'Liquidation si les actifs non stables montent ensemble de': 'Liquidation if non-stable assets rise together by',
+  'Pas de liquidation par un mouvement d\'ensemble du marché': 'No liquidation from a market-wide move',
+  'Intérêts nets': 'Net interest', 'APY net': 'Net APY', 'Encore empruntable': 'Available to borrow', 'Capacité d\'emprunt utilisée': 'Borrow capacity used',
+  'LTV actuel': 'Current LTV', 'LTV max': 'Max LTV', 'Seuil de liquidation': 'Liquidation threshold', 'Dépôts': 'Supplies', 'Emprunts': 'Borrows',
+  'Collatéral': 'Collateral', 'Liquidation à': 'Liquidation at', 'Liquidation si le prix dépasse': 'Liquidation if the price exceeds',
+  'Non utilisé comme collatéral': 'Not used as collateral', 'Ne peut pas déclencher seul la liquidation': 'Cannot trigger liquidation on its own',
+  'Risque de liquidation :': 'Liquidation risk:', 'liquidable': 'liquidatable', 'Liquidable': 'Liquidatable',
+  'Adresse invalide : 0x suivi de 40 caractères': 'Invalid address: 0x followed by 40 characters', 'Cette adresse est déjà suivie': 'This address is already tracked',
+  'Adresse retirée': 'Address removed', 'Adresse copiée': 'Address copied', 'Copier l\'adresse': 'Copy address',
+  'Adresse ajoutée à « Mes adresses »': 'Address added to “My addresses”',
+  // Aave : à risque
+  'Type de position': 'Position type', 'Risque de prix': 'Price risk', 'Boucles E-Mode': 'E-Mode loops', 'de dette': 'of debt',
+  'Boucles entre actifs corrélés (weETH contre WETH, USDe contre USDC…) : le HF est bas par construction, le risque vient d\'un décrochage entre les deux actifs.':
+    'Loops between correlated assets (weETH against WETH, USDe against USDC…): the HF is low by design, the risk is a depeg between the two assets.',
+  'Positions exposées au prix : le collatéral (ETH, BTC…) peut baisser face à une dette en stablecoins. Baisse tolérée = baisse du collatéral face à la dette avant liquidation.':
+    'Price-exposed positions: the collateral (ETH, BTC…) can fall against stablecoin debt. Tolerated drop = how far the collateral can fall against the debt before liquidation.',
+  'Aucune grosse position sous un HF de 1,2 pour le moment.': 'No large position below an HF of 1.2 right now.',
+  'Les positions Aave n’ont pas pu être lues à la dernière mise à jour.': 'Aave positions could not be read at the last update.',
+  'La liste des positions à risque n’est pas encore disponible.': 'The list of positions at risk is not available yet.',
+  'La liste est produite à la publication sur GitHub.': 'The list is built when the site is published on GitHub.',
+  // Whales
+  'Whales Hyperliquid': 'Hyperliquid whales', 'Plus gros traders : positions, spot et ordres en direct': 'Largest traders: positions, spot and orders, live',
+  'Suivre une adresse': 'Track an address', 'Classement officiel ↗': 'Official leaderboard ↗', 'Classement des whales': 'Whale ranking',
+  'Plus gros': 'Largest', 'Liquidation proche': 'Near liquidation', 'Top 30 j': 'Top 30d', 'Top 7 j': 'Top 7d', 'Suivis': 'Tracked',
+  'Exposition des whales': 'Whale exposure', 'Aucune position perp ouverte': 'No open perp position', 'Positions indisponibles': 'Positions unavailable',
+  'compte perp': 'perp account', 'PnL 30 j': 'PnL 30d', 'PnL 7 j': 'PnL 7d', 'Liquidations en vue': 'Liquidations in sight',
+  'positions d\'au moins 250 k$ à moins de 10 % de leur prix de liquidation': 'positions of at least $250K within 10% of their liquidation price',
+  'Longs / shorts': 'Longs / shorts', 'fermée depuis le scan': 'closed since the scan', 'Position fermée ou liquidée': 'Position closed or liquidated',
+  'Aucune grosse position à moins de 10 % de sa liquidation pour le moment.': 'No large position within 10% of liquidation right now.',
+  'Aucune adresse suivie. Touche « Suivre une adresse », ou ouvre une whale du classement puis « Suivre ».':
+    'No tracked address. Tap “Track an address”, or open a whale from the ranking and tap “Track”.',
+  'comptes ayant tradé au moins 1 M$ sur 30 jours': 'accounts that traded at least $1M over 30 days', 'comptes de plus de 100 k$': 'accounts above $100K',
+  'Le classement des whales n’est pas encore disponible.': 'The whale ranking is not available yet.',
+  'Le classement est produit à la publication sur GitHub.': 'The ranking is built when the site is published on GitHub.',
+  'Le classement Hyperliquid n’a pas pu être récupéré à la dernière mise à jour.': 'The Hyperliquid leaderboard could not be fetched at the last update.',
+  'Suivre une adresse Hyperliquid': 'Track a Hyperliquid address', 'Adresse Hyperliquid': 'Hyperliquid address', 'Nom': 'Name',
+  'L\'adresse apparaît dans l\'onglet « Suivis », avec ses positions, son spot et ses ordres. Elle reste enregistrée sur ce téléphone.':
+    'The address appears in the “Tracked” tab, with its positions, spot and orders. It stays saved on this phone.',
+  'Adresse ajoutée aux suivis': 'Address added to tracked', 'Adresse retirée des suivis': 'Address removed from tracked',
+  '☆ Suivre': '☆ Track', '★ Suivi': '★ Tracked',
+  // Fiche d'une whale
+  'Compte perp': 'Perp account', 'Exposition': 'Exposure', 'Levier effectif': 'Effective leverage', 'Retirable': 'Withdrawable',
+  'PnL 24 h': 'PnL 24h', 'PnL total': 'PnL all-time', 'Valeur totale': 'Total value', 'ROI 30 j': 'ROI 30d', 'Volume 30 j': 'Volume 30d', 'Volume total': 'All-time volume',
+  'PnL cumulé sur 30 jours': 'Cumulative PnL over 30 days', 'Positions perp ouvertes': 'Open perp positions', 'Ordres ouverts': 'Open orders', 'Derniers trades': 'Latest trades',
+  'isolé': 'isolated', 'Taille': 'Size', 'Entrée': 'Entry', 'Prix': 'Price', 'aucune': 'none', 'Marge': 'Margin', 'Funding payé': 'Funding paid', 'Funding reçu': 'Funding received',
+  'Liquidation': 'Liquidation', 'Quantité': 'Quantity', 'Coût d\'entrée': 'Cost basis', 'Bloqué en ordres': 'Locked in orders', 'Aucun solde spot.': 'No spot balance.',
+  'Achat': 'Buy', 'Vente': 'Sell', 'Limite': 'Limit', 'Stop marché': 'Stop market', 'Stop limite': 'Stop limit', 'Take profit marché': 'Take profit market',
+  'Take profit limite': 'Take profit limit', 'Déclenchement': 'Trigger', 'TP/SL de position': 'Position TP/SL', 'Aucun ordre ouvert.': 'No open orders.',
+  'Ouverture long': 'Open long', 'Clôture long': 'Close long', 'Ouverture short': 'Open short', 'Clôture short': 'Close short',
+  'Bascule long → short': 'Flip long → short', 'Bascule short → long': 'Flip short → long', 'PnL réalisé': 'Realized PnL',
+  'Aucun trade sur 7 jours.': 'No trades in 7 days.', 'Charger les 40 derniers trades': 'Load the 40 latest trades', 'Chargement…': 'Loading…',
+  'Derniers trades indisponibles pour le moment': 'Latest trades unavailable for now', 'Trader sur Hyperliquid': 'Trade on Hyperliquid',
+  'Explorateur Hyperliquid': 'Hyperliquid explorer', 'Ouvrir sur Hyperliquid': 'Open on Hyperliquid',
+  'Données publiques Hyperliquid, rafraîchies toutes les 30 secondes': 'Public Hyperliquid data, refreshed every 30 seconds',
+  'Hyperliquid ne répond pas pour le moment.': 'Hyperliquid is not responding right now.',
+  'Chargement des positions, du spot et des ordres…': 'Loading positions, spot and orders…',
+  // Actualités
+  'Actualités': 'News', 'Source des actualités': 'News source', 'Médias': 'Outlets', 'Filtrer par crypto': 'Filter by coin', 'Langue': 'Language',
+  'Toutes langues': 'All languages', 'Français': 'French', 'Anglais': 'English', 'Toutes': 'All', 'Nouveau': 'New',
+  'Aucun article récent pour ce filtre.': 'No recent articles for this filter.', 'Le fil des médias est vide pour le moment.': 'The outlets feed is empty for now.',
+  'Le fil des médias n’est pas encore disponible. L’onglet TradingView affiche les actus en direct.': 'The outlets feed is not available yet. The TradingView tab shows live news.',
+  'Le fil des médias est produit à la publication sur GitHub. Ouvre la page en ligne, ou utilise l’onglet TradingView.': 'The outlets feed is built when the site is published on GitHub. Open the online page, or use the TradingView tab.',
+  'Voir TradingView News': 'Open TradingView News', 'Fil d’actualités': 'Live feed from', ', en direct.': '.'
+};
+
+// Phrases avec valeurs. Les fonctions évitent toute interprétation des « $ » dans les montants.
+const EN_RE = [
+  [/^il y a (\d+) (min|h|j)$/, (m, n, u) => `${n} ${u === 'j' ? 'd' : u} ago`],
+  [/^(.+) de la cap\.$/, (m, a) => `${a} of market cap`],
+  [/^(.+) : ouvrir le graphique$/, (m, a) => `${a}: open chart`],
+  [/^Retirer (.+)$/, (m, a) => `Remove ${a}`],
+  [/^(.+) retiré de la liste$/, (m, a) => `${a} removed from the list`],
+  [/^Recherche du graphique (.+)…$/, (m, a) => `Looking up the ${a} chart…`],
+  [/^(.+) ajouté$/, (m, a) => `${a} added`],
+  [/^graphique (.+)$/, (m, a) => `chart ${a}`],
+  [/^Symbole enregistré : (.+)$/, (m, a) => `Symbol saved: ${a}`],
+  [/^variations et mini-courbes 7 jours CoinGecko, maj (.+)$/, (m, a) => `changes and 7-day sparklines from CoinGecko, updated ${a}`],
+  [/^(.+) : prix CoinGecko \(absent de Binance\)$/, (m, a) => `${a}: CoinGecko price (not on Binance)`],
+  [/^Changer le symbole TradingView, actuellement (.+)$/, (m, a) => `Change the TradingView symbol, currently ${a}`],
+  [/^Trader (.+) sur Hyperliquid ↗$/, (m, a) => `Trade ${a} on Hyperliquid ↗`],
+  [/^(.+) sur Aave \(Ethereum Core\) ↗$/, (m, a) => `${a} on Aave (Ethereum Core) ↗`],
+  [/^Aucun pool (.+) empruntable sur cette chaîne\.$/, (m, a) => `No borrowable ${a} pool on this chain.`],
+  [/^dépôt (.+)$/, (m, a) => `supply ${a}`],
+  [/^de (.+) à (.+)$/, (m, a, b) => `from ${a} to ${b}`],
+  [/^sur (.+?) \((.+?)\), (.+) liquidé à (.+)$/, (m, a, b, c, d) => `on ${a} (${b}), ${c} liquidated at ${d}`],
+  [/^sur (.+?) \((.+?)\)$/, (m, a, b) => `on ${a} (${b})`],
+  [/^sur (.+)$/, (m, a) => `on ${a}`],
+  [/^(.+) empruntés$/, (m, a) => `${a} borrowed`],
+  [/^(.+) dispo$/, (m, a) => `${a} available`],
+  [/^Voir les (\d+) pools$/, (m, a) => `Show all ${a} pools`],
+  [/^(\d+) pools avec au moins 1 M\$ emprunté sur (\d+) chaînes$/, (m, a, b) => `${a} pools with at least $1M borrowed on ${b} chains`],
+  [/^maj (.+?)\.?$/, (m, a) => `updated ${a}`],
+  [/^Collatéral · seuil (.+)$/, (m, a) => `Collateral · threshold ${a}`],
+  [/^Collatéral (.+)$/, (m, a) => `Collateral ${a}`],
+  [/^baisse de (.+)$/, (m, a) => `drop of ${a}`],
+  [/^hausse de (.+)$/, (m, a) => `rise of ${a}`],
+  [/^Simulation (.+) : HF$/, (m, a) => `Scenario ${a}: HF`],
+  [/^(.+)\/an$/, (m, a) => `${a}/yr`],
+  [/^Voir le détail \((\d+) marchés?\)$/, (m, a) => `Show details (${a} market${a === '1' ? '' : 's'})`],
+  [/^Ouvrir (.+) sur Aave( \(.+\))?$/, (m, a, b) => `Open ${a} on Aave${b || ''}`],
+  [/^Risque de prix \((\d+)\)$/, (m, a) => `Price risk (${a})`],
+  [/^Boucles E-Mode \((\d+)\)$/, (m, a) => `E-Mode loops (${a})`],
+  [/^Baisse tolérée (.+)$/, (m, a) => `Tolerated drop ${a}`],
+  [/^Décrochage toléré (.+)$/, (m, a) => `Tolerated depeg ${a}`],
+  [/^Voir la position Aave de (.+)$/, (m, a) => `Open the Aave position of ${a}`],
+  [/^(.+) plus gros emprunteurs vérifiés \((.+)\), HF sous 1,2 et dette d'au moins 1 M\$$/, (m, a, b) => `${a} largest borrowers checked (${b}), HF below 1.2 and debt of at least $1M`],
+  [/^liste régénérée toutes les 30 min, (.+)$/, (m, a) => `list rebuilt every 30 min, ${a}`],
+  [/^HF en direct, maj (.+)$/, (m, a) => `live HF, updated ${a}`],
+  [/^Suivis \((\d+)\)$/, (m, a) => `Tracked (${a})`],
+  [/^positions perp de (\d+) comptes? de ce classement$/, (m, a) => `perp positions of ${a} account${a === '1' ? '' : 's'} in this ranking`],
+  [/^Compte perp (.+)$/, (m, a) => `Perp account ${a}`],
+  [/^Compte (.+)$/, (m, a) => `Account ${a}`],
+  [/^compte (.+)$/, (m, a) => `account ${a}`],
+  [/^levier (.+)$/, (m, a) => `leverage ${a}`],
+  [/^Voir le détail de (.+)$/, (m, a) => `Open details of ${a}`],
+  [/^Classement Hyperliquid de (.+) comptes actifs sur 30 jours, résumé (.+)$/, (m, a, b) => `Hyperliquid leaderboard of ${a} accounts active over 30 days, summarized ${b}`],
+  [/^positions en direct, maj (.+)$/, (m, a) => `live positions, updated ${a}`],
+  [/^(\d+) longs liquidés si le prix baisse$/, (m, a) => `${a} longs liquidated if the price drops`],
+  [/^(\d+) shorts liquidés s'il monte$/, (m, a) => `${a} shorts liquidated if it rises`],
+  [/^liquidation à (.+)$/, (m, a) => `liquidation at ${a}`],
+  [/^Prix (.+) → liq\. (.+)$/, (m, a, b) => `Price ${a} → liq. ${b}`],
+  [/^(.+) plus gros comptes actifs scannés$/, (m, a) => `${a} largest active accounts scanned`],
+  [/^prix et distances en direct, maj (.+)$/, (m, a) => `live prices and distances, updated ${a}`],
+  [/^(\d+) autres? soldes? de moins de 1 \$\.$/, (m, a) => `${a} other balance${a === '1' ? '' : 's'} under $1.`],
+  [/^Les 40 plus gros sur (\d+)\.$/, (m, a) => `The 40 largest of ${a}.`],
+  [/^(\d+) articles?$/, (m, a) => `${a} article${a === '1' ? '' : 's'}`],
+  [/^(\d+) médias \((.+)\)$/, (m, a, b) => `${a} outlets (${b})`],
+  [/^fil régénéré toutes les 30 min, dernière fois (.+)$/, (m, a) => `feed rebuilt every 30 min, last ${a}`],
+  [/^(.+) · pool(s?)$/, (m, a, s) => `${a} · pool${s}`]
+];
+
+function trSegment(s) {
+  if (Object.prototype.hasOwnProperty.call(EN, s)) return EN[s];
+  for (const [re, fn] of EN_RE) if (re.test(s)) return s.replace(re, fn);
+  return null;
+}
+function tr(text) {
+  const [, before, raw, after] = /^(\s*)([\s\S]*?)(\s*)$/.exec(text);
+  const core = raw.replace(/\s+/g, ' ');   // le HTML peut couper une phrase sur plusieurs lignes
+  if (!core || !/[A-Za-zÀ-ÿ]/.test(core)) return text;
+  const lead = core.startsWith('· ') ? '· ' : '';
+  const body = lead ? core.slice(2) : core;
+  let out = trSegment(body);
+  if (out == null && body.includes(' · ')) {
+    const parts = body.split(' · ');
+    const done = parts.map(p => trSegment(p) ?? p);
+    if (done.some((p, i) => p !== parts[i])) out = done.join(' · ');
+  }
+  return out == null ? text : before + lead + out + after;
+}
+const I18N_SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA']);
+const I18N_ATTRS = ['aria-label', 'title', 'placeholder'];
+function translateAttrs(el) {
+  for (const a of I18N_ATTRS) {
+    const v = el.getAttribute(a);
+    if (v) { const t = tr(v); if (t !== v) el.setAttribute(a, t); }
+  }
+}
+function translateText(n) {
+  const p = n.parentElement;
+  if (!p || I18N_SKIP.has(p.tagName) || p.closest('[data-noi18n]')) return;
+  const t = tr(n.data);
+  if (t !== n.data) n.data = t;
+}
+function translateTree(root) {
+  if (root.nodeType === 3) return translateText(root);
+  if (root.nodeType !== 1 || I18N_SKIP.has(root.tagName) || root.closest('[data-noi18n]')) return;
+  translateAttrs(root);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+    acceptNode: n => n.nodeType === 1 && (I18N_SKIP.has(n.tagName) || n.hasAttribute('data-noi18n')) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT
+  });
+  let n;
+  while ((n = walker.nextNode())) n.nodeType === 3 ? translateText(n) : translateAttrs(n);
+}
+if (LANG === 'en') {
+  translateTree(document.body);
+  new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.type === 'characterData') translateText(m.target);
+      else if (m.type === 'attributes') translateAttrs(m.target);
+      else m.addedNodes.forEach(translateTree);
+    }
+  }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+}
+
+/* ================= Formats ================= */
 const NF = {};
-const nf = (min, max) => NF[min + '-' + max] ||= new Intl.NumberFormat('fr-FR', { minimumFractionDigits: min, maximumFractionDigits: max });
+const nf = (min, max) => NF[min + '-' + max] ||= new Intl.NumberFormat(LOCALE(), { minimumFractionDigits: min, maximumFractionDigits: max });
 const NBSP = ' ', NNBSP = ' ';
 function fmtPrice(v) {
   if (v == null || !isFinite(v)) return '—';
@@ -809,20 +1141,22 @@ function fmtPrice(v) {
   else if (a >= 10) s = nf(2, 2).format(v);
   else if (a >= 1) s = nf(3, 3).format(v);
   else if (a >= 0.01) s = nf(4, 4).format(v);
-  else s = new Intl.NumberFormat('fr-FR', { maximumSignificantDigits: 4 }).format(v);
-  return s + NBSP + '$';
+  else s = new Intl.NumberFormat(LOCALE(), { maximumSignificantDigits: 4 }).format(v);
+  return LANG === 'en' ? '$' + s : s + NBSP + '$';
 }
 function fmtUsdC(v) {
   if (v == null || !isFinite(v)) return '—';
   const a = Math.abs(v);
   let n = v, u = '';
-  if (a >= 1e12) { n = v / 1e12; u = 'T'; } else if (a >= 1e9) { n = v / 1e9; u = 'Md'; } else if (a >= 1e6) { n = v / 1e6; u = 'M'; } else if (a >= 1e3) { n = v / 1e3; u = 'k'; }
+  const en = LANG === 'en';
+  if (a >= 1e12) { n = v / 1e12; u = 'T'; } else if (a >= 1e9) { n = v / 1e9; u = en ? 'B' : 'Md'; } else if (a >= 1e6) { n = v / 1e6; u = 'M'; } else if (a >= 1e3) { n = v / 1e3; u = en ? 'K' : 'k'; }
   const d = Math.abs(n) >= 100 ? 0 : Math.abs(n) >= 10 ? 1 : 2;
+  if (en) return (n < 0 ? '−' : '') + '$' + nf(0, d).format(Math.abs(n)) + u;
   return nf(0, d).format(n) + NBSP + u + '$';
 }
 const sign = v => v > 0 ? '+' : v < 0 ? '−' : '';
-function fmtPct(v, d = 2) { if (v == null || !isFinite(v)) return '—'; return sign(v) + nf(d, d).format(Math.abs(v)) + NNBSP + '%'; }
-const fmtRate = f => (f == null || !isFinite(f)) ? '—' : nf(2, 2).format(f * 100) + NNBSP + '%';
+function fmtPct(v, d = 2) { if (v == null || !isFinite(v)) return '—'; return sign(v) + nf(d, d).format(Math.abs(v)) + PCT(); }
+const fmtRate = f => (f == null || !isFinite(f)) ? '—' : nf(2, 2).format(f * 100) + PCT();
 const clsOf = v => v == null || !isFinite(v) ? '' : v > 0 ? 't-up' : v < 0 ? 't-down' : '';
 function pill(v) {
   if (v == null || !isFinite(v)) return '';
@@ -832,12 +1166,13 @@ function pill(v) {
 function ago(ts) {
   if (!ts) return '';
   const s = Math.round((Date.now() - ts) / 1000);
-  if (s < 45) return 'à l’instant';
-  if (s < 3600) return `il y a ${Math.round(s / 60)} min`;
-  if (s < 86400) return `il y a ${Math.round(s / 3600)} h`;
-  return `il y a ${Math.round(s / 86400)} j`;
+  const en = LANG === 'en';
+  if (s < 45) return en ? 'just now' : 'à l’instant';
+  if (s < 3600) return en ? `${Math.round(s / 60)} min ago` : `il y a ${Math.round(s / 60)} min`;
+  if (s < 86400) return en ? `${Math.round(s / 3600)} h ago` : `il y a ${Math.round(s / 3600)} h`;
+  return en ? `${Math.round(s / 86400)} d ago` : `il y a ${Math.round(s / 86400)} j`;
 }
-const hhmm = ts => ts ? new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+const hhmm = ts => ts ? new Date(ts).toLocaleTimeString(LOCALE(), { hour: '2-digit', minute: '2-digit' }) : '';
 
 let sgid = 0;
 function spark(values, { area = true } = {}) {
@@ -889,10 +1224,11 @@ const state = {
   newsSrc: store.get('cd.newsSrc', 'agg'), newsCoin: 'all', newsLang: store.get('cd.newsLang', 'all'),
   searchRes: new Map(),
   aaveMode: store.get('cd.aaveMode', 'rates'), aaveMarkets: null,
-  awallets: store.get('cd.aaveWallets', []), awData: {}, awAt: 0,
+  awallets: store.get('cd.aaveWallets', []), awData: {}, awAt: 0, awOpen: {}, awSim: {}, aaveRisk: null,
   whales: null, whalesAt: 0, whalesErr: null,
   hlRank: store.get('cd.hlRank', 'value'), hlFollow: store.get('cd.hlFollow', []),
-  hl: {}, hlAt: 0, hlOpen: null, hlDetail: {}, spotMeta: null, mids: null, midsAt: 0
+  hl: {}, hlAt: 0, hlOpen: null, hlDetail: {}, spotMeta: null, mids: null, midsAt: 0,
+  liq: null, liqAt: 0, liqErr: null, arFilter: store.get('cd.arFilter', 'market')
 };
 if (!Array.isArray(state.awallets)) state.awallets = [];
 if (!Array.isArray(state.hlFollow)) state.hlFollow = [];
@@ -1025,8 +1361,8 @@ function renderKpis() {
       <div class="kpi-v">${g ? fmtUsdC(g.vol) : sk}</div>
       <div class="kpi-s">${g ? nf(1, 1).format(g.vol / g.mcap * 100) + NNBSP + '% de la cap.' : '&nbsp;'}</div></div>
     <div class="kpi"><span class="kpi-l">Dominance BTC</span>
-      <div class="kpi-v">${g ? nf(1, 1).format(g.btcd) + NNBSP + '%' : sk}</div>
-      <div class="kpi-s">${g ? 'ETH ' + nf(1, 1).format(g.ethd) + NNBSP + '%' : '&nbsp;'}</div></div>
+      <div class="kpi-v">${g ? nf(1, 1).format(g.btcd) + PCT() : sk}</div>
+      <div class="kpi-s">${g ? 'ETH ' + nf(1, 1).format(g.ethd) + PCT() : '&nbsp;'}</div></div>
     <div class="kpi"><span class="kpi-l">Fear &amp; Greed</span>
       <div class="kpi-v">${f ? `${f.v}<small>/100</small><span class="fng-l" style="color:${fngColor}">${esc(f.label)}</span>` : sk}</div>
       ${f ? `<div class="fng-bar" aria-hidden="true"><i style="--v:${Math.max(2, Math.min(98, f.v))}%"></i></div>` : '<div class="kpi-s">&nbsp;</div>'}</div>`;
@@ -1105,7 +1441,11 @@ function renderAssetHead() {
       <div><dt>Haut 24 h</dt><dd>${fmtPrice(hi)}</dd></div>
       <div><dt>Bas 24 h</dt><dd>${fmtPrice(lo)}</dd></div>
       <div><dt>Écart au record</dt><dd class="${clsOf(m?.ath_change_percentage)}">${fmtPct(m?.ath_change_percentage, 1)}</dd></div>
-    </dl>`;
+    </dl>
+    <div class="ah-links wd-links">
+      <a href="${esc(hlTradeUrl(w.sym))}" target="_blank" rel="noopener">Trader ${esc(w.sym)} sur Hyperliquid ↗</a>
+      ${AAVE_ASSETS[w.sym] ? `<a href="${esc(aaveReserveUrl('AaveV3Ethereum', AAVE_ASSETS[w.sym]))}" target="_blank" rel="noopener">${esc(w.sym)} sur Aave (Ethereum Core) ↗</a>` : ''}
+    </div>`;
 }
 
 /* ================= Widgets TradingView ================= */
@@ -1135,12 +1475,12 @@ function ensureWidgets() {
   const th = tvTheme(), w = selectedWatch(), mob = !isDesk();
   if (isShown($('#tv-tape')) && state.watch.length) {
     const symbols = state.watch.map(x => ({ proName: x.tv, title: x.sym }));
-    mountTv('tv-tape', 'ticker-tape', { symbols, showSymbolLogo: true, isTransparent: true, displayMode: 'adaptive', colorTheme: th, locale: 'fr' },
+    mountTv('tv-tape', 'ticker-tape', { symbols, showSymbolLogo: true, isTransparent: true, displayMode: 'adaptive', colorTheme: th, locale: LANG },
       th + '|' + symbols.map(s => s.proName).join(','));
   }
   if (w && isShown($('#tv-chart'))) {
     mountTv('tv-chart', 'advanced-chart', {
-      autosize: true, symbol: w.tv, interval: '60', timezone: 'Europe/Paris', theme: th, style: '1', locale: 'fr',
+      autosize: true, symbol: w.tv, interval: '60', timezone: 'Europe/Paris', theme: th, style: '1', locale: LANG,
       backgroundColor: th === 'dark' ? 'rgba(14, 20, 31, 1)' : 'rgba(255, 255, 255, 1)',
       gridColor: th === 'dark' ? 'rgba(126, 137, 156, 0.08)' : 'rgba(13, 19, 32, 0.06)',
       hide_side_toolbar: mob, hide_top_toolbar: false, hide_legend: false, allow_symbol_change: false,
@@ -1151,13 +1491,13 @@ function ensureWidgets() {
   if (w && isShown($('#tv-ta'))) {
     mountTv('tv-ta', 'technical-analysis', {
       interval: '1h', width: '100%', height: '100%', isTransparent: true, symbol: w.tv,
-      showIntervalTabs: true, displayMode: 'single', locale: 'fr', colorTheme: th
+      showIntervalTabs: true, displayMode: 'single', locale: LANG, colorTheme: th
     }, th + '|' + w.tv);
   }
   if (state.newsSrc === 'tv' && isShown($('#tv-news'))) {
     const f = newsCoinWatch();
     const cfg = f ? { feedMode: 'symbol', symbol: f.tv } : { feedMode: 'market', market: 'crypto' };
-    mountTv('tv-news', 'timeline', { ...cfg, isTransparent: true, displayMode: 'regular', width: '100%', height: '100%', colorTheme: th, locale: 'fr' },
+    mountTv('tv-news', 'timeline', { ...cfg, isTransparent: true, displayMode: 'regular', width: '100%', height: '100%', colorTheme: th, locale: LANG },
       th + '|' + (f ? f.tv : 'market'));
   }
 }
@@ -1183,6 +1523,28 @@ function marketLabel(name, chain) {
   return s.replace(/([a-z])([A-Z])/g, '$1 $2');
 }
 const hkey = r => `${r.chainId}:${r.market}:${r.token}`;
+
+// Actifs de la liste de suivi disponibles sur Aave Ethereum Core (adresse du jeton sous-jacent).
+const AAVE_ASSETS = { ETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', BTC: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+  LINK: '0x514910771AF9Ca656af840dff83E8264EcF986CA', AAVE: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9' };
+
+/* Liens vers l'appli Aave : nom de marché de l'appli (proto_…_v3) déduit du nom de marché de l'API. */
+const AAVE_APP_MARKETS = new Set(['mainnet', 'lido', 'etherfi', 'horizon', 'arbitrum', 'base', 'optimism', 'polygon', 'avalanche', 'bnb', 'gnosis',
+  'scroll', 'zksync', 'linea', 'metis', 'sonic', 'celo', 'soneium', 'ink', 'plasma', 'mantle', 'monad', 'xlayer', 'megaeth']);
+function aaveAppMarket(rawName) {
+  const s = String(rawName || '').replace(/^AaveV3/, '');
+  const special = { Ethereum: 'mainnet', EthereumLido: 'lido', EthereumEtherFi: 'etherfi', EthereumHorizon: 'horizon' };
+  const key = special[s] || s.toLowerCase();
+  return AAVE_APP_MARKETS.has(key) ? `proto_${key}_v3` : null;
+}
+function aaveMarketUrl(rawName) {
+  const mk = aaveAppMarket(rawName);
+  return mk ? `https://app.aave.com/markets/?marketName=${mk}` : 'https://app.aave.com/markets/';
+}
+function aaveReserveUrl(rawName, token) {
+  const mk = aaveAppMarket(rawName);
+  return mk && isAddr(String(token)) ? `https://app.aave.com/reserve-overview/?underlyingAsset=${String(token).toLowerCase()}&marketName=${mk}` : '';
+}
 const utilPct = r => Math.round((r.util > 1.5 ? r.util / 100 : r.util) * 100);
 
 async function gql(query, { partial = false } = {}) {
@@ -1213,7 +1575,7 @@ async function loadAave() {
         rows.push({
           g: g.key, sym: String(r.underlyingToken.symbol).replace(/₮/g, 'T'), token: r.underlyingToken.address,
           img: r.underlyingToken.imageUrl, chain: mk.chain.name, chainId: mk.chain.chainId, chainIcon: mk.chain.icon,
-          market: mk.address, label: marketLabel(mk.name, mk.chain.name),
+          market: mk.address, mName: mk.name, label: marketLabel(mk.name, mk.chain.name),
           apy: +bi.apy.value, sApy: +(r.supplyInfo?.apy?.value || 0),
           borrowUsd: +bi.total.usd, availUsd: +bi.availableLiquidity.usd, util: +bi.utilizationRate.value,
           ok: bi.borrowingState === 'ENABLED' && !r.isFrozen && !r.isPaused
@@ -1322,10 +1684,11 @@ function renderAave() {
       const u = utilPct(r);
       return `<li class="pool">
         ${safeUrl(r.chainIcon) ? `<img class="pool-ic" src="${esc(r.chainIcon)}" alt="" width="22" height="22" loading="lazy">` : '<span class="pool-ic"></span>'}
-        <span class="pool-name" title="${esc(r.label)} · ${esc(r.chain)}">${esc(r.label)}<small>${esc(r.sym)}</small></span>
+        <a class="pool-name" href="${esc(aaveReserveUrl(r.mName, r.token) || aaveMarketUrl(r.mName))}" target="_blank" rel="noopener" title="Ouvrir ${esc(r.sym)} sur Aave (${esc(r.label)})">${esc(r.label)}<small>${esc(r.sym)}</small></a>
         <span class="pool-rate">${deltaHtml(deltaPts(r), true)}${fmtRate(r.apy)}</span>
         <span class="pool-meta">
-          <span class="pool-util" title="Taux d'utilisation du pool"><span class="ubar ${u >= 92 ? 'hot' : u >= 80 ? 'warn' : ''}"><i style="--u:${Math.min(100, u)}%"></i></span>${u}${NNBSP}%</span>
+          <span class="pool-util" title="Taux d'utilisation du pool"><span class="ubar ${u >= 92 ? 'hot' : u >= 80 ? 'warn' : ''}"><i style="--u:${Math.min(100, u)}%"></i></span>${u}${PCT()}</span>
+          <span>Dépôt <b class="t-up">${fmtRate(r.sApy)}</b></span>
           <span>${fmtUsdC(r.borrowUsd)} empruntés · ${fmtUsdC(r.availUsd)} dispo</span>
         </span></li>`;
     }).join('');
@@ -1333,7 +1696,7 @@ function renderAave() {
       <div class="ac-head">
         ${safeUrl(ref.img) ? `<img class="ac-logo" src="${esc(ref.img)}" alt="" width="38" height="38" loading="lazy">` : `<span class="ac-logo coin-ava">${g.key[0]}</span>`}
         <div><h3>${g.key}</h3><span class="t-muted">${g.name} · ${all.length} pool${all.length > 1 ? 's' : ''}</span></div>
-        <div><div class="ac-rate">${fmtRate(ref.apy)}</div><div class="ac-ref">${esc(ref.label)}</div></div>
+        <div><div class="ac-rate">${fmtRate(ref.apy)}</div><div class="ac-ref">${esc(ref.label)} · dépôt ${fmtRate(ref.sApy)}</div></div>
       </div>
       <div class="ac-trend">
         <div class="ac-spk">${pts.length > 1 ? spark(thin(pts.map(p => p.v), 84)) : '<span class="spk spk-empty"></span>'}</div>
@@ -1419,8 +1782,8 @@ function renderNews() {
     return `<li class="ni"><a href="${esc(u)}" target="_blank" rel="noopener noreferrer">
       <div style="min-width:0">
         <div class="ni-meta"><span class="ni-src">${esc(it.s)}</span><span class="ni-lang">${esc(String(it.l || '').toUpperCase())}</span>${isFinite(t) ? `<time datetime="${esc(it.d)}" data-t="${t}">${ago(t)}</time>` : ''}${fresh ? '<span class="ni-new">Nouveau</span>' : ''}</div>
-        <h3 class="ni-title">${esc(it.t)}</h3>
-        ${it.x ? `<p class="ni-sum">${esc(it.x)}</p>` : ''}
+        <h3 class="ni-title" data-noi18n>${esc(it.t)}</h3>
+        ${it.x ? `<p class="ni-sum" data-noi18n>${esc(it.x)}</p>` : ''}
         ${it.tags.length ? `<div class="ni-tags">${it.tags.map(w => `<span class="tag">${esc(w.sym)}</span>`).join('')}</div>` : ''}
       </div>
       ${img ? `<img class="ni-img" src="${esc(img)}" alt="" width="78" height="58" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
@@ -1442,11 +1805,11 @@ async function copyText(t) {
 function fmtQty(v) {
   if (v == null || !isFinite(v)) return '—';
   const a = Math.abs(v);
-  if (a >= 1e9) return nf(0, 2).format(v / 1e9) + NBSP + 'Md';
-  if (a >= 1e6) return nf(0, 2).format(v / 1e6) + NBSP + 'M';
+  if (a >= 1e9) return nf(0, 2).format(v / 1e9) + (LANG === 'en' ? 'B' : NBSP + 'Md');
+  if (a >= 1e6) return nf(0, 2).format(v / 1e6) + (LANG === 'en' ? 'M' : NBSP + 'M');
   if (a >= 1000) return nf(0, 0).format(v);
   if (a >= 1) return nf(0, 3).format(v);
-  return new Intl.NumberFormat('fr-FR', { maximumSignificantDigits: 4 }).format(v);
+  return new Intl.NumberFormat(LOCALE(), { maximumSignificantDigits: 4 }).format(v);
 }
 const signedUsd = v => (v == null || !isFinite(v)) ? '—' : sign(v) + fmtUsdC(Math.abs(v));
 function tokenImg(src, sym) {
@@ -1473,47 +1836,150 @@ async function ensureAaveMarkets() {
   return state.aaveMarkets;
 }
 
+/* Paramètres de risque des marchés : seuil de liquidation de chaque actif, hors E-Mode et par catégorie E-Mode. */
+const STABLES = new Set(['USDC', 'USDT', 'USDT0', 'DAI', 'USDS', 'GHO', 'FRAX', 'FRXUSD', 'SFRXUSD', 'LUSD', 'PYUSD', 'USDE', 'SUSDE', 'EUSDE',
+  'RLUSD', 'USDBC', 'USDC.E', 'EURC', 'EURS', 'FDUSD', 'CRVUSD', 'USDTB', 'USDG', 'MUSD', 'USD1', 'SDAI', 'SUSDS', 'AUSD', 'USDP', 'TUSD', 'USDX', 'USDF']);
+const isStable = sym => STABLES.has(normSym(sym));
+
+async function ensureAaveRisk() {
+  if (state.aaveRisk && Date.now() - state.aaveRisk.at < 3600000) return state.aaveRisk;
+  await ensureAaveMarkets();
+  const ids = state.aaveChains.map(c => +c.chainId).filter(Number.isFinite).join(',');
+  const d = await gql(`{ markets(request:{chainIds:[${ids}]}) { address chain { chainId }
+    eModeCategories { id label liquidationThreshold { value } }
+    reserves { underlyingToken { address } supplyInfo { liquidationThreshold { value } } eModeInfo { categoryId liquidationThreshold { value } } } } }`);
+  const byMarket = {};
+  for (const m of d.markets || []) {
+    const cats = {}, res = {};
+    for (const c of m.eModeCategories || []) cats[c.id] = { label: c.label, lt: +c.liquidationThreshold.value };
+    for (const r of m.reserves || []) {
+      const emode = {};
+      for (const e of r.eModeInfo || []) emode[e.categoryId] = +e.liquidationThreshold.value;
+      res[String(r.underlyingToken.address).toLowerCase()] = { lt: +r.supplyInfo.liquidationThreshold.value, emode };
+    }
+    byMarket[m.chain.chainId + ':' + String(m.address).toLowerCase()] = { cats, res };
+  }
+  state.aaveRisk = { at: Date.now(), byMarket };
+  return state.aaveRisk;
+}
+
+/*
+ * Risque d'un marché Aave pour une adresse.
+ * HF = Σ(collatéral × seuil de liquidation) / dette. On le recale sur la valeur exacte de l'API
+ * (totalCollateralBase × currentLiquidationThreshold), puis on résout HF = 1 :
+ *  - pour chaque collatéral seul (les autres prix constants) : prix de liquidation à la baisse ;
+ *  - pour chaque dette non stable seule : prix de liquidation à la hausse ;
+ *  - pour un mouvement commun de tous les actifs non stables (les stablecoins restent à 1 $) : le choc toléré.
+ */
+function computeRisk(m, risk) {
+  const st = m.st, coll = m.supplies.filter(s => s.coll);
+  m.k = null; m.shock = null; m.emodeLabel = st?.eModeEnabled ? 'E-Mode' : null;
+  for (const s of coll) s.lt = risk?.res[s.addr]?.lt ?? null;   // seuil hors E-Mode, affiné plus bas si dette
+  if (!(m.debt > 0) || !coll.length) return;
+  const ltOf = (addr, cat) => {
+    const r = risk?.res[addr];
+    if (!r) return null;
+    return cat != null && r.emode[cat] != null ? r.emode[cat] : r.lt;
+  };
+  const exact = st ? +st.totalCollateralBase * +st.currentLiquidationThreshold.value : 0;
+  let cat = null;
+  if (st?.eModeEnabled && risk) {
+    // L'API ne dit pas quelle catégorie E-Mode est active : on garde celle qui reproduit le seuil exact du compte.
+    const cands = new Set();
+    for (const s of coll) Object.keys(risk.res[s.addr]?.emode || {}).forEach(c => cands.add(+c));
+    let bestErr = Infinity;
+    for (const c of cands) {
+      const err = Math.abs(coll.reduce((a, s) => a + s.usd * (ltOf(s.addr, c) ?? 0), 0) - exact);
+      if (err < bestErr) { bestErr = err; cat = c; }
+    }
+    if (cat != null && risk.cats[cat]) m.emodeLabel = risk.cats[cat].label.replace(/_/g, ' ');
+  }
+  for (const s of coll) s.lt = ltOf(s.addr, cat);
+  const est = coll.reduce((a, s) => a + s.usd * (s.lt ?? 0), 0);
+  const Cw = exact > 0 ? exact : est;
+  const scale = est > 0 ? Cw / est : 1;
+  const D = m.debt;
+  for (const s of coll) {
+    if (!(s.lt > 0) || !(s.px > 0) || !(s.amt > 0)) continue;
+    const lt = s.lt * scale;
+    const dSame = m.borrows.filter(b => b.addr === s.addr).reduce((a, b) => a + b.amt, 0);
+    const den = s.amt * lt - dSame;
+    const p = den > 0 ? ((D - dSame * s.px) - (Cw - s.amt * s.px * lt)) / den : 0;
+    s.liq = p > 0 ? p : 0;              // 0 : cet actif ne peut pas déclencher seul la liquidation
+    s.dist = p > 0 ? p / s.px - 1 : null;
+  }
+  for (const b of m.borrows) {
+    if (isStable(b.sym) || !(b.px > 0) || !(b.amt > 0)) continue;
+    const sc = coll.find(s => s.addr === b.addr && s.lt > 0);
+    const own = sc ? sc.amt * sc.lt * scale : 0;
+    const den = b.amt - own;
+    if (den <= 0) continue;
+    const p = ((Cw - (sc ? sc.amt * sc.px * sc.lt * scale : 0)) - (D - b.amt * b.px)) / den;
+    if (p > 0) { b.liq = p; b.dist = p / b.px - 1; }
+  }
+  let cs = 0, cv = 0, ds = 0, dv = 0;
+  for (const s of coll) { const c = s.usd * (s.lt ?? 0) * scale; if (isStable(s.sym)) cs += c; else cv += c; }
+  for (const b of m.borrows) { if (isStable(b.sym)) ds += b.usd; else dv += b.usd; }
+  m.k = { cs, cv, ds, dv };
+  if (Math.abs(cv - dv) > 1e-6) {
+    const f = (ds - cs) / (cv - dv);
+    if (f > 0 && f < 20) m.shock = f - 1;
+  }
+}
+const hfAt = (k, s) => { const den = k.ds + k.dv * (1 + s); return den > 0 ? (k.cs + k.cv * (1 + s)) / den : null; };
+
 async function loadWallet(addr) {
   const prev = state.awData[addr];
   try {
     const mks = (await ensureAaveMarkets()).filter(m => isAddr(m.address));
     const list = mks.map(m => `{address:"${m.address}", chainId:${+m.chainId}}`).join(',');
-    const pos = 'market { name address chain { name chainId icon } } currency { symbol imageUrl }';
-    const d = await gql(`{
-      s: userSupplies(request:{markets:[${list}], user:"${addr}", collateralsOnly:false, orderBy:{balance:DESC}}) { ${pos} balance { amount { value } usd } apy { value } isCollateral }
-      b: userBorrows(request:{markets:[${list}], user:"${addr}", orderBy:{debt:DESC}}) { ${pos} debt { amount { value } usd } apy { value } } }`);
+    const pos = 'market { name address chain { name chainId icon } } currency { symbol imageUrl address }';
+    const [d, risk] = await Promise.all([
+      gql(`{
+        s: userSupplies(request:{markets:[${list}], user:"${addr}", collateralsOnly:false, orderBy:{balance:DESC}}) { ${pos} balance { amount { value } usd usdPerToken } apy { value } isCollateral }
+        b: userBorrows(request:{markets:[${list}], user:"${addr}", orderBy:{debt:DESC}}) { ${pos} debt { amount { value } usd usdPerToken } apy { value } } }`),
+      ensureAaveRisk().catch(() => null)
+    ]);
     const byMarket = new Map();
     const marketOf = m => {
       const k = m.chain.chainId + ':' + String(m.address).toLowerCase();
-      if (!byMarket.has(k)) byMarket.set(k, { address: m.address, chainId: m.chain.chainId, chain: m.chain.name, icon: m.chain.icon, label: marketLabel(m.name, m.chain.name), supplies: [], borrows: [], st: null });
+      if (!byMarket.has(k)) byMarket.set(k, { key: k, address: m.address, chainId: m.chain.chainId, chain: m.chain.name, icon: m.chain.icon, rawName: m.name, label: marketLabel(m.name, m.chain.name), supplies: [], borrows: [], st: null });
       return byMarket.get(k);
     };
     for (const s of d.s || []) {
       const usd = +s.balance.usd;
       if (!(usd >= 0.01)) continue;
-      marketOf(s.market).supplies.push({ sym: s.currency.symbol, img: s.currency.imageUrl, amt: +s.balance.amount.value, usd, apy: +s.apy.value, coll: !!s.isCollateral });
+      marketOf(s.market).supplies.push({ sym: s.currency.symbol, img: s.currency.imageUrl, addr: String(s.currency.address).toLowerCase(),
+        amt: +s.balance.amount.value, px: +s.balance.usdPerToken, usd, apy: +s.apy.value, coll: !!s.isCollateral, lt: null, liq: null, dist: null });
     }
     for (const b of d.b || []) {
       const usd = +b.debt.usd;
       if (!(usd >= 0.01)) continue;
-      marketOf(b.market).borrows.push({ sym: b.currency.symbol, img: b.currency.imageUrl, amt: +b.debt.amount.value, usd, apy: +b.apy.value });
+      marketOf(b.market).borrows.push({ sym: b.currency.symbol, img: b.currency.imageUrl, addr: String(b.currency.address).toLowerCase(),
+        amt: +b.debt.amount.value, px: +b.debt.usdPerToken, usd, apy: +b.apy.value, liq: null, dist: null });
     }
     const markets = [...byMarket.values()].filter(m => isAddr(m.address));
     for (let i = 0; i < markets.length; i += 10) {
       const lot = markets.slice(i, i + 10);
-      const q = '{ ' + lot.map((m, j) => `m${j}: userMarketState(request:{market:"${m.address}", user:"${addr}", chainId:${+m.chainId}}) { netWorth netAPY { value } healthFactor totalCollateralBase totalDebtBase availableBorrowsBase ltv { value } eModeEnabled }`).join(' ') + ' }';
+      const q = '{ ' + lot.map((m, j) => `m${j}: userMarketState(request:{market:"${m.address}", user:"${addr}", chainId:${+m.chainId}}) { netWorth netAPY { value } healthFactor totalCollateralBase totalDebtBase availableBorrowsBase ltv { value } currentLiquidationThreshold { value } eModeEnabled }`).join(' ') + ' }';
       try { const r = await gql(q, { partial: true }); lot.forEach((m, j) => { m.st = r?.['m' + j] || null; }); } catch {}
     }
-    let sup = 0, debt = 0, hfMin = null, hfMarket = null;
+    let sup = 0, debt = 0, yearly = 0, hfMin = null, hfMarket = null, shock = null, nearest = null;
     for (const m of markets) {
       m.sup = m.supplies.reduce((a, x) => a + x.usd, 0);
       m.debt = m.borrows.reduce((a, x) => a + x.usd, 0);
+      m.yearly = m.supplies.reduce((a, x) => a + x.usd * x.apy, 0) - m.borrows.reduce((a, x) => a + x.usd * x.apy, 0);
       m.hf = m.st && m.st.healthFactor != null ? +m.st.healthFactor : null;
-      sup += m.sup; debt += m.debt;
+      try { computeRisk(m, risk?.byMarket[m.key]); } catch { m.k = null; m.shock = null; }
+      sup += m.sup; debt += m.debt; yearly += m.yearly;
       if (m.debt > 0 && m.hf != null && (hfMin == null || m.hf < hfMin)) { hfMin = m.hf; hfMarket = m.label; }
+      if (m.shock != null && (shock == null || Math.abs(m.shock) < Math.abs(shock.v))) shock = { v: m.shock, label: m.label };
+      for (const x of [...m.supplies, ...m.borrows]) {
+        if (x.dist != null && (nearest == null || Math.abs(x.dist) < Math.abs(nearest.dist))) nearest = { sym: x.sym, liq: x.liq, dist: x.dist, label: m.label };
+      }
     }
     markets.sort((a, b) => (b.sup + b.debt) - (a.sup + a.debt));
-    state.awData[addr] = { at: Date.now(), err: null, markets, sup, debt, net: sup - debt, hfMin, hfMarket };
+    state.awData[addr] = { at: Date.now(), err: null, markets, sup, debt, net: sup - debt, yearly, hfMin, hfMarket, shock, nearest };
   } catch {
     state.awData[addr] = { ...(prev || {}), err: 'Positions Aave indisponibles pour le moment.' };
   }
@@ -1531,45 +1997,119 @@ function hfInfo(hf, debt) {
   return { cls: hf < 1.1 ? 'hot' : hf < 1.5 ? 'warn' : 'ok', txt: 'HF ' + (hf >= 100 ? '> 100' : nf(2, 2).format(hf)) };
 }
 
-function lineHtml(x, kind) {
-  return `<div class="line">${tokenImg(x.img, x.sym)}
-    <span class="nm"><b>${esc(x.sym)}</b>${kind === 's' && x.coll ? '<span class="badge">Collatéral</span>' : ''}</span>
-    <span class="amt">${fmtUsdC(x.usd)}</span>
-    <small>APY ${fmtRate(x.apy)}</small><small class="r">${fmtQty(x.amt)} ${esc(x.sym)}</small></div>`;
+const distCls = dist => { const a = Math.abs(dist); return a < 0.15 ? 'hot' : a < 0.3 ? 'warn' : 'ok'; };
+const pctAbs = (v, d = 1) => nf(0, d).format(Math.abs(v * 100)) + PCT();
+
+function liqHtml(x, kind) {
+  if (kind === 's') {
+    if (!x.coll) return '<span class="liq none">Non utilisé comme collatéral</span>';
+    if (x.liq == null) return '';
+    if (x.liq === 0) return '<span class="liq none">Ne peut pas déclencher seul la liquidation</span>';
+    return `<span class="liq ${distCls(x.dist)}">Liquidation à <b>${fmtPrice(x.liq)}</b> · ${x.dist < 0 ? 'baisse' : 'hausse'} de ${pctAbs(x.dist)}</span>`;
+  }
+  if (x.liq) return `<span class="liq ${distCls(x.dist)}">Liquidation si le prix dépasse <b>${fmtPrice(x.liq)}</b> · hausse de ${pctAbs(x.dist)}</span>`;
+  return '';
 }
 
-function walletMarketHtml(m) {
+function lineHtml(x, kind, m) {
+  const link = aaveReserveUrl(m.rawName, x.addr);
+  const name = link ? `<a href="${esc(link)}" target="_blank" rel="noopener" title="Ouvrir ${esc(x.sym)} sur Aave">${esc(x.sym)}</a>` : esc(x.sym);
+  const badge = kind === 's' && x.coll ? `<span class="badge">Collatéral${x.lt ? ' · seuil ' + nf(0, 0).format(x.lt * 100) + PCT() : ''}</span>` : '';
+  return `<div class="line">${tokenImg(x.img, x.sym)}
+    <span class="nm"><b>${name}</b>${badge}</span>
+    <span class="amt">${fmtUsdC(x.usd)}</span>
+    <small>${fmtQty(x.amt)} ${esc(x.sym)}${x.px ? ' · ' + fmtPrice(x.px) : ''}</small><small class="r">APY ${fmtRate(x.apy)}</small>
+    ${liqHtml(x, kind)}</div>`;
+}
+
+function hfGauge(hf) {
+  if (hf == null) return '';
+  const pos = Math.max(0, Math.min(1, (hf - 1) / 2)) * 100;
+  return `<div class="hfgauge" aria-hidden="true"><span class="hfg-bar"><i style="left:${pos.toFixed(1)}%"></i></span>
+    <span class="hfg-scale"><span>1 liquidation</span><span>1,5</span><span>2</span><span>2,5</span><span>3+</span></span></div>`;
+}
+
+function simText(m, s) {
+  if (!s || !m.k) return '';
+  const h = hfAt(m.k, s);
+  if (h == null) return '';
+  const c = h < 1.1 ? 't-down' : h < 1.5 ? 't-warn' : 't-up';
+  return `Simulation ${s > 0 ? '+' : '−'}${nf(0, 0).format(Math.abs(s * 100))}${PCT()} : HF <b class="${c}">${h >= 100 ? '> 100' : nf(2, 2).format(h)}</b>${h < 1 ? ' · liquidable' : ''}`;
+}
+
+function walletMarketHtml(m, addr) {
   const st = m.st, hf = hfInfo(m.hf, m.debt);
-  const cap = st ? +st.totalCollateralBase * +st.ltv.value : 0;
-  const used = cap > 0 && m.debt > 0 ? m.debt / cap * 100 : null;
+  const coll = st ? +st.totalCollateralBase : 0, maxLtv = st ? +st.ltv.value : 0;
+  const used = coll * maxLtv > 0 && m.debt > 0 ? m.debt / (coll * maxLtv) * 100 : null;
   const icon = safeUrl(m.icon) ? `<img src="${esc(m.icon)}" alt="" width="20" height="20" loading="lazy">` : '';
+  const mUrl = aaveMarketUrl(m.rawName);
+  let risk = '';
+  if (m.debt > 0) {
+    const shock = m.shock != null
+      ? `<span class="shock ${distCls(m.shock)}">Liquidation si les actifs non stables ${m.shock < 0 ? 'baissent' : 'montent'} ensemble de <b>${pctAbs(m.shock)}</b></span>`
+      : '<span class="shock ok">Pas de liquidation par un mouvement d\'ensemble du marché</span>';
+    risk = `${hfGauge(m.hf)}<div class="risk-sum">${shock}<span class="simhf" data-simfor="${esc(addr + '|' + m.key)}">${simText(m, (state.awSim[addr] || 0) / 100)}</span></div>`;
+  }
   return `<section class="wm">
-    <div class="wm-head">${icon}<b>${esc(m.label)}</b><span class="hf ${hf.cls}">${hf.txt}</span></div>
+    <div class="wm-head">${icon}<b>${mUrl ? `<a href="${esc(mUrl)}" target="_blank" rel="noopener" title="Ouvrir ce marché sur Aave">${esc(m.label)}</a>` : esc(m.label)}</b>
+      ${m.emodeLabel ? `<span class="badge" title="Mode efficacité : seuils relevés entre actifs corrélés">E-Mode ${esc(m.emodeLabel)}</span>` : ''}<span class="hf ${hf.cls}">${hf.txt}</span></div>
+    ${risk}
     <div class="wm-stats"><span>Net <b>${fmtUsdC(m.sup - m.debt)}</b></span>
-      ${st ? `<span>APY net <b class="${clsOf(+st.netAPY.value)}">${fmtPct(+st.netAPY.value * 100)}</b></span><span>Encore empruntable <b>${fmtUsdC(+st.availableBorrowsBase)}</b></span>` : ''}
-      ${st && st.eModeEnabled ? '<span class="badge">E-Mode</span>' : ''}</div>
-    ${used != null ? `<div class="usage"><span>Capacité d'emprunt utilisée</span><span class="ubar ${used >= 90 ? 'hot' : used >= 75 ? 'warn' : ''}"><i style="--u:${Math.min(100, used).toFixed(1)}%"></i></span><b>${nf(0, 0).format(used)}${NNBSP}%</b></div>` : ''}
+      <span>Intérêts nets <b class="${clsOf(m.yearly)}">${signedUsd(m.yearly)}/an</b></span>
+      ${st ? `<span>APY net <b class="${clsOf(+st.netAPY.value)}">${fmtPct(+st.netAPY.value * 100)}</b></span>` : ''}
+      ${st && m.debt > 0 ? `<span>Encore empruntable <b>${fmtUsdC(+st.availableBorrowsBase)}</b></span>` : ''}</div>
+    ${used != null ? `<div class="usage"><span>Capacité d'emprunt utilisée</span><span class="ubar ${used >= 90 ? 'hot' : used >= 75 ? 'warn' : ''}"><i style="--u:${Math.min(100, used).toFixed(1)}%"></i></span><b>${nf(0, 0).format(used)}${PCT()}</b></div>
+      <div class="wm-stats"><span>LTV actuel <b>${pctAbs(m.debt / coll)}</b></span><span>LTV max <b>${pctAbs(maxLtv)}</b></span><span>Seuil de liquidation <b>${pctAbs(+st.currentLiquidationThreshold.value)}</b></span></div>` : ''}
     <div class="lines">
-      ${m.supplies.length ? '<h4>Dépôts</h4>' + m.supplies.map(x => lineHtml(x, 's')).join('') : ''}
-      ${m.borrows.length ? '<h4>Emprunts</h4>' + m.borrows.map(x => lineHtml(x, 'b')).join('') : ''}
+      ${m.supplies.length ? '<h4>Dépôts</h4>' + m.supplies.map(x => lineHtml(x, 's', m)).join('') : ''}
+      ${m.borrows.length ? '<h4>Emprunts</h4>' + m.borrows.map(x => lineHtml(x, 'b', m)).join('') : ''}
     </div></section>`;
 }
 
-function walletHtml(w) {
+function walletHtml(w, i, opts = {}) {
   const d = state.awData[w.addr];
   const ok = d && d.markets;
+  const open = opts.inDialog || (state.awOpen[w.addr] ?? (state.awallets.length <= 2));
+  const followed = state.awallets.some(x => x.addr === w.addr);
   const head = `<div class="wc-head"><div class="wc-id"><b>${esc(w.label || 'Adresse suivie')}</b>${addrChip(w.addr)}</div>
     <div class="wc-net"><span class="kpi-l">Valeur nette</span><b>${ok ? fmtUsdC(d.net) : '<span class="skel">0,00 M$</span>'}</b></div></div>`;
-  const foot = `<div class="wc-foot"><span><a href="https://debank.com/profile/${esc(w.addr)}" target="_blank" rel="noopener">Tout son DeFi sur DeBank</a></span>
-    <button class="btn sm danger" type="button" data-wremove="${esc(w.addr)}">Ne plus suivre</button></div>`;
+  const foot = `<div class="wc-foot"><span class="wd-links">
+      <a href="https://app.aave.com/" target="_blank" rel="noopener">Aave</a>
+      <a href="https://debank.com/profile/${esc(w.addr)}" target="_blank" rel="noopener">Tout son DeFi sur DeBank</a></span>
+    ${opts.inDialog
+      ? (followed ? '<span class="t-muted">Adresse suivie dans « Mes adresses »</span>' : `<button class="btn sm primary" type="button" data-wfollow="${esc(w.addr)}">Suivre cette adresse</button>`)
+      : `<button class="btn sm danger" type="button" data-wremove="${esc(w.addr)}">Ne plus suivre</button>`}</div>`;
   if (!d) return `<article class="wcard">${head}<p class="hint">Chargement des positions sur toutes les chaînes Aave…</p>${foot}</article>`;
   if (!ok) return `<article class="wcard">${head}<div class="err">${esc(d.err)}<button class="btn sm" type="button" data-wretry="${esc(w.addr)}">Réessayer</button></div>${foot}</article>`;
   const hf = hfInfo(d.hfMin, d.debt);
   const hfShort = hf.cls === 'none' ? '∞' : (d.hfMin >= 100 ? '> 100' : nf(2, 2).format(d.hfMin));
   const hfColor = { none: 't-muted', ok: 't-up', warn: 't-warn', hot: 't-down' }[hf.cls];
-  const minis = `<div class="minis"><div class="mini"><span>Déposé</span><b>${fmtUsdC(d.sup)}</b></div><div class="mini"><span>Emprunté</span><b>${fmtUsdC(d.debt)}</b></div><div class="mini" title="Health factor le plus bas, liquidation sous 1"><span>Santé (HF)</span><b class="${hfColor}">${hfShort}</b></div></div>`;
-  const body = d.markets.length ? d.markets.map(walletMarketHtml).join('') : '<p class="empty" style="padding:4px 0">Aucune position Aave v3 sur cette adresse.</p>';
-  return `<article class="wcard">${head}${minis}${body}${d.err ? `<p class="hint">${esc(d.err)} Dernières données affichées.</p>` : ''}${foot}</article>`;
+  const shockTxt = d.shock ? `${d.shock.v < 0 ? '−' : '+'}${pctAbs(d.shock.v, 0)}` : (d.debt > 0 ? '—' : 'Aucun');
+  const minis = `<div class="minis four">
+    <div class="mini"><span>Déposé</span><b>${fmtUsdC(d.sup)}</b></div>
+    <div class="mini"><span>Emprunté</span><b>${fmtUsdC(d.debt)}</b></div>
+    <div class="mini" title="Health factor le plus bas, liquidation sous 1"><span>Santé (HF)</span><b class="${hfColor}">${hfShort}</b></div>
+    <div class="mini" title="Mouvement commun des actifs non stables qui déclencherait une liquidation"><span>Choc toléré</span><b class="${d.shock ? 't-' + ({ hot: 'down', warn: 'warn', ok: 'up' })[distCls(d.shock.v)] : 't-muted'}">${shockTxt}</b></div></div>`;
+  const near = d.nearest
+    ? `<p class="nearest">Liquidation la plus proche : <b>${esc(d.nearest.sym)}</b> à <b>${fmtPrice(d.nearest.liq)}</b> (${d.nearest.dist < 0 ? '−' : '+'}${pctAbs(d.nearest.dist)}) · ${esc(d.nearest.label)}</p>` : '';
+  const sim = state.awSim[w.addr] || 0;
+  const simBox = d.debt > 0 ? `<div class="sim">
+      <label for="wsim-${i}">Simuler un mouvement des actifs non stables</label>
+      <div class="sim-row"><input type="range" id="wsim-${i}" min="-60" max="60" step="5" value="${sim}" data-wsim="${esc(w.addr)}" aria-describedby="wsim-h-${i}">
+        <output class="mono" for="wsim-${i}">${sim > 0 ? '+' : sim < 0 ? '−' : ''}${Math.abs(sim)}${PCT()}</output></div>
+      <p class="hint" id="wsim-h-${i}">ETH, BTC et les autres actifs volatils bougent ensemble ; les stablecoins restent à 1 $. Le HF simulé s'affiche sous chaque marché.</p></div>` : '';
+  const body = d.markets.length ? d.markets.map(m => walletMarketHtml(m, w.addr)).join('') : '<p class="empty" style="padding:4px 0">Aucune position Aave v3 sur cette adresse.</p>';
+  const toggle = d.markets.length && !opts.inDialog ? `<button class="btn sm ghost wc-toggle" type="button" data-wtoggle="${esc(w.addr)}" aria-expanded="${open}">${open ? 'Masquer le détail' : `Voir le détail (${d.markets.length} marché${d.markets.length > 1 ? 's' : ''})`}</button>` : '';
+  return `<article class="wcard">${head}${minis}${near}${open ? simBox + body : ''}${toggle}${d.err ? `<p class="hint">${esc(d.err)} Dernières données affichées.</p>` : ''}${foot}</article>`;
+}
+
+function updateSim(addr) {
+  const d = state.awData[addr];
+  if (!d?.markets) return;
+  const s = (state.awSim[addr] || 0) / 100;
+  for (const m of d.markets) {
+    for (const el of $$(`[data-simfor="${CSS.escape(addr + '|' + m.key)}"]`)) el.innerHTML = simText(m, s);
+  }
 }
 
 function renderWallets() {
@@ -1579,8 +2119,13 @@ function renderWallets() {
     $('#aw-foot').textContent = '';
     return;
   }
-  list.innerHTML = state.awallets.map(walletHtml).join('');
-  $('#aw-foot').textContent = `Positions lues sur l'API Aave v3, rafraîchies toutes les 3 minutes${state.awAt ? ' · maj ' + hhmm(state.awAt) : ''}. HF : health factor, liquidation sous 1.`;
+  list.innerHTML = state.awallets.map((w, i) => walletHtml(w, i)).join('');
+  const maj = state.awAt ? hhmm(state.awAt) : '';
+  $('#aw-foot').textContent = LANG === 'en'
+    ? `Positions read from the Aave v3 API, refreshed every 3 minutes${maj ? ', updated ' + maj : ''}. HF: health factor, liquidation below 1. `
+      + 'An asset\'s liquidation price assumes the other prices stay put; the tolerated shock moves all non-stable assets together. Estimates based on the thresholds published by Aave.'
+    : `Positions lues sur l'API Aave v3, rafraîchies toutes les 3 minutes${maj ? ', maj ' + maj : ''}. HF : health factor, liquidation sous 1. `
+      + 'Le prix de liquidation d\'un actif suppose que les autres prix ne bougent pas ; le choc toléré fait bouger ensemble tous les actifs non stables. Estimations à partir des seuils publiés par Aave.';
 }
 
 function updateAlerts() {
@@ -1589,24 +2134,170 @@ function updateAlerts() {
   const el = $('#aave-alert');
   el.hidden = !risky.length;
   el.innerHTML = risky.length
-    ? 'Risque de liquidation : ' + risky.map(({ w, d }) => `<span><b>HF ${nf(2, 2).format(d.hfMin)}</b> sur ${esc(w.label || shortAddr(w.addr))} (${esc(d.hfMarket || '')})</span>`).join(' · ')
+    ? 'Risque de liquidation : ' + risky.map(({ w, d }) => `<span><b>HF ${nf(2, 2).format(d.hfMin)}</b> sur ${esc(w.label || shortAddr(w.addr))} (${esc(d.hfMarket || '')})`
+      + (d.nearest ? `, ${esc(d.nearest.sym)} liquidé à ${fmtPrice(d.nearest.liq)}` : '') + '</span>').join(' · ')
     : '';
   $('#aave-dot').hidden = !risky.length;
 }
 
 function renderAaveMode() {
+  if (!['rates', 'wallets', 'risk'].includes(state.aaveMode)) state.aaveMode = 'rates';
   $$('[data-amode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.amode === state.aaveMode)));
   $('#aave-rates').hidden = state.aaveMode !== 'rates';
   $('#aave-wallets').hidden = state.aaveMode !== 'wallets';
-  $('#aave-sub').textContent = state.aaveMode === 'rates'
-    ? 'Taux variables d\'emprunt, en direct de l\'API Aave'
-    : 'Dépôts, emprunts et santé des adresses que tu suis';
+  $('#aave-risk').hidden = state.aaveMode !== 'risk';
+  $('#aave-sub').textContent = {
+    rates: 'Taux variables d\'emprunt, en direct de l\'API Aave',
+    wallets: 'Dépôts, emprunts et santé des adresses que tu suis',
+    risk: 'Plus gros emprunteurs proches de la liquidation'
+  }[state.aaveMode];
+}
+
+/* ================= Positions proches de la liquidation (liquidations.json + API en direct) ================= */
+async function loadLiquidations() {
+  if (location.protocol === 'file:') { state.liqErr = 'La liste est produite à la publication sur GitHub.'; return; }
+  try {
+    const j = await getJSON('liquidations.json?v=' + Math.floor(Date.now() / 300000), { cache: 'no-store' });
+    state.liq = j; state.liqErr = null;
+  } catch {
+    if (!state.liq) state.liqErr = 'La liste des positions à risque n’est pas encore disponible.';
+  }
+  state.liqAt = Date.now();
+}
+
+function aaveRiskItems() {
+  const all = state.liq?.aave?.items || [];
+  return all.filter(x => state.arFilter === 'emode' ? x.emode : !x.emode);
+}
+
+// Mise à jour en direct du health factor des positions affichées (10 requêtes groupées par appel).
+async function liveAaveRisk() {
+  const items = aaveRiskItems().filter(x => isAddr(x.addr) && isAddr(x.marketAddr));
+  for (let i = 0; i < items.length; i += 10) {
+    const lot = items.slice(i, i + 10);
+    const q = '{ ' + lot.map((x, j) => `u${j}: userMarketState(request:{market:"${x.marketAddr}", user:"${x.addr}", chainId:${+x.chainId}}) { healthFactor totalDebtBase totalCollateralBase }`).join(' ') + ' }';
+    try {
+      const d = await gql(q, { partial: true });
+      lot.forEach((x, j) => {
+        const st = d?.['u' + j];
+        if (st) { x.hfLive = st.healthFactor != null ? +st.healthFactor : null; x.debtLive = +st.totalDebtBase; x.collLive = +st.totalCollateralBase; x.liveAt = Date.now(); }
+      });
+    } catch {}
+  }
+  renderAaveRisk();
+}
+
+function renderAaveRisk() {
+  const list = $('#ar-list'), foot = $('#ar-foot'), intro = $('#ar-intro');
+  const all = state.liq?.aave?.items || [];
+  $$('[data-arf]').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.arf === state.arFilter));
+    const n = all.filter(x => b.dataset.arf === 'emode' ? x.emode : !x.emode).length;
+    b.textContent = (b.dataset.arf === 'emode' ? 'Boucles E-Mode' : 'Risque de prix') + (all.length ? ` (${n})` : '');
+  });
+  intro.textContent = state.arFilter === 'emode'
+    ? 'Boucles entre actifs corrélés (weETH contre WETH, USDe contre USDC…) : le HF est bas par construction, le risque vient d\'un décrochage entre les deux actifs.'
+    : 'Positions exposées au prix : le collatéral (ETH, BTC…) peut baisser face à une dette en stablecoins. Baisse tolérée = baisse du collatéral face à la dette avant liquidation.';
+  if (!state.liq) {
+    list.innerHTML = state.liqErr ? `<li class="err">${esc(state.liqErr)}</li>`
+      : Array.from({ length: 5 }, () => '<li style="padding:14px 0;border-top:1px solid var(--line)"><span class="skel" style="width:45%;height:15px"></span><br><span class="skel" style="width:80%;height:20px;margin-top:8px"></span></li>').join('');
+    foot.textContent = '';
+    return;
+  }
+  if (state.liq.aave?.error) { list.innerHTML = `<li class="err">${esc('Les positions Aave n’ont pas pu être lues à la dernière mise à jour.')}</li>`; foot.textContent = ''; return; }
+  const items = aaveRiskItems();
+  if (!items.length) { list.innerHTML = '<li class="empty">Aucune grosse position sous un HF de 1,2 pour le moment.</li>'; foot.textContent = ''; return; }
+  list.innerHTML = items.map((x, i) => {
+    const hf = x.hfLive ?? x.hf, debt = x.debtLive ?? x.debt, coll = x.collLive ?? x.coll;
+    const info = hfInfo(hf, debt);
+    const tol = hf > 0 ? 1 - 1 / hf : null;
+    const label = marketLabel(x.market, x.chain);
+    const sup = (x.supplies || []).map(s => s[0]).join(' + ') || '?';
+    const bor = (x.borrows || []).map(b => b[0]).join(' + ') || '?';
+    const tolChip = tol == null ? '' : tol <= 0
+      ? '<span class="pchip short">Liquidable</span>'
+      : `<span class="pchip ${tol < 0.05 ? 'short' : 'more'}">${x.emode ? 'Décrochage toléré' : 'Baisse tolérée'} ${pctAbs(tol)}</span>`;
+    return `<li><button class="wrow" type="button" data-aaveaddr="${esc(x.addr)}" aria-label="Voir la position Aave de ${esc(shortAddr(x.addr))}">
+      <span class="wr-rank">${i + 1}</span>
+      <span class="wr-id"><b>${esc(shortAddr(x.addr))}</b><small>${esc(label)} · ${esc(sup)} → ${esc(bor)}</small></span>
+      <span class="wr-pnl"><b>${fmtUsdC(debt)}</b><small>de dette</small></span>
+      <span class="wr-pos"><span class="hf ${info.cls}">${info.txt}</span>${tolChip}<span class="pchip more">Collatéral ${fmtUsdC(coll)}</span></span></button></li>`;
+  }).join('');
+  const a = state.liq.aave;
+  foot.textContent = `${nf(0, 0).format(a.checked || 0)} plus gros emprunteurs vérifiés (${(a.chains || []).join(', ')}), HF sous 1,2 et dette d'au moins 1 M$ · liste régénérée toutes les 30 min, ${ago(Date.parse(state.liq.generated))}`
+    + (items.some(x => x.liveAt) ? ' · HF en direct, maj ' + hhmm(Math.max(...items.map(x => x.liveAt || 0))) : '');
+}
+
+let aaveDlgAddr = null;
+const aaveDlg = $('#aave-dlg');
+function renderAaveDlg() {
+  if (!aaveDlgAddr) return;
+  $('#ad-body').innerHTML = walletHtml({ addr: aaveDlgAddr, label: (state.awallets.find(w => w.addr === aaveDlgAddr)?.label) || 'Position Aave' }, 'dlg', { inDialog: true });
+}
+function openAaveAddr(addr) {
+  aaveDlgAddr = addr;
+  renderAaveDlg();
+  if (!aaveDlg.open) aaveDlg.showModal();
+  loadWallet(addr).then(renderAaveDlg);
+}
+aaveDlg.addEventListener('close', () => { aaveDlgAddr = null; });
+
+function hlRiskItems() {
+  return (state.liq?.hyperliquid?.items || []).map(x => {
+    // Recalcul en direct si l'état du compte a été rechargé depuis le scan.
+    const ch = state.hl[x.addr]?.ch;
+    if (!ch) return x;
+    const p = (ch.assetPositions || []).map(a => a.position).find(p => p && p.coin === x.coin);
+    if (!p || !+p.szi) return { ...x, closed: true };
+    const ntl = Math.abs(+p.positionValue), mark = ntl / Math.abs(+p.szi), liq = p.liquidationPx != null ? +p.liquidationPx : null;
+    return { ...x, long: +p.szi > 0, ntl, mark, liq, dist: liq ? (liq - mark) / mark : null, upnl: +p.unrealizedPnl, lev: p.leverage?.value, live: true };
+  });
+}
+
+function renderRiskWhales(listEl, foot) {
+  const all = hlRiskItems();
+  const expo = $('#w-expo');
+  if (!state.liq) {
+    expo.innerHTML = '';
+    listEl.innerHTML = state.liqErr ? `<li class="err">${esc(state.liqErr)}</li>`
+      : Array.from({ length: 5 }, () => '<li style="padding:14px 0;border-top:1px solid var(--line)"><span class="skel" style="width:45%;height:15px"></span><br><span class="skel" style="width:80%;height:20px;margin-top:8px"></span></li>').join('');
+    foot.textContent = '';
+    return;
+  }
+  const open = all.filter(x => !x.closed);
+  const L = open.filter(x => x.long).reduce((a, x) => a + x.ntl, 0), S = open.filter(x => !x.long).reduce((a, x) => a + x.ntl, 0);
+  expo.innerHTML = `<div class="expo-head"><b>Liquidations en vue</b><span>positions d'au moins 250 k$ à moins de 10 % de leur prix de liquidation</span></div>
+    <div class="expo-row"><b title="Longs / shorts">L / S</b><span class="ls"><i class="l" style="width:${(L + S ? L / (L + S) * 100 : 0).toFixed(1)}%"></i><i class="s" style="width:${(L + S ? S / (L + S) * 100 : 0).toFixed(1)}%"></i></span><span class="net">${fmtUsdC(L)} / ${fmtUsdC(S)}</span>
+    <small>${open.filter(x => x.long).length} longs liquidés si le prix baisse · ${open.filter(x => !x.long).length} shorts liquidés s'il monte</small></div>`;
+  if (!all.length) { listEl.innerHTML = '<li class="empty">Aucune grosse position à moins de 10 % de sa liquidation pour le moment.</li>'; foot.textContent = ''; return; }
+  listEl.innerHTML = all.map((x, i) => {
+    const name = whaleName(x.addr) || x.name;
+    const near = x.dist != null && Math.abs(x.dist) < 0.03;
+    return `<li><button class="wrow" type="button" data-whale="${esc(x.addr)}" aria-label="Voir le détail de ${esc(name || shortAddr(x.addr))}">
+      <span class="wr-rank">${i + 1}</span>
+      <span class="wr-id"><b class="named">${esc(x.coin)} · ${x.long ? 'Long' : 'Short'}${x.lev ? ' ×' + x.lev : ''}</b><small>${esc(name || shortAddr(x.addr))} · compte ${fmtUsdC(x.av)}</small></span>
+      <span class="wr-pnl"><b>${fmtUsdC(x.ntl)}</b><small class="${near ? 't-down' : ''}">${x.closed ? 'fermée depuis le scan' : x.dist != null ? 'liquidation à ' + (x.dist < 0 ? '−' : '+') + pctAbs(x.dist) : ''}</small></span>
+      <span class="wr-pos">${x.closed ? '<span class="pchip more">Position fermée ou liquidée</span>'
+        : `<span class="pchip ${x.long ? 'long' : 'short'}">Prix ${fmtPrice(x.mark)} → liq. ${fmtPrice(x.liq)}</span><span class="pchip more">PnL ${signedUsd(x.upnl)}</span>`}</span></button></li>`;
+  }).join('');
+  const h = state.liq.hyperliquid;
+  foot.textContent = `${nf(0, 0).format(h.scanned || 0)} plus gros comptes actifs scannés · liste régénérée toutes les 30 min, ${ago(Date.parse(state.liq.generated))}`
+    + (state.hlAt ? ' · prix et distances en direct, maj ' + hhmm(state.hlAt) : '');
 }
 
 /* ================= Hyperliquid : whales ================= */
 const HL = 'https://api.hyperliquid.xyz/info';
 const hlPost = (body, timeout = 20000) => getJSON(HL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), timeout });
 const followOf = a => state.hlFollow.find(f => f.addr === a);
+// Page de trading Hyperliquid : /trade/BTC pour un perp, /trade/HYPE/USDC pour une paire spot.
+function hlTradeUrl(coin, spot = false) {
+  const clean = s => String(s).replace(/[^A-Za-z0-9:._-]/g, '');
+  const c = String(coin || '');
+  if (!c || c === 'USDC' || c.startsWith('@')) return '';
+  if (c.includes('/')) return 'https://app.hyperliquid.xyz/trade/' + c.split('/').map(clean).join('/');
+  return 'https://app.hyperliquid.xyz/trade/' + clean(c) + (spot ? '/USDC' : '');
+}
+const hlLink = (label, url) => url ? `<a href="${esc(url)}" target="_blank" rel="noopener" title="Ouvrir sur Hyperliquid">${esc(label)}</a>` : esc(label);
 const whaleMeta = a => state.whales?.whales?.[a] || null;
 const whaleName = a => followOf(a)?.label || whaleMeta(a)?.name || '';
 
@@ -1624,6 +2315,7 @@ async function loadWhalesFile() {
 
 function whaleList() {
   if (state.hlRank === 'follow') return state.hlFollow.map(f => f.addr);
+  if (state.hlRank === 'risk') return [...new Set((state.liq?.hyperliquid?.items || []).map(x => x.addr))].slice(0, 40);
   return (state.whales?.rankings?.[state.hlRank] || []).slice(0, 30);
 }
 
@@ -1632,6 +2324,7 @@ const scheduleWhaleRender = () => { clearTimeout(whaleRenderTimer); whaleRenderT
 
 async function loadWhales() {
   if (!state.whales || Date.now() - state.whalesAt > 10 * 60000) await loadWhalesFile();
+  if (state.hlRank === 'risk' && (!state.liq || Date.now() - state.liqAt > 10 * 60000)) await loadLiquidations();
   renderWhales();
   await pool(whaleList(), 4, async a => {
     try { state.hl[a] = { at: Date.now(), ch: await hlPost({ type: 'clearinghouseState', user: a }) }; }
@@ -1709,6 +2402,7 @@ function renderWhales() {
     if (b.dataset.wrank === 'follow') b.textContent = state.hlFollow.length ? `Suivis (${state.hlFollow.length})` : 'Suivis';
   });
   const listEl = $('#w-list'), foot = $('#w-foot');
+  if (state.hlRank === 'risk') { renderRiskWhales(listEl, foot); return; }
   const list = whaleList();
   if (state.hlRank === 'follow' && !list.length) {
     $('#w-expo').innerHTML = '';
@@ -1792,7 +2486,7 @@ async function loadFills(a) {
 
 const ORDER_TYPES = { 'Limit': 'Limite', 'Stop Market': 'Stop marché', 'Stop Limit': 'Stop limite', 'Take Profit Market': 'Take profit marché', 'Take Profit Limit': 'Take profit limite' };
 const FILL_DIRS = { 'Open Long': 'Ouverture long', 'Close Long': 'Clôture long', 'Open Short': 'Ouverture short', 'Close Short': 'Clôture short', 'Buy': 'Achat', 'Sell': 'Vente', 'Long > Short': 'Bascule long → short', 'Short > Long': 'Bascule short → long' };
-const dateTime = t => new Date(t).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+const dateTime = t => new Date(t).toLocaleString(LOCALE(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 
 function renderWhaleDetail() {
   const a = state.hlOpen;
@@ -1827,7 +2521,7 @@ function renderWhaleDetail() {
 
   const pos = ch ? perpPositions(ch) : [];
   html += `<section class="wd-sec"><h3>Positions perp ouvertes <span>${pos.length}</span></h3>` + (pos.length ? pos.map(p => `
-    <div class="prow"><div class="p-l"><span class="side ${p.long ? 'long' : 'short'}">${p.long ? 'Long' : 'Short'}${p.lev ? ' ×' + p.lev : ''}</span><b>${esc(p.coin)}</b><small class="t-muted">${p.levType === 'isolated' ? 'isolé' : 'cross'}</small></div>
+    <div class="prow"><div class="p-l"><span class="side ${p.long ? 'long' : 'short'}">${p.long ? 'Long' : 'Short'}${p.lev ? ' ×' + p.lev : ''}</span><b>${hlLink(p.coin, hlTradeUrl(p.coin))}</b><small class="t-muted">${p.levType === 'isolated' ? 'isolé' : 'cross'}</small></div>
       <div class="p-r">${fmtUsdC(p.ntl)}</div>
       <div class="p-d"><span>Taille <b>${fmtQty(Math.abs(p.sz))} ${esc(p.coin)}</b></span><span>Entrée <b>${fmtPrice(p.entry)}</b></span><span>Prix <b>${fmtPrice(p.mark)}</b></span>
         <span>PnL <b class="${clsOf(p.upnl)}">${signedUsd(p.upnl)} (${fmtPct(p.roe * 100, 1)})</b></span>
@@ -1842,7 +2536,7 @@ function renderWhaleDetail() {
     const tot = sp.reduce((s, b) => s + (b.val || 0), 0);
     html += `<section class="wd-sec"><h3>Spot <span>${fmtUsdC(tot)}</span></h3>` + (shown.length ? shown.map(b => {
       const pnl = b.val != null && b.cost > 0 ? b.val - b.cost : null;
-      return `<div class="prow"><div class="p-l"><b>${esc(b.coin)}</b></div><div class="p-r">${b.val != null ? fmtUsdC(b.val) : '—'}</div>
+      return `<div class="prow"><div class="p-l"><b>${hlLink(b.coin, hlTradeUrl(b.coin, true))}</b></div><div class="p-r">${b.val != null ? fmtUsdC(b.val) : '—'}</div>
         <div class="p-d"><span>Quantité <b>${fmtQty(+b.total)}</b></span>${b.cost > 0 ? `<span>Coût d'entrée <b>${fmtUsdC(b.cost)}</b></span>` : ''}${pnl != null ? `<span>PnL <b class="${clsOf(pnl)}">${signedUsd(pnl)}</b></span>` : ''}${+b.hold > 0 ? `<span>Bloqué en ordres <b>${fmtQty(+b.hold)}</b></span>` : ''}</div></div>`;
     }).join('') + (sp.length > shown.length ? `<p class="hint" style="padding-top:6px">${sp.length - shown.length} autre${sp.length - shown.length > 1 ? 's' : ''} solde${sp.length - shown.length > 1 ? 's' : ''} de moins de 1 $.</p>` : '')
       : '<p class="empty" style="padding:6px 0">Aucun solde spot.</p>') + '</section>';
@@ -1852,7 +2546,7 @@ function renderWhaleDetail() {
     const ords = [...d.orders].sort((x, y) => (+y.sz * +y.limitPx) - (+x.sz * +x.limitPx));
     html += `<section class="wd-sec"><h3>Ordres ouverts <span>${ords.length}</span></h3>` + (ords.length ? ords.slice(0, 40).map(o => {
       const buy = o.side === 'B';
-      return `<div class="prow"><div class="p-l"><span class="side ${buy ? 'long' : 'short'}">${buy ? 'Achat' : 'Vente'}</span><b>${esc(coinLabel(o.coin))}</b><small class="t-muted">${esc(ORDER_TYPES[o.orderType] || o.orderType || '')}</small></div>
+      return `<div class="prow"><div class="p-l"><span class="side ${buy ? 'long' : 'short'}">${buy ? 'Achat' : 'Vente'}</span><b>${hlLink(coinLabel(o.coin), hlTradeUrl(coinLabel(o.coin)))}</b><small class="t-muted">${esc(ORDER_TYPES[o.orderType] || o.orderType || '')}</small></div>
         <div class="p-r">${fmtUsdC(+o.sz * +o.limitPx)}</div>
         <div class="p-d"><span>Prix <b>${fmtPrice(+o.limitPx)}</b></span><span>Taille <b>${fmtQty(+o.sz)}</b></span>
           ${o.isTrigger ? `<span>Déclenchement <b>${esc(o.triggerCondition || fmtPrice(+o.triggerPx))}</b></span>` : ''}
@@ -1877,9 +2571,10 @@ function renderWhaleDetail() {
   }
   html += '</section>';
 
-  html += `<div class="wd-links"><a href="https://app.hyperliquid.xyz/explorer/address/${esc(a)}" target="_blank" rel="noopener">Explorateur Hyperliquid</a>
+  html += `<div class="wd-links"><a href="https://app.hyperliquid.xyz/trade" target="_blank" rel="noopener">Trader sur Hyperliquid</a>
+    <a href="https://app.hyperliquid.xyz/explorer/address/${esc(a)}" target="_blank" rel="noopener">Explorateur Hyperliquid</a>
     <a href="https://hypurrscan.io/address/${esc(a)}" target="_blank" rel="noopener">Hypurrscan</a></div>
-    <p class="hint">${d.err ? esc(d.err) + ' ' : ''}Données publiques Hyperliquid, rafraîchies toutes les 30 secondes${d.at ? ' · maj ' + new Date(d.at).toLocaleTimeString('fr-FR') : ''}.</p>`;
+    <p class="hint">${d.err ? esc(d.err) + ' ' : ''}Données publiques Hyperliquid, rafraîchies toutes les 30 secondes${d.at ? ' · maj ' + new Date(d.at).toLocaleTimeString(LOCALE()) : ''}.</p>`;
   const top = body.scrollTop;
   body.innerHTML = html;
   body.scrollTop = top;
@@ -1931,6 +2626,14 @@ const jobs = {
   aave: { every: 300000, run: loadAave, last: 0, view: 'aave', when: () => isDesk() || state.aaveMode === 'rates' },
   wallets: { every: 180000, run: loadWallets, last: 0, when: () => state.awallets.length > 0 },
   whales: { every: 120000, run: loadWhales, last: 0, view: 'whales' },
+  aaverisk: {
+    every: 180000, last: 0, view: 'aave', when: () => state.aaveMode === 'risk',
+    run: async () => {
+      if (!state.liq || Date.now() - state.liqAt > 10 * 60000) await loadLiquidations();
+      renderAaveRisk();
+      await liveAaveRisk();
+    }
+  },
   news: { every: 300000, run: loadNews, last: 0, view: 'news' }
 };
 const running = {};
@@ -2066,10 +2769,30 @@ document.addEventListener('click', e => {
   if (d.amode) {
     state.aaveMode = d.amode; store.set('cd.aaveMode', d.amode); renderAaveMode();
     if (d.amode === 'wallets') { renderWallets(); if (Date.now() - state.awAt > 60000) { jobs.wallets.last = Date.now(); loadWallets(); } }
-    else tick(false);
+    else {
+      if (d.amode === 'risk') { renderAaveRisk(); if (!state.liq) jobs.aaverisk.last = 0; }
+      tick(false);
+    }
+    return;
+  }
+  if (d.arf) { state.arFilter = d.arf; store.set('cd.arFilter', d.arf); renderAaveRisk(); liveAaveRisk(); return; }
+  if (d.aaveaddr) return openAaveAddr(d.aaveaddr);
+  if (d.wfollow) {
+    if (!state.awallets.some(w => w.addr === d.wfollow)) {
+      state.awallets.push({ addr: d.wfollow, label: '' });
+      store.set('cd.aaveWallets', state.awallets);
+      toast('Adresse ajoutée à « Mes adresses »');
+    }
+    renderAaveDlg(); renderWallets(); updateAlerts();
     return;
   }
   if (d.wretry) { loadWallet(d.wretry).then(() => { renderWallets(); updateAlerts(); }); return; }
+  if (d.wtoggle) {
+    const cur = state.awOpen[d.wtoggle] ?? (state.awallets.length <= 2);
+    state.awOpen[d.wtoggle] = !cur;
+    renderWallets();
+    return;
+  }
   if (d.wremove) {
     state.awallets = state.awallets.filter(w => w.addr !== d.wremove);
     delete state.awData[d.wremove];
@@ -2089,7 +2812,18 @@ document.addEventListener('click', e => {
     if (isDesk()) $('#follow-addr').focus();
   }
 });
-for (const dlg of [addDlg, symDlg, whaleDlg, followDlg]) dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+for (const dlg of [addDlg, symDlg, whaleDlg, followDlg, aaveDlg]) dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+// Simulateur de mouvement de marché sur les adresses Aave : recalcul du HF sans tout redessiner.
+document.addEventListener('input', e => {
+  const r = e.target.closest('input[data-wsim]');
+  if (!r) return;
+  const v = +r.value;
+  state.awSim[r.dataset.wsim] = v;
+  const out = r.parentElement.querySelector('output');
+  if (out) out.textContent = (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + PCT();
+  updateSim(r.dataset.wsim);
+});
 
 $('#aw-form').addEventListener('submit', e => {
   e.preventDefault();
@@ -2135,6 +2869,16 @@ $('#btn-reset').addEventListener('click', () => {
   saveWatch(); renderAll(); connectLive(); jobs.markets.last = 0; tick(false); ensureWidgets();
   toast('Liste d’origine rétablie');
 });
+{
+  const b = $('#btn-lang');
+  b.textContent = LANG === 'fr' ? 'EN' : 'FR';
+  b.title = LANG === 'fr' ? 'Switch to English' : 'Passer en français';
+  b.setAttribute('aria-label', b.title);
+  b.addEventListener('click', () => {
+    try { localStorage.setItem('cd.lang', LANG === 'fr' ? 'en' : 'fr'); } catch {}
+    location.reload();
+  });
+}
 $('#btn-theme').addEventListener('click', () => {
   const t = tvTheme() === 'dark' ? 'light' : 'dark';
   document.documentElement.dataset.theme = t;
@@ -2177,7 +2921,7 @@ setInterval(() => {
 }, 30000);
 
 function renderAll() {
-  renderKpis(); renderWatch(); renderAssetHead(); renderAaveMode(); renderAave(); renderWallets(); updateAlerts(); renderWhales(); renderNews();
+  renderKpis(); renderWatch(); renderAssetHead(); renderAaveMode(); renderAave(); renderWallets(); updateAlerts(); renderAaveRisk(); renderWhales(); renderNews();
 }
 
 /* ================= Démarrage ================= */

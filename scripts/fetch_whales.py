@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Construit whales.json pour Kryptopsy : les plus gros comptes Hyperliquid et les meilleurs PnL.
+"""Construit whales.json (plus gros comptes Hyperliquid, meilleurs PnL) et liquidations.json
+(plus grosses positions Hyperliquid et Aave proches de la liquidation, voir liquidations.py) pour Kryptopsy.
 
 Le classement public de Hyperliquid pèse près de 40 Mo, trop pour un téléphone :
 GitHub Actions le télécharge toutes les 30 minutes et n'en garde que les comptes utiles.
@@ -110,6 +111,13 @@ def main():
     print(f"{len(comptes)} comptes lus, {len(actifs)} actifs sur 30 jours, {len(whales)} whales gardées -> {sortie}")
     for c in par_valeur[:5]:
         print(f"  {c['addr']}  {c['value']:>16,.0f} $  {c['name'] or ''}")
+
+    # Positions proches de la liquidation (Hyperliquid et Aave), dans liquidations.json à côté.
+    import os
+    import liquidations
+    chemin = os.path.join(os.path.dirname(os.path.abspath(sortie)), "liquidations.json")
+    print("Positions proches de la liquidation :")
+    liquidations.construire(sorted(actifs, key=lambda c: c["value"], reverse=True), chemin)
 
 
 if __name__ == "__main__":
