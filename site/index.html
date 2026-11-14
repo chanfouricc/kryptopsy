@@ -1,0 +1,1452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crypto Desk</title>
+<meta name="description" content="Cours TradingView, taux d'emprunt Aave v3 et actualités crypto, pensé pour le téléphone.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#070B12" id="meta-theme">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://s3.tradingview.com">
+<link rel="preconnect" href="https://api.coingecko.com">
+<link rel="preconnect" href="https://api.v3.aave.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<script>
+(function () {
+  var t;
+  try { t = localStorage.getItem('cd.theme'); } catch (e) {}
+  if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+})();
+</script>
+<style>
+/* Mise en page : téléphone = 4 onglets (Marchés, Graphique, Aave, Actus) avec barre de navigation basse ;
+   à partir de 1024 px = colonne marché (liste, graphique, Aave) + rail d'actualités collant à droite. */
+:root {
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r-lg: 18px; --r-md: 13px; --r-sm: 9px;
+  --topbar-h: 58px; --nav-h: 66px;
+
+  /* Palette claire */
+  --bg: #EEF1F6; --surface: #FFFFFF; --surface-2: #F6F8FB; --raise: #E8ECF3;
+  --line: #DDE3EC; --line-strong: #C5CDDA;
+  --fg: #0D1320; --fg-2: #394357; --muted: #677186;
+  --accent: #B87A12; --accent-strong: #8F5C08; --accent-soft: rgba(184, 122, 18, .12); --on-accent: #FFFFFF;
+  --aave: #6B52CC; --aave-soft: rgba(107, 82, 204, .10);
+  --up: #0E9A6A; --up-soft: rgba(14, 154, 106, .12);
+  --down: #D23849; --down-soft: rgba(210, 56, 73, .10);
+  --warn: #D06A14; --warn-soft: rgba(208, 106, 20, .12);
+  --glow: rgba(184, 122, 18, .10);
+  --shadow: 0 1px 2px rgba(13, 19, 32, .05), 0 10px 28px -16px rgba(13, 19, 32, .22);
+  color-scheme: light;
+}
+html[data-theme="dark"] {
+  /* Palette sombre : encre bleutée, accent or */
+  --bg: #070B12; --surface: #0E141F; --surface-2: #121A27; --raise: #19222F;
+  --line: #1E2838; --line-strong: #2C384E;
+  --fg: #E9EDF5; --fg-2: #B4BDCC; --muted: #7E899C;
+  --accent: #F3B54A; --accent-strong: #FFCB6E; --accent-soft: rgba(243, 181, 74, .13); --on-accent: #1B1204;
+  --aave: #B9A6FF; --aave-soft: rgba(185, 166, 255, .11);
+  --up: #2FD39A; --up-soft: rgba(47, 211, 154, .13);
+  --down: #FF6473; --down-soft: rgba(255, 100, 115, .13);
+  --warn: #FF9A4A; --warn-soft: rgba(255, 154, 74, .14);
+  --glow: rgba(243, 181, 74, .08);
+  --shadow: 0 1px 0 rgba(255, 255, 255, .03) inset, 0 16px 36px -22px rgba(0, 0, 0, .95);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100dvh;
+  font: 500 15px/1.5 var(--font-body); color: var(--fg);
+  background-color: var(--bg);
+  background-image: radial-gradient(900px 420px at 12% -140px, var(--glow), transparent 70%);
+  background-repeat: no-repeat;
+  -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+}
+img { max-width: 100%; }
+button, input { font: inherit; color: inherit; }
+a { color: inherit; }
+[hidden] { display: none !important; }
+h1, h2, h3 { text-wrap: balance; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+.t-up { color: var(--up); } .t-down { color: var(--down); } .t-warn { color: var(--warn); } .t-muted { color: var(--muted); }
+
+/* ---------- Barre du haut ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-in {
+  display: flex; align-items: center; gap: 10px; height: var(--topbar-h);
+  max-width: 1680px; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; min-width: 0; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.brand b { font: 700 17px/1 var(--font-display); letter-spacing: -.02em; white-space: nowrap; }
+.top-actions { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.icon-btn {
+  width: 42px; height: 42px; display: grid; place-items: center; flex: none;
+  border-radius: 13px; border: 1px solid var(--line); background: var(--surface); cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--line-strong); }
+.icon-btn svg { width: 19px; height: 19px; }
+.icon-btn.spin svg { animation: spin .8s linear; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.live {
+  display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 11px;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+  font: 700 12px/1 var(--font-body); color: var(--fg-2); white-space: nowrap;
+}
+.live i { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: none; }
+.live[data-state="live"] i { background: var(--up); animation: pulse 2s infinite; }
+.live[data-state="delayed"] i { background: var(--warn); }
+.live[data-state="offline"] i { background: var(--down); }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--up-soft); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+/* ---------- Structure ---------- */
+.app {
+  max-width: 1680px; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 28px);
+}
+.col-main { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.view { display: none; min-width: 0; scroll-margin-top: calc(var(--topbar-h) + 16px); }
+body[data-view="marches"] #marches,
+body[data-view="graphique"] #graphique,
+body[data-view="aave"] #aave,
+body[data-view="news"] #news { display: block; }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); }
+.sec-head { display: flex; align-items: center; justify-content: space-between; gap: 10px 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.sec-head h2 { margin: 0; font: 600 19px/1.2 var(--font-display); letter-spacing: -.02em; }
+.sub { margin: 3px 0 0; color: var(--muted); font-size: 13px; }
+.sec-foot { margin: 12px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.sec-foot a { color: var(--fg-2); }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 14px;
+  border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+  font: 700 13.5px/1 var(--font-body); color: var(--fg); cursor: pointer; white-space: nowrap;
+}
+.btn:hover { border-color: var(--line-strong); }
+.btn svg { width: 16px; height: 16px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.btn.ghost { background: transparent; }
+.btn-row { display: flex; gap: 8px; }
+.empty { color: var(--muted); font-size: 14px; padding: 18px 4px; margin: 0; }
+.err { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 14px; border-radius: 12px; background: var(--down-soft); font-size: 13.5px; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px 0; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+  font: 700 13px/1 var(--font-body); color: var(--fg-2); cursor: pointer; white-space: nowrap;
+}
+.chip img { width: 18px; height: 18px; border-radius: 50%; }
+.chip[aria-pressed="true"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.seg { display: inline-flex; padding: 3px; border-radius: 12px; background: var(--raise); border: 1px solid var(--line); flex: none; }
+.seg button { height: 32px; padding: 0 12px; border: 0; border-radius: 9px; background: transparent; font: 700 12.5px/1 var(--font-body); color: var(--muted); cursor: pointer; white-space: nowrap; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: 0 1px 3px rgba(0, 0, 0, .14); }
+
+.pill { display: inline-flex; align-items: center; padding: 4px 7px; border-radius: 7px; font: 600 12px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill.up { color: var(--up); background: var(--up-soft); }
+.pill.down { color: var(--down); background: var(--down-soft); }
+.pill.flat { color: var(--muted); background: var(--raise); }
+.tick-up { color: var(--up) !important; }
+.tick-down { color: var(--down) !important; }
+
+.skel { display: inline-block; min-width: 4ch; border-radius: 6px; color: transparent !important; background: linear-gradient(90deg, var(--raise), var(--surface-2), var(--raise)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* Mini-graphiques */
+.spk { position: relative; display: block; height: var(--spk-h, 28px); }
+.spk svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.spk-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: currentColor; transform: translate(-50%, -50%); box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent); }
+.spk-empty { border-bottom: 1px dashed var(--line-strong); height: calc(var(--spk-h, 28px) / 2); }
+
+/* ---------- Marchés ---------- */
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi { padding: 12px 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); min-width: 0; }
+.kpi-l { display: block; font: 700 10.5px/1.2 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.kpi-v { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 7px; font: 600 19px/1.1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.kpi-v small { font-size: 12px; color: var(--muted); }
+.kpi-s { font-size: 12px; line-height: 1.4; color: var(--muted); margin-top: 5px; }
+.fng-l { font: 700 12px/1 var(--font-body); }
+.fng-bar { position: relative; height: 5px; margin-top: 10px; border-radius: 3px; background: linear-gradient(90deg, var(--down), var(--warn) 35%, var(--muted) 50%, var(--up) 80%); }
+.fng-bar i { position: absolute; top: 50%; left: var(--v); width: 12px; height: 12px; border-radius: 50%; background: var(--fg); border: 2px solid var(--surface); transform: translate(-50%, -50%); }
+
+.tape { min-height: 46px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); overflow: hidden; }
+
+.watch { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--shadow); }
+.coin {
+  display: grid; width: 100%; min-height: 66px; padding: 11px 14px; column-gap: 12px; row-gap: 3px; align-items: center;
+  grid-template-columns: 36px minmax(0, 1fr) 70px minmax(88px, auto);
+  grid-template-areas: "logo id spark px" "logo id spark chg";
+  border: 0; border-top: 1px solid var(--line); background: transparent; text-align: left; cursor: pointer;
+}
+.coin:first-child { border-top: 0; }
+.coin[aria-pressed="true"] { background: var(--accent-soft); }
+.coin-logo { grid-area: logo; width: 36px; height: 36px; border-radius: 50%; background: var(--raise); object-fit: cover; }
+.coin-ava { display: grid; place-items: center; font: 700 14px/1 var(--font-display); color: var(--fg-2); }
+.coin-id { grid-area: id; min-width: 0; display: flex; flex-direction: column; }
+.coin-sym { font: 700 15.5px/1.25 var(--font-display); letter-spacing: -.01em; }
+.coin-name { font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.coin-spark { grid-area: spark; --spk-h: 30px; min-width: 0; }
+.coin-px { grid-area: px; justify-self: end; font: 600 15px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.coin-chg { grid-area: chg; justify-self: end; }
+.coin-meta { display: none; }
+.coin.is-edit { grid-template-columns: 36px minmax(0, 1fr) auto; grid-template-areas: "logo id x"; cursor: default; }
+.coin-x { grid-area: x; height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--down-soft); background: var(--down-soft); color: var(--down); font: 700 12.5px/1 var(--font-body); cursor: pointer; }
+.edit-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+
+/* ---------- Graphique ---------- */
+.chart-panel { padding: 14px; container: chart / inline-size; }
+.asset-switch { margin-bottom: 12px; }
+.asset-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; }
+.ah-logo { width: 42px; height: 42px; border-radius: 50%; background: var(--raise); object-fit: cover; }
+.ah-name { margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; font: 600 19px/1.15 var(--font-display); letter-spacing: -.02em; }
+.ah-sym { font: 600 13px/1 var(--font-mono); color: var(--muted); }
+.tv-sym { margin-top: 5px; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 28px; padding: 0 9px; border-radius: 8px; border: 1px dashed var(--line-strong); background: transparent; color: var(--muted); font: 500 12px/1 var(--font-mono); cursor: pointer; }
+.tv-sym span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tv-sym svg { width: 13px; height: 13px; flex: none; }
+.ah-px { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.ah-px b { font: 600 21px/1.1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ah-stats { grid-column: 1 / -1; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(96px, 1fr); gap: 10px 14px; margin: 10px 0 0; padding-top: 12px; border-top: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.ah-stats::-webkit-scrollbar { display: none; }
+.ah-stats div { min-width: 0; }
+.ah-stats dt { font: 700 10px/1.2 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.ah-stats dd { margin: 4px 0 0; font: 600 13.5px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chart-grid { display: grid; gap: 14px; margin-top: 14px; }
+.tv-chart { height: clamp(340px, calc(100dvh - 370px), 640px); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+@container chart (max-width: 719px) {
+  /* Sur téléphone, le graphique prend toute la largeur du panneau. */
+  .tv-chart { margin-inline: -14px; border-radius: 0; border-left: 0; border-right: 0; }
+}
+.ta-box { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 10px 0; display: flex; flex-direction: column; }
+.ta-title { font: 700 10.5px/1.2 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); padding: 0 4px; }
+.ta-host { height: 430px; }
+.tv-host, .tradingview-widget-container, .tradingview-widget-container__widget { width: 100%; height: 100%; }
+/* Les iframes TradingView sont en schéma clair : sans cela, Chrome peint un fond blanc opaque derrière un widget transparent en thème sombre. */
+.tv-host { color-scheme: light; }
+@container chart (min-width: 720px) {
+  .ah-stats { grid-auto-columns: minmax(0, 1fr); }
+  .ah-px b { font-size: 26px; }
+}
+@container chart (min-width: 900px) {
+  .chart-grid { grid-template-columns: minmax(0, 1fr) 300px; }
+  .tv-chart { height: 560px; }
+  .ta-host { height: auto; flex: 1; min-height: 400px; }
+}
+
+/* ---------- Aave ---------- */
+.aave-panel { padding: 16px; container: aave / inline-size; }
+.aave-title { display: flex; align-items: center; gap: 10px; }
+.aave-title svg { width: 30px; height: 30px; flex: none; }
+.aave-tools { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.aave-grid { display: grid; gap: 14px; }
+@container aave (min-width: 760px) { .aave-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ac { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
+.ac-head { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.ac-logo { width: 38px; height: 38px; border-radius: 50%; background: var(--raise); }
+.ac-head h3 { margin: 0; font: 700 18px/1.1 var(--font-display); }
+.ac-head .t-muted { font-size: 12px; }
+.ac-rate { font: 600 27px/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--aave); text-align: right; white-space: nowrap; }
+.ac-ref { margin-top: 5px; font-size: 11.5px; color: var(--muted); text-align: right; white-space: nowrap; }
+.ac-trend { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+.ac-spk { --spk-h: 48px; color: var(--aave); min-width: 0; }
+.ac-delta { font: 600 13px/1.35 var(--font-mono); text-align: right; white-space: nowrap; }
+.ac-delta small { display: block; font: 500 11px/1.4 var(--font-body); color: var(--muted); }
+.ac-best { font-size: 12.5px; color: var(--fg-2); padding: 9px 11px; border-radius: 10px; background: var(--aave-soft); }
+.ac-best b { color: var(--fg); }
+.pools { list-style: none; margin: 0; padding: 0; }
+.pool { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; grid-template-areas: "ic name rate" "ic meta meta"; gap: 5px 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.pool-ic { grid-area: ic; width: 22px; height: 22px; border-radius: 7px; align-self: start; margin-top: 1px; background: var(--raise); }
+.pool-name { grid-area: name; min-width: 0; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pool-name small { margin-left: 6px; font: 500 11.5px var(--font-mono); color: var(--muted); }
+.pool-rate { grid-area: rate; display: flex; align-items: baseline; gap: 7px; font: 600 15px/1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pool-rate small { font-size: 11px; font-weight: 500; }
+.pool-meta { grid-area: meta; display: flex; align-items: center; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; font: 500 11.5px/1.3 var(--font-mono); color: var(--muted); }
+.pool-util { display: inline-flex; align-items: center; gap: 8px; }
+.ubar { width: 64px; height: 5px; border-radius: 3px; background: var(--raise); overflow: hidden; }
+.ubar i { display: block; height: 100%; width: var(--u); border-radius: 3px; background: var(--up); }
+.ubar.warn i { background: var(--warn); }
+.ubar.hot i { background: var(--down); }
+.more { align-self: flex-start; padding: 4px 0; border: 0; background: none; color: var(--aave); font: 700 13px/1 var(--font-body); cursor: pointer; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 5px; border-radius: 3px; }
+
+/* ---------- Actualités ---------- */
+.news-panel { padding: 16px; display: flex; flex-direction: column; min-height: 0; }
+.news-filters { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+.news-scroll { min-width: 0; }
+.news-list { list-style: none; margin: 0; padding: 0; }
+.ni { border-top: 1px solid var(--line); }
+.ni:first-child { border-top: 0; }
+.ni a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 13px 0; text-decoration: none; }
+.ni-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); }
+.ni-src { font-weight: 800; color: var(--fg-2); }
+.ni-lang { font: 600 10px/1 var(--font-mono); padding: 3px 5px; border-radius: 5px; background: var(--raise); }
+.ni-new { color: var(--accent-strong); font-weight: 800; }
+.ni-title { margin: 5px 0 0; font: 700 14.5px/1.38 var(--font-body); text-wrap: pretty; }
+.ni a:hover .ni-title { color: var(--accent-strong); }
+.ni-sum { margin: 4px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ni-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 7px; }
+.tag { font: 600 10.5px/1 var(--font-mono); padding: 4px 6px; border-radius: 6px; background: var(--accent-soft); color: var(--accent-strong); }
+.ni-img { width: 78px; height: 58px; border-radius: 10px; object-fit: cover; background: var(--raise); }
+.tv-news { height: calc(100dvh - var(--topbar-h) - var(--nav-h) - 190px); min-height: 460px; }
+
+/* ---------- Navigation basse (téléphone) ---------- */
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  border-top: 1px solid var(--line);
+}
+.bottom-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 54px; text-decoration: none; color: var(--muted); font: 700 11.5px/1 var(--font-body); }
+.nav-ic { display: grid; place-items: center; width: 58px; height: 30px; border-radius: 15px; }
+.nav-ic svg { width: 22px; height: 22px; }
+.bottom-nav a[aria-current="page"] { color: var(--fg); }
+.bottom-nav a[aria-current="page"] .nav-ic { background: var(--accent-soft); color: var(--accent-strong); }
+
+/* ---------- Feuilles (ajout, symbole) ---------- */
+dialog.sheet { border: 0; padding: 0; margin: 0; width: 100%; height: 100%; max-width: none; max-height: none; background: transparent; color: var(--fg); }
+dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
+.sheet-in {
+  position: absolute; left: 0; right: 0; bottom: 0; max-height: 88dvh;
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 18px max(16px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px 22px 0 0; box-shadow: var(--shadow);
+}
+.sheet-in::before { content: ""; align-self: center; width: 40px; height: 4px; border-radius: 2px; background: var(--line-strong); margin-top: -6px; }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sheet-head h2 { margin: 0; font: 600 18px/1.2 var(--font-display); }
+.field { width: 100%; height: 50px; padding: 0 14px; border-radius: 13px; border: 1px solid var(--line-strong); background: var(--surface-2); font: 500 16px var(--font-body); color: var(--fg); }
+.field.mono { font-family: var(--font-mono); }
+.results { list-style: none; margin: 0; padding: 0; overflow: auto; min-height: 0; overscroll-behavior: contain; }
+.res { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 12px; align-items: center; width: 100%; min-height: 54px; padding: 8px 4px; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; cursor: pointer; }
+.res img, .res .coin-ava { width: 30px; height: 30px; border-radius: 50%; background: var(--raise); }
+.res b { font: 700 14.5px/1.2 var(--font-display); }
+.res span.t-muted { display: block; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.res em { font: 500 11.5px var(--font-mono); font-style: normal; color: var(--muted); }
+.hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.res-title { margin: 4px 0 0; font: 700 10.5px/1 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.sym-picks { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); z-index: 40;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 14px);
+  max-width: calc(100vw - 32px); padding: 11px 16px; border-radius: 13px;
+  background: var(--fg); color: var(--bg); font: 700 13.5px/1.35 var(--font-body); box-shadow: var(--shadow);
+}
+
+.site-foot { margin-top: 26px; color: var(--muted); font-size: 12px; line-height: 1.65; }
+.site-foot a { color: var(--fg-2); }
+
+/* ---------- Grand écran ---------- */
+@media (min-width: 700px) {
+  .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .aave-tools { flex-direction: row; align-items: center; justify-content: space-between; }
+  .aave-tools .chips { min-width: 0; }
+  .sheet-in { left: 50%; right: auto; top: 10vh; bottom: auto; width: min(540px, 92vw); max-height: 78vh; transform: translateX(-50%); border-radius: 20px; padding-bottom: 18px; }
+  .sheet-in::before { display: none; }
+}
+@media (min-width: 1024px) {
+  .view { display: block; }
+  .app { display: grid; grid-template-columns: minmax(0, 1fr) clamp(330px, 26vw, 410px); gap: 22px; align-items: start; padding-block: 20px 34px; }
+  .col-news { position: sticky; top: calc(var(--topbar-h) + 20px); }
+  .news-panel { height: calc(100dvh - var(--topbar-h) - 40px); }
+  .news-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; margin-right: -8px; padding-right: 8px; }
+  .tv-news { height: 100%; min-height: 0; }
+  .bottom-nav, .asset-switch { display: none; }
+  .site-foot { grid-column: 1 / -1; margin-top: 4px; }
+  .toast { bottom: 24px; }
+  .watch { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: none; border: 0; box-shadow: none; overflow: visible; }
+  .coin {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    grid-template-areas: "logo id chg" "px px px" "spark spark spark" "meta meta meta";
+    row-gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--shadow);
+  }
+  .coin:first-child { border-top: 1px solid var(--line); }
+  .coin:hover { border-color: var(--line-strong); }
+  .coin[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset, var(--shadow); background: linear-gradient(180deg, var(--accent-soft), transparent 70%), var(--surface); }
+  .coin-logo { width: 34px; height: 34px; }
+  .coin-chg { align-self: start; }
+  .coin-px { justify-self: start; font-size: 22px; }
+  .coin-spark { --spk-h: 46px; }
+  .coin-meta { grid-area: meta; display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--muted); }
+  .coin-meta b { display: block; margin-top: 2px; font: 600 12px/1.2 var(--font-mono); color: var(--fg-2); }
+  .coin.is-edit { grid-template-areas: "logo id x"; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body data-view="marches">
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#marches" aria-label="Crypto Desk, accueil">
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect width="64" height="64" rx="16" style="fill:var(--surface-2);stroke:var(--line-strong)" stroke-width="2"/>
+        <rect x="17" y="18" width="2.5" height="30" rx="1.25" style="fill:var(--up)"/><rect x="13" y="25" width="10.5" height="15" rx="2.5" style="fill:var(--up)"/>
+        <rect x="30.75" y="10" width="2.5" height="40" rx="1.25" style="fill:var(--accent)"/><rect x="26.75" y="15" width="10.5" height="27" rx="2.5" style="fill:var(--accent)"/>
+        <rect x="44.5" y="16" width="2.5" height="28" rx="1.25" style="fill:var(--down)"/><rect x="40.5" y="21" width="10.5" height="14" rx="2.5" style="fill:var(--down)"/>
+      </svg>
+      <b>Crypto Desk</b>
+    </a>
+    <div class="top-actions">
+      <span class="live" id="live" data-state="connecting" role="status"><i></i><span class="live-txt">Connexion</span></span>
+      <button class="icon-btn" id="btn-refresh" type="button" aria-label="Tout actualiser" title="Tout actualiser">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+      </button>
+      <button class="icon-btn" id="btn-theme" type="button" aria-label="Basculer clair / sombre" title="Basculer clair / sombre">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 0 0 17z" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="app">
+  <div class="col-main">
+
+    <!-- Marchés -->
+    <section class="view" id="marches" aria-labelledby="h-marches">
+      <h2 class="sr" id="h-marches">Marchés</h2>
+      <div class="kpis" id="kpis"></div>
+      <div class="tape"><div class="tv-host" id="tv-tape"></div></div>
+      <div class="sec-head">
+        <div>
+          <h2>Liste de suivi</h2>
+          <p class="sub">Touchez une crypto pour ouvrir son graphique.</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn ghost" id="btn-edit" type="button">Modifier</button>
+          <button class="btn primary" id="btn-add" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter
+          </button>
+        </div>
+      </div>
+      <div class="watch" id="watch"></div>
+      <div class="edit-bar" id="edit-bar" hidden>
+        <span class="t-muted" style="font-size:13px">Retire les cryptos dont tu n'as plus besoin.</span>
+        <button class="btn ghost" id="btn-reset" type="button">Revenir à la liste d'origine</button>
+      </div>
+      <p class="sec-foot" id="watch-foot"></p>
+    </section>
+
+    <!-- Graphique -->
+    <section class="view" id="graphique" aria-label="Graphique">
+      <div class="panel chart-panel">
+        <div class="chips asset-switch" id="asset-switch" role="group" aria-label="Choisir la crypto"></div>
+        <div class="asset-head" id="asset-head"></div>
+        <div class="chart-grid">
+          <div class="tv-chart"><div class="tv-host" id="tv-chart"></div></div>
+          <div class="ta-box">
+            <div class="ta-title">Signal technique TradingView</div>
+            <div class="ta-host"><div class="tv-host" id="tv-ta"></div></div>
+          </div>
+        </div>
+        <p class="sec-foot">Graphique et signal fournis par <a href="https://fr.tradingview.com/" target="_blank" rel="noopener">TradingView</a>. Le symbole TradingView se change avec le bouton en pointillés.</p>
+      </div>
+    </section>
+
+    <!-- Aave -->
+    <section class="view" id="aave" aria-labelledby="h-aave">
+      <div class="panel aave-panel">
+        <div class="sec-head">
+          <div class="aave-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" style="fill:var(--aave-soft);stroke:var(--aave)" stroke-width="1.5"/><path d="M9.5 21.5 15 9.5h2l5.5 12" style="fill:none;stroke:var(--aave)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.5 17.5h9" style="stroke:var(--aave)" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <div>
+              <h2 id="h-aave">Emprunter sur Aave v3</h2>
+              <p class="sub">Taux variables d'emprunt, en direct de l'API Aave</p>
+            </div>
+          </div>
+        </div>
+        <div class="aave-tools">
+          <div class="chips" id="aave-chains" role="group" aria-label="Filtrer par chaîne"></div>
+          <div class="seg" role="group" aria-label="Trier les pools">
+            <button type="button" data-asort="size" aria-pressed="true">Les plus gros</button>
+            <button type="button" data-asort="rate" aria-pressed="false">Les moins chers</button>
+          </div>
+        </div>
+        <div class="aave-grid" id="aave-grid"></div>
+        <div class="sec-foot">
+          <div class="legend">
+            <span><i style="background:var(--up)"></i>Utilisation &lt; 80 %</span>
+            <span><i style="background:var(--warn)"></i>80 à 92 %</span>
+            <span><i style="background:var(--down)"></i>&gt; 92 % : le taux peut grimper vite</span>
+          </div>
+          <span id="aave-foot"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Actualités -->
+  <aside class="view col-news" id="news" aria-labelledby="h-news">
+    <div class="panel news-panel">
+      <div class="sec-head">
+        <h2 id="h-news">Actualités</h2>
+        <div class="seg" role="group" aria-label="Source des actualités">
+          <button type="button" data-nsrc="agg" aria-pressed="true">Médias</button>
+          <button type="button" data-nsrc="tv" aria-pressed="false">TradingView</button>
+        </div>
+      </div>
+      <div class="news-filters">
+        <div class="chips" id="news-coins" role="group" aria-label="Filtrer par crypto"></div>
+        <div class="chips" id="news-lang" role="group" aria-label="Langue">
+          <button class="chip" type="button" data-nlang="all" aria-pressed="true">Toutes langues</button>
+          <button class="chip" type="button" data-nlang="fr" aria-pressed="false">Français</button>
+          <button class="chip" type="button" data-nlang="en" aria-pressed="false">Anglais</button>
+        </div>
+      </div>
+      <div class="news-scroll" id="news-scroll">
+        <ol class="news-list" id="news-list"></ol>
+        <div class="tv-news" id="tv-news-wrap" hidden><div class="tv-host" id="tv-news"></div></div>
+      </div>
+      <p class="sec-foot" id="news-foot"></p>
+    </div>
+  </aside>
+
+  <footer class="site-foot">
+    Données : graphiques, bandeau, signal et fil d'actus <a href="https://fr.tradingview.com/" target="_blank" rel="noopener">TradingView</a> ·
+    prix en direct Binance · marché CoinGecko · taux <a href="https://app.aave.com/" target="_blank" rel="noopener">Aave v3</a> ·
+    Fear &amp; Greed alternative.me · articles des médias cités.
+    Informations de marché, pas un conseil en investissement.
+  </footer>
+</main>
+
+<nav class="bottom-nav" aria-label="Sections">
+  <a href="#marches" aria-current="page"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="m7 15 4-5 3 3 5-6"/></svg></span>Marchés</a>
+  <a href="#graphique"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v18M17 5v14"/><rect x="4.5" y="7" width="5" height="8" rx="1.2" fill="currentColor"/><rect x="14.5" y="9" width="5" height="6" rx="1.2"/></svg></span>Graphique</a>
+  <a href="#aave"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/><path d="M18.5 5.5l-13 13"/></svg></span>Aave</a>
+  <a href="#news"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M7.5 9h9M7.5 12.5h9M7.5 16h5"/></svg></span>Actus</a>
+</nav>
+
+<dialog class="sheet" id="add-dlg" aria-labelledby="add-title">
+  <div class="sheet-in">
+    <div class="sheet-head">
+      <h2 id="add-title">Ajouter une crypto</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <label class="sr" for="add-q">Nom ou symbole</label>
+    <input class="field" id="add-q" type="search" placeholder="Nom ou symbole : LINK, Sui, Aave…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+    <ul class="results" id="add-results"></ul>
+    <p class="hint">Le graphique TradingView est cherché sur Binance, puis sur Bybit. Tu pourras changer le symbole ensuite.</p>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="sym-dlg" aria-labelledby="sym-title">
+  <form class="sheet-in" id="sym-form">
+    <div class="sheet-head">
+      <h2 id="sym-title">Symbole TradingView</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p class="hint">Format PLACE:PAIRE, par exemple BINANCE:BTCUSDT ou COINBASE:BTCUSD.</p>
+    <label class="sr" for="sym-input">Symbole TradingView</label>
+    <input class="field mono" id="sym-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="done">
+    <div class="sym-picks" id="sym-picks"></div>
+    <button class="btn primary" type="submit" style="justify-content:center;height:46px">Enregistrer</button>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+'use strict';
+
+/* ================= Outils ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeUrl = u => { try { const x = new URL(u); return x.protocol === 'https:' || x.protocol === 'http:' ? x.href : ''; } catch { return ''; } };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+const MQ_DESK = matchMedia('(min-width: 1024px)');
+const isDesk = () => MQ_DESK.matches;
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const thin = (a, n) => a.length <= n ? a : Array.from({ length: n }, (_, i) => a[Math.round(i * (a.length - 1) / (n - 1))]);
+
+async function getJSON(url, opt = {}) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), opt.timeout || 20000);
+  try {
+    const r = await fetch(url, { ...opt, signal: ctl.signal });
+    if (!r.ok) { const e = new Error('HTTP ' + r.status); e.status = r.status; throw e; }
+    return await r.json();
+  } finally { clearTimeout(timer); }
+}
+
+/* ================= Formats (fr-FR) ================= */
+const NF = {};
+const nf = (min, max) => NF[min + '-' + max] ||= new Intl.NumberFormat('fr-FR', { minimumFractionDigits: min, maximumFractionDigits: max });
+const NBSP = ' ', NNBSP = ' ';
+function fmtPrice(v) {
+  if (v == null || !isFinite(v)) return '—';
+  const a = Math.abs(v);
+  let s;
+  if (a >= 10000) s = nf(0, 0).format(v);
+  else if (a >= 10) s = nf(2, 2).format(v);
+  else if (a >= 1) s = nf(3, 3).format(v);
+  else if (a >= 0.01) s = nf(4, 4).format(v);
+  else s = new Intl.NumberFormat('fr-FR', { maximumSignificantDigits: 4 }).format(v);
+  return s + NBSP + '$';
+}
+function fmtUsdC(v) {
+  if (v == null || !isFinite(v)) return '—';
+  const a = Math.abs(v);
+  let n = v, u = '';
+  if (a >= 1e12) { n = v / 1e12; u = 'T'; } else if (a >= 1e9) { n = v / 1e9; u = 'Md'; } else if (a >= 1e6) { n = v / 1e6; u = 'M'; } else if (a >= 1e3) { n = v / 1e3; u = 'k'; }
+  const d = Math.abs(n) >= 100 ? 0 : Math.abs(n) >= 10 ? 1 : 2;
+  return nf(0, d).format(n) + NBSP + u + '$';
+}
+const sign = v => v > 0 ? '+' : v < 0 ? '−' : '';
+function fmtPct(v, d = 2) { if (v == null || !isFinite(v)) return '—'; return sign(v) + nf(d, d).format(Math.abs(v)) + NNBSP + '%'; }
+const fmtRate = f => (f == null || !isFinite(f)) ? '—' : nf(2, 2).format(f * 100) + NNBSP + '%';
+const clsOf = v => v == null || !isFinite(v) ? '' : v > 0 ? 't-up' : v < 0 ? 't-down' : '';
+function pill(v) {
+  if (v == null || !isFinite(v)) return '';
+  const c = Math.abs(v) < 0.005 ? 'flat' : v > 0 ? 'up' : 'down';
+  return `<span class="pill ${c}">${fmtPct(v)}</span>`;
+}
+function ago(ts) {
+  if (!ts) return '';
+  const s = Math.round((Date.now() - ts) / 1000);
+  if (s < 45) return 'à l’instant';
+  if (s < 3600) return `il y a ${Math.round(s / 60)} min`;
+  if (s < 86400) return `il y a ${Math.round(s / 3600)} h`;
+  return `il y a ${Math.round(s / 86400)} j`;
+}
+const hhmm = ts => ts ? new Date(ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+
+let sgid = 0;
+function spark(values, { area = true } = {}) {
+  if (!values || values.length < 2) return '<span class="spk spk-empty"></span>';
+  const W = 100, H = 30, pad = 2;
+  let min = Infinity, max = -Infinity;
+  for (const v of values) { if (v < min) min = v; if (v > max) max = v; }
+  const span = (max - min) || 1, n = values.length;
+  const pts = values.map((v, i) => [(i / (n - 1)) * W, pad + (1 - (v - min) / span) * (H - pad * 2)]);
+  const d = 'M' + pts.map(p => p[0].toFixed(2) + ',' + p[1].toFixed(2)).join('L');
+  const id = 'sg' + (++sgid);
+  const last = pts[n - 1];
+  return `<span class="spk"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">` +
+    (area ? `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:currentColor;stop-opacity:.26"/><stop offset="1" style="stop-color:currentColor;stop-opacity:0"/></linearGradient></defs><path d="${d}L${W},${H}L0,${H}Z" style="fill:url(#${id})"/>` : '') +
+    `<path d="${d}" style="fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round" vector-effect="non-scaling-stroke"/></svg>` +
+    `<i class="spk-dot" style="left:${last[0].toFixed(2)}%;top:${(last[1] / H * 100).toFixed(2)}%"></i></span>`;
+}
+
+/* ================= État ================= */
+const DEFAULT_WATCH = [
+  { id: 'bitcoin', sym: 'BTC', name: 'Bitcoin', tv: 'BINANCE:BTCUSDT', bn: 'BTCUSDT' },
+  { id: 'ethereum', sym: 'ETH', name: 'Ethereum', tv: 'BINANCE:ETHUSDT', bn: 'ETHUSDT' },
+  { id: 'solana', sym: 'SOL', name: 'Solana', tv: 'BINANCE:SOLUSDT', bn: 'SOLUSDT' },
+  { id: 'hyperliquid', sym: 'HYPE', name: 'Hyperliquid', tv: 'BINANCE:HYPEUSDT', bn: 'HYPEUSDT' },
+  { id: 'near', sym: 'NEAR', name: 'NEAR Protocol', tv: 'BINANCE:NEARUSDT', bn: 'NEARUSDT' }
+];
+const SUGGESTIONS = [
+  { id: 'ripple', sym: 'XRP', name: 'XRP' }, { id: 'binancecoin', sym: 'BNB', name: 'BNB' },
+  { id: 'chainlink', sym: 'LINK', name: 'Chainlink' }, { id: 'sui', sym: 'SUI', name: 'Sui' },
+  { id: 'aave', sym: 'AAVE', name: 'Aave' }, { id: 'dogecoin', sym: 'DOGE', name: 'Dogecoin' },
+  { id: 'avalanche-2', sym: 'AVAX', name: 'Avalanche' }, { id: 'ethena', sym: 'ENA', name: 'Ethena' }
+];
+const ALIASES = {
+  bitcoin: ['Bitcoin', 'BTC'], ethereum: ['Ethereum', 'Ether', 'ETH'], solana: ['Solana', 'SOL'],
+  hyperliquid: ['Hyperliquid', 'HYPE'], near: ['NEAR']
+};
+
+const savedWatch = store.get('cd.watch', null);
+const state = {
+  watch: Array.isArray(savedWatch) && savedWatch.length ? savedWatch : DEFAULT_WATCH.map(w => ({ ...w })),
+  selected: store.get('cd.selected', 'bitcoin'),
+  editing: false,
+  market: {}, marketAt: 0, marketErr: null,
+  live: {}, wsUp: false, prevPx: {},
+  global: null, fng: null,
+  aaveChains: null, aaveRows: null, aaveAt: 0, aaveErr: null, aaveHist: {},
+  aaveChain: store.get('cd.aaveChain', 'all'), aaveSort: store.get('cd.aaveSort', 'size'), aaveOpen: {},
+  news: [], newsGen: null, newsSources: [], newsErr: null, newsAt: 0,
+  newsSrc: store.get('cd.newsSrc', 'agg'), newsCoin: 'all', newsLang: store.get('cd.newsLang', 'all'),
+  searchRes: new Map()
+};
+const saveWatch = () => store.set('cd.watch', state.watch);
+const selectedWatch = () => state.watch.find(w => w.id === state.selected) || state.watch[0] || null;
+const liveOf = w => { const l = w.bn && state.live[w.bn]; return l && Date.now() - l.ts < 30000 ? l : null; };
+const priceOf = w => { const l = liveOf(w); return l ? l.price : state.market[w.id]?.current_price ?? null; };
+const chgOf = w => { const l = liveOf(w); return l && l.open ? (l.price / l.open - 1) * 100 : state.market[w.id]?.price_change_percentage_24h ?? null; };
+
+function logo(src, w, cls = 'coin-logo') {
+  const u = safeUrl(src);
+  return u ? `<img class="${cls}" src="${esc(u)}" alt="" width="36" height="36" loading="lazy" referrerpolicy="no-referrer">`
+           : `<span class="${cls} coin-ava" aria-hidden="true">${esc((w.sym || '?')[0])}</span>`;
+}
+
+/* ================= Données de marché ================= */
+const CG = 'https://api.coingecko.com/api/v3';
+
+async function loadMarkets() {
+  const ids = state.watch.map(w => w.id).join(',');
+  if (!ids) return;
+  try {
+    const rows = await getJSON(`${CG}/coins/markets?vs_currency=usd&ids=${encodeURIComponent(ids)}&sparkline=true&price_change_percentage=1h,24h,7d`);
+    for (const r of rows) state.market[r.id] = r;
+    state.marketAt = Date.now(); state.marketErr = null;
+  } catch (e) {
+    if (e.status === 429) { state.marketErr = 'CoinGecko limite les appels : nouvel essai dans 2 minutes.'; jobs.markets.last = Date.now() + 60000; }
+    else state.marketErr = 'Données CoinGecko indisponibles pour le moment.';
+  }
+  renderWatch(); renderAssetHead(); updateLiveBadge();
+}
+
+async function loadGlobal() {
+  try {
+    const { data } = await getJSON(`${CG}/global`);
+    state.global = { mcap: data.total_market_cap.usd, vol: data.total_volume.usd, chg: data.market_cap_change_percentage_24h_usd, btcd: data.market_cap_percentage.btc, ethd: data.market_cap_percentage.eth };
+  } catch {}
+  renderKpis();
+}
+
+const FNG_FR = { 'Extreme Fear': 'Peur extrême', 'Fear': 'Peur', 'Neutral': 'Neutre', 'Greed': 'Avidité', 'Extreme Greed': 'Avidité extrême' };
+async function loadFng() {
+  try {
+    const j = await getJSON('https://api.alternative.me/fng/?limit=2');
+    const [a, b] = j.data;
+    state.fng = { v: +a.value, label: FNG_FR[a.value_classification] || a.value_classification, prev: b ? +b.value : null };
+  } catch {}
+  renderKpis();
+}
+
+/* Prix en direct : flux public Binance (mini-ticker 24 h, une mise à jour par seconde) */
+let ws = null, wsRetry = 0, wsTimer = null;
+function connectLive() {
+  clearTimeout(wsTimer);
+  if (ws) { ws.onclose = null; try { ws.close(); } catch {} ws = null; }
+  const streams = [...new Set(state.watch.filter(w => w.bn).map(w => w.bn.toLowerCase() + '@miniTicker'))];
+  state.wsUp = false;
+  if (!streams.length || document.hidden) { updateLiveBadge(); return; }
+  try { ws = new WebSocket('wss://stream.binance.com:443/stream?streams=' + streams.join('/')); }
+  catch { scheduleWs(); return; }
+  ws.onopen = () => { wsRetry = 0; state.wsUp = true; updateLiveBadge(); };
+  ws.onmessage = ev => {
+    try {
+      const d = JSON.parse(ev.data).data;
+      if (!d || !d.s) return;
+      state.live[d.s] = { price: +d.c, open: +d.o, high: +d.h, low: +d.l, ts: Date.now() };
+      queuePaint();
+    } catch {}
+  };
+  ws.onclose = () => { state.wsUp = false; updateLiveBadge(); scheduleWs(); };
+  ws.onerror = () => { try { ws.close(); } catch {} };
+}
+function scheduleWs() {
+  if (document.hidden) return;
+  clearTimeout(wsTimer);
+  wsTimer = setTimeout(connectLive, Math.min(60000, 3000 * 2 ** wsRetry++));
+}
+
+let paintQueued = false;
+const tickTimers = new WeakMap();
+function queuePaint() {
+  if (paintQueued) return;
+  paintQueued = true;
+  requestAnimationFrame(() => { paintQueued = false; paintPrices(); });
+}
+function paintPrices() {
+  for (const w of state.watch) {
+    const p = priceOf(w);
+    if (p == null) continue;
+    const prev = state.prevPx[w.id];
+    state.prevPx[w.id] = p;
+    const sel = CSS.escape(w.id);
+    for (const el of $$(`[data-price-for="${sel}"]`)) {
+      el.textContent = fmtPrice(p);
+      if (prev != null && p !== prev) {
+        el.classList.remove('tick-up', 'tick-down');
+        el.classList.add(p > prev ? 'tick-up' : 'tick-down');
+        clearTimeout(tickTimers.get(el));
+        tickTimers.set(el, setTimeout(() => el.classList.remove('tick-up', 'tick-down'), 650));
+      }
+    }
+    const c = pill(chgOf(w));
+    for (const el of $$(`[data-chg-for="${sel}"]`)) if (el.innerHTML !== c) el.innerHTML = c;
+  }
+}
+
+function updateLiveBadge() {
+  const el = $('#live');
+  let s, t, title;
+  if (!navigator.onLine) { s = 'offline'; t = 'Hors ligne'; title = 'Pas de connexion internet.'; }
+  else if (state.wsUp) { s = 'live'; t = 'Direct'; title = 'Prix en direct (Binance).'; }
+  else if (state.marketAt) { s = 'delayed'; t = 'Différé'; title = 'Prix CoinGecko, mis à jour chaque minute.'; }
+  else { s = 'connecting'; t = 'Connexion'; title = 'Connexion aux sources de prix…'; }
+  el.dataset.state = s; el.title = title;
+  el.querySelector('.live-txt').textContent = t;
+  renderWatchFoot();
+}
+
+/* ================= Rendu : marchés ================= */
+function renderKpis() {
+  const g = state.global, f = state.fng;
+  const sk = '<span class="skel">000,0 Md$</span>';
+  let fngColor = 'var(--muted)';
+  if (f) fngColor = f.v < 25 ? 'var(--down)' : f.v < 45 ? 'var(--warn)' : f.v < 56 ? 'var(--muted)' : 'var(--up)';
+  $('#kpis').innerHTML = `
+    <div class="kpi"><span class="kpi-l">Capitalisation</span>
+      <div class="kpi-v">${g ? fmtUsdC(g.mcap) + pill(g.chg) : sk}</div>
+      <div class="kpi-s">Marché crypto · 24 h</div></div>
+    <div class="kpi"><span class="kpi-l">Volume 24 h</span>
+      <div class="kpi-v">${g ? fmtUsdC(g.vol) : sk}</div>
+      <div class="kpi-s">${g ? nf(1, 1).format(g.vol / g.mcap * 100) + NNBSP + '% de la cap.' : '&nbsp;'}</div></div>
+    <div class="kpi"><span class="kpi-l">Dominance BTC</span>
+      <div class="kpi-v">${g ? nf(1, 1).format(g.btcd) + NNBSP + '%' : sk}</div>
+      <div class="kpi-s">${g ? 'ETH ' + nf(1, 1).format(g.ethd) + NNBSP + '%' : '&nbsp;'}</div></div>
+    <div class="kpi"><span class="kpi-l">Fear &amp; Greed</span>
+      <div class="kpi-v">${f ? `${f.v}<small>/100</small><span class="fng-l" style="color:${fngColor}">${esc(f.label)}</span>` : sk}</div>
+      ${f ? `<div class="fng-bar" aria-hidden="true"><i style="--v:${Math.max(2, Math.min(98, f.v))}%"></i></div>` : '<div class="kpi-s">&nbsp;</div>'}</div>`;
+}
+
+function renderWatch() {
+  const el = $('#watch');
+  $('#btn-edit').textContent = state.editing ? 'Terminé' : 'Modifier';
+  $('#edit-bar').hidden = !state.editing;
+  if (!state.watch.length) {
+    el.innerHTML = '<p class="empty" style="padding:18px">Ta liste est vide. Touche « Ajouter » pour suivre une crypto.</p>';
+    return;
+  }
+  el.innerHTML = state.watch.map(w => {
+    const m = state.market[w.id];
+    const img = m?.image || w.img;
+    const id = esc(w.id);
+    if (state.editing) {
+      return `<div class="coin is-edit">${logo(img, w)}<span class="coin-id"><b class="coin-sym">${esc(w.sym)}</b><span class="coin-name">${esc(w.name)}</span></span>
+        <button class="coin-x" type="button" data-remove="${id}" aria-label="Retirer ${esc(w.name)}">Retirer</button></div>`;
+    }
+    const p = priceOf(w), c = chgOf(w);
+    const sp = m?.sparkline_in_7d?.price || [];
+    const t7 = m?.price_change_percentage_7d_in_currency;
+    const h1 = m?.price_change_percentage_1h_in_currency;
+    return `<button class="coin" type="button" data-id="${id}" aria-pressed="${w.id === state.selected}" aria-label="${esc(w.name)} : ouvrir le graphique">
+      ${logo(img, w)}
+      <span class="coin-id"><b class="coin-sym">${esc(w.sym)}</b><span class="coin-name">${esc(w.name)}</span></span>
+      <span class="coin-spark ${t7 == null ? 't-muted' : t7 >= 0 ? 't-up' : 't-down'}">${spark(thin(sp, 56))}</span>
+      <b class="coin-px" data-price-for="${id}">${p == null ? '<span class="skel">00 000 $</span>' : fmtPrice(p)}</b>
+      <span class="coin-chg" data-chg-for="${id}">${pill(c)}</span>
+      <span class="coin-meta">
+        <span>1 h<b class="${clsOf(h1)}">${fmtPct(h1)}</b></span>
+        <span>7 jours<b class="${clsOf(t7)}">${fmtPct(t7)}</b></span>
+        <span>Cap.<b>${m ? fmtUsdC(m.market_cap) : '—'}</b></span>
+      </span>
+    </button>`;
+  }).join('');
+  for (const w of state.watch) { const p = priceOf(w); if (p != null) state.prevPx[w.id] = p; }
+  renderWatchFoot();
+}
+
+function renderWatchFoot() {
+  const parts = [];
+  parts.push(state.wsUp ? 'Prix en direct via Binance' : 'Prix CoinGecko, rafraîchis chaque minute');
+  if (state.marketAt) parts.push('variations et mini-courbes 7 jours CoinGecko, maj ' + hhmm(state.marketAt));
+  if (state.marketErr) parts.push(state.marketErr);
+  const nonBinance = state.watch.filter(w => !w.bn).map(w => w.sym);
+  if (nonBinance.length && state.wsUp) parts.push(nonBinance.join(', ') + ' : prix CoinGecko (absent de Binance)');
+  $('#watch-foot').textContent = parts.join(' · ');
+}
+
+/* ================= Rendu : graphique ================= */
+function renderAssetHead() {
+  const w = selectedWatch();
+  const head = $('#asset-head');
+  $('#asset-switch').innerHTML = state.watch.map(x =>
+    `<button class="chip" type="button" data-pick="${esc(x.id)}" aria-pressed="${!!w && x.id === w.id}">${esc(x.sym)}</button>`).join('');
+  if (!w) { head.innerHTML = '<p class="empty">Ajoute une crypto pour afficher son graphique.</p>'; return; }
+  const m = state.market[w.id], l = liveOf(w);
+  const hi = l?.high ?? m?.high_24h, lo = l?.low ?? m?.low_24h;
+  const h1 = m?.price_change_percentage_1h_in_currency, d7 = m?.price_change_percentage_7d_in_currency;
+  const id = esc(w.id);
+  head.innerHTML = `
+    ${logo(m?.image || w.img, w, 'ah-logo')}
+    <div style="min-width:0">
+      <h2 class="ah-name">${esc(w.name)} <span class="ah-sym">${esc(w.sym)}</span></h2>
+      <button class="tv-sym" type="button" id="tv-sym-btn" aria-label="Changer le symbole TradingView, actuellement ${esc(w.tv)}"><span>${esc(w.tv)}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>
+    </div>
+    <div class="ah-px"><b data-price-for="${id}">${fmtPrice(priceOf(w))}</b><span data-chg-for="${id}">${pill(chgOf(w))}</span></div>
+    <dl class="ah-stats">
+      <div><dt>1 h</dt><dd class="${clsOf(h1)}">${fmtPct(h1)}</dd></div>
+      <div><dt>7 jours</dt><dd class="${clsOf(d7)}">${fmtPct(d7)}</dd></div>
+      <div><dt>Capitalisation</dt><dd>${m ? fmtUsdC(m.market_cap) : '—'}</dd></div>
+      <div><dt>Haut 24 h</dt><dd>${fmtPrice(hi)}</dd></div>
+      <div><dt>Bas 24 h</dt><dd>${fmtPrice(lo)}</dd></div>
+      <div><dt>Écart au record</dt><dd class="${clsOf(m?.ath_change_percentage)}">${fmtPct(m?.ath_change_percentage, 1)}</dd></div>
+    </dl>`;
+}
+
+/* ================= Widgets TradingView ================= */
+const TV_BASE = 'https://s3.tradingview.com/external-embedding/embed-widget-';
+const mounted = {};
+const tvTheme = () => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+const isShown = el => !!el && el.getClientRects().length > 0;
+function mountTv(hostId, name, config, key) {
+  const host = document.getElementById(hostId);
+  if (!host || (mounted[hostId] === key && host.childElementCount)) return;
+  mounted[hostId] = key;
+  host.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'tradingview-widget-container';
+  const inner = document.createElement('div');
+  inner.className = 'tradingview-widget-container__widget';
+  wrap.appendChild(inner);
+  const s = document.createElement('script');
+  s.type = 'text/javascript'; s.async = true;
+  s.src = TV_BASE + name + '.js';
+  s.text = JSON.stringify(config);
+  wrap.appendChild(s);
+  host.appendChild(wrap);
+}
+function newsCoinWatch() { return state.newsCoin === 'all' ? null : state.watch.find(w => w.id === state.newsCoin) || null; }
+function ensureWidgets() {
+  const th = tvTheme(), w = selectedWatch(), mob = !isDesk();
+  if (isShown($('#tv-tape')) && state.watch.length) {
+    const symbols = state.watch.map(x => ({ proName: x.tv, title: x.sym }));
+    mountTv('tv-tape', 'ticker-tape', { symbols, showSymbolLogo: true, isTransparent: true, displayMode: 'adaptive', colorTheme: th, locale: 'fr' },
+      th + '|' + symbols.map(s => s.proName).join(','));
+  }
+  if (w && isShown($('#tv-chart'))) {
+    mountTv('tv-chart', 'advanced-chart', {
+      autosize: true, symbol: w.tv, interval: '60', timezone: 'Europe/Paris', theme: th, style: '1', locale: 'fr',
+      backgroundColor: th === 'dark' ? 'rgba(14, 20, 31, 1)' : 'rgba(255, 255, 255, 1)',
+      gridColor: th === 'dark' ? 'rgba(126, 137, 156, 0.08)' : 'rgba(13, 19, 32, 0.06)',
+      hide_side_toolbar: mob, hide_top_toolbar: false, hide_legend: false, allow_symbol_change: false,
+      save_image: false, calendar: false, details: false, hotlist: false, withdateranges: !mob,
+      support_host: 'https://www.tradingview.com'
+    }, th + '|' + w.tv + '|' + mob);
+  }
+  if (w && isShown($('#tv-ta'))) {
+    mountTv('tv-ta', 'technical-analysis', {
+      interval: '1h', width: '100%', height: '100%', isTransparent: true, symbol: w.tv,
+      showIntervalTabs: true, displayMode: 'single', locale: 'fr', colorTheme: th
+    }, th + '|' + w.tv);
+  }
+  if (state.newsSrc === 'tv' && isShown($('#tv-news'))) {
+    const f = newsCoinWatch();
+    const cfg = f ? { feedMode: 'symbol', symbol: f.tv } : { feedMode: 'market', market: 'crypto' };
+    mountTv('tv-news', 'timeline', { ...cfg, isTransparent: true, displayMode: 'regular', width: '100%', height: '100%', colorTheme: th, locale: 'fr' },
+      th + '|' + (f ? f.tv : 'market'));
+  }
+}
+
+/* ================= Aave v3 ================= */
+const AAVE = 'https://api.v3.aave.com/graphql';
+const GROUPS = [
+  { key: 'USDT', name: 'Tether', re: /^USDT0?$/ },
+  { key: 'USDC', name: 'USD Coin', re: /^(USDC|USDC\.E|USDBC)$/ },
+  { key: 'ETH', name: 'Ether', re: /^W?ETH$/ },
+  { key: 'BTC', name: 'Bitcoin', re: /^(WBTC|CBBTC|BTCB|BTC\.B|TBTC)$/ }
+];
+const MARKET_NAMES = {
+  AaveV3Ethereum: 'Ethereum Core', AaveV3EthereumLido: 'Ethereum Prime', AaveV3EthereumEtherFi: 'Ethereum EtherFi',
+  AaveV3EthereumHorizon: 'Horizon RWA', AaveV3BNB: 'BNB Chain', AaveV3ZkSync: 'zkSync', AaveV3XLayer: 'X Layer'
+};
+const normSym = s => String(s || '').toUpperCase().replace(/₮/g, 'T');
+const isAddr = a => /^0x[0-9a-fA-F]{40}$/.test(a);
+function marketLabel(name, chain) {
+  if (MARKET_NAMES[name]) return MARKET_NAMES[name];
+  const s = String(name).replace(/^AaveV3/, '');
+  if (s.toLowerCase() === String(chain).toLowerCase().replace(/\s+/g, '')) return chain;
+  return s.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
+const hkey = r => `${r.chainId}:${r.market}:${r.token}`;
+const utilPct = r => Math.round((r.util > 1.5 ? r.util / 100 : r.util) * 100);
+
+async function gql(query, { partial = false } = {}) {
+  const r = await getJSON(AAVE, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ query }), timeout: 30000 });
+  if (r.errors?.length && !(partial && r.data)) throw new Error(r.errors[0].message);
+  return r.data;
+}
+
+async function loadAave() {
+  try {
+    if (!state.aaveChains) {
+      const d = await gql('{ chains { name chainId icon isTestnet } }');
+      state.aaveChains = d.chains.filter(c => !c.isTestnet);
+    }
+    const ids = state.aaveChains.map(c => +c.chainId).filter(Number.isFinite).join(',');
+    const d = await gql(`{ markets(request:{chainIds:[${ids}]}) { name address chain { name chainId icon }
+      reserves { underlyingToken { symbol address imageUrl } isFrozen isPaused
+        supplyInfo { apy { value } }
+        borrowInfo { apy { value } total { usd } utilizationRate { value } availableLiquidity { usd } borrowingState } } } }`);
+    const rows = [];
+    for (const mk of d.markets || []) {
+      for (const r of mk.reserves || []) {
+        const bi = r.borrowInfo;
+        if (!bi) continue;
+        const g = GROUPS.find(g => g.re.test(normSym(r.underlyingToken.symbol)));
+        if (!g) continue;
+        rows.push({
+          g: g.key, sym: String(r.underlyingToken.symbol).replace(/₮/g, 'T'), token: r.underlyingToken.address,
+          img: r.underlyingToken.imageUrl, chain: mk.chain.name, chainId: mk.chain.chainId, chainIcon: mk.chain.icon,
+          market: mk.address, label: marketLabel(mk.name, mk.chain.name),
+          apy: +bi.apy.value, sApy: +(r.supplyInfo?.apy?.value || 0),
+          borrowUsd: +bi.total.usd, availUsd: +bi.availableLiquidity.usd, util: +bi.utilizationRate.value,
+          ok: bi.borrowingState === 'ENABLED' && !r.isFrozen && !r.isPaused
+        });
+      }
+    }
+    state.aaveRows = rows.filter(r => r.ok && r.borrowUsd >= 1e6 && isFinite(r.apy));
+    state.aaveAt = Date.now(); state.aaveErr = null;
+    if (state.aaveChain !== 'all' && !state.aaveRows.some(r => r.chain === state.aaveChain)) state.aaveChain = 'all';
+  } catch (e) {
+    state.aaveErr = 'Les taux Aave sont indisponibles pour le moment.';
+  }
+  renderAave();
+  loadAaveHist();
+}
+
+function aaveView() {
+  const rows = (state.aaveRows || []).filter(r => state.aaveChain === 'all' || r.chain === state.aaveChain);
+  return GROUPS.map(g => {
+    const gr = rows.filter(r => r.g === g.key);
+    const bySize = [...gr].sort((a, b) => b.borrowUsd - a.borrowUsd);
+    const liquid = gr.filter(r => r.availUsd >= 1e6);
+    const best = liquid.length ? liquid.reduce((a, b) => (b.apy < a.apy ? b : a)) : null;
+    const sorted = state.aaveSort === 'rate' ? [...gr].sort((a, b) => a.apy - b.apy) : bySize;
+    const open = !!state.aaveOpen[g.key];
+    return { g, all: sorted, shown: open ? sorted : sorted.slice(0, 5), ref: bySize[0] || null, best };
+  });
+}
+
+async function loadAaveHist() {
+  if (!state.aaveRows) return;
+  const want = [];
+  for (const v of aaveView()) { if (v.ref) want.push(v.ref); want.push(...v.shown); }
+  const seen = new Set();
+  const need = want.filter(r => {
+    const k = hkey(r);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    const h = state.aaveHist[k];
+    return isAddr(r.market) && isAddr(r.token) && (!h || Date.now() - h.at > 30 * 60000);
+  }).slice(0, 30);
+  if (!need.length) return;
+  // L'API Aave accepte au plus 10 requêtes groupées (alias) par appel.
+  const lots = [];
+  for (let i = 0; i < need.length; i += 10) lots.push(need.slice(i, i + 10));
+  await Promise.all(lots.map(async lot => {
+    const q = '{ ' + lot.map((r, i) =>
+      `h${i}: borrowAPYHistory(request:{chainId:${+r.chainId}, market:"${r.market}", underlyingToken:"${r.token}", window: LAST_WEEK}) { date avgRate { value } }`).join(' ') + ' }';
+    try {
+      const d = await gql(q, { partial: true });
+      lot.forEach((r, i) => {
+        const arr = (d?.['h' + i] || []).map(p => ({ t: Date.parse(p.date), v: +p.avgRate.value }))
+          .filter(p => isFinite(p.v) && isFinite(p.t)).sort((a, b) => a.t - b.t);
+        state.aaveHist[hkey(r)] = { at: Date.now(), pts: arr };
+      });
+    } catch {}
+  }));
+  renderAave();
+}
+
+function deltaPts(r) {
+  const h = state.aaveHist[hkey(r)];
+  return h && h.pts.length > 1 ? (r.apy - h.pts[0].v) * 100 : null;
+}
+function deltaHtml(d, small = false) {
+  if (d == null) return '';
+  const c = d > 0.005 ? 't-down' : d < -0.005 ? 't-up' : 't-muted';
+  const txt = sign(Math.abs(d) < 0.005 ? 0 : d) + nf(2, 2).format(Math.abs(d)) + (small ? '' : NBSP + 'pt');
+  return small ? `<small class="${c}" title="Variation sur 7 jours, en points">${txt}</small>` : `<span class="${c}">${txt}</span>`;
+}
+
+function renderAave() {
+  const grid = $('#aave-grid');
+  $$('[data-asort]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.asort === state.aaveSort)));
+  if (!state.aaveRows) {
+    $('#aave-chains').innerHTML = '';
+    grid.innerHTML = state.aaveErr
+      ? `<div class="err">${esc(state.aaveErr)}<button class="btn" type="button" data-retry="aave">Réessayer</button></div>`
+      : GROUPS.map(g => `<article class="ac"><div class="ac-head"><span class="ac-logo skel"></span><div><h3>${g.key}</h3><span class="t-muted">Chargement des pools…</span></div><span class="ac-rate skel">0,00 %</span></div><span class="skel" style="height:48px;width:100%"></span></article>`).join('');
+    $('#aave-foot').textContent = '';
+    return;
+  }
+  const chains = {};
+  for (const r of state.aaveRows) (chains[r.chain] ||= { name: r.chain, icon: r.chainIcon, usd: 0 }).usd += r.borrowUsd;
+  const list = Object.values(chains).sort((a, b) => b.usd - a.usd);
+  $('#aave-chains').innerHTML = `<button class="chip" type="button" data-chain="all" aria-pressed="${state.aaveChain === 'all'}">Toutes les chaînes</button>` +
+    list.map(c => `<button class="chip" type="button" data-chain="${esc(c.name)}" aria-pressed="${state.aaveChain === c.name}">${safeUrl(c.icon) ? `<img src="${esc(c.icon)}" alt="" width="18" height="18" loading="lazy">` : ''}${esc(c.name)}</button>`).join('');
+
+  grid.innerHTML = aaveView().map(({ g, all, shown, ref, best }) => {
+    if (!ref) {
+      return `<article class="ac"><div class="ac-head"><span class="ac-logo coin-ava">${g.key[0]}</span><div><h3>${g.key}</h3><span class="t-muted">${g.name}</span></div></div>
+        <p class="empty" style="padding:4px 0">Aucun pool ${g.key} empruntable sur cette chaîne.</p></article>`;
+    }
+    const h = state.aaveHist[hkey(ref)], pts = h?.pts || [];
+    const d7 = deltaPts(ref);
+    let range = '';
+    if (pts.length > 1) {
+      let mn = Infinity, mx = -Infinity;
+      for (const p of pts) { if (p.v < mn) mn = p.v; if (p.v > mx) mx = p.v; }
+      range = `<small>de ${fmtRate(mn)} à ${fmtRate(mx)}</small>`;
+    }
+    const bestHtml = best && hkey(best) !== hkey(ref)
+      ? `<div class="ac-best">Le moins cher avec au moins 1 M$ disponible : <b class="mono">${fmtRate(best.apy)}</b> sur ${esc(best.label)}${best.sym.toUpperCase() !== g.key ? ' (' + esc(best.sym) + ')' : ''}</div>`
+      : `<div class="ac-best">Le pool principal est aussi le moins cher avec au moins 1 M$ disponible.</div>`;
+    const rows = shown.map(r => {
+      const u = utilPct(r);
+      return `<li class="pool">
+        ${safeUrl(r.chainIcon) ? `<img class="pool-ic" src="${esc(r.chainIcon)}" alt="" width="22" height="22" loading="lazy">` : '<span class="pool-ic"></span>'}
+        <span class="pool-name" title="${esc(r.label)} · ${esc(r.chain)}">${esc(r.label)}<small>${esc(r.sym)}</small></span>
+        <span class="pool-rate">${deltaHtml(deltaPts(r), true)}${fmtRate(r.apy)}</span>
+        <span class="pool-meta">
+          <span class="pool-util" title="Taux d'utilisation du pool"><span class="ubar ${u >= 92 ? 'hot' : u >= 80 ? 'warn' : ''}"><i style="--u:${Math.min(100, u)}%"></i></span>${u}${NNBSP}%</span>
+          <span>${fmtUsdC(r.borrowUsd)} empruntés · ${fmtUsdC(r.availUsd)} dispo</span>
+        </span></li>`;
+    }).join('');
+    return `<article class="ac">
+      <div class="ac-head">
+        ${safeUrl(ref.img) ? `<img class="ac-logo" src="${esc(ref.img)}" alt="" width="38" height="38" loading="lazy">` : `<span class="ac-logo coin-ava">${g.key[0]}</span>`}
+        <div><h3>${g.key}</h3><span class="t-muted">${g.name} · ${all.length} pool${all.length > 1 ? 's' : ''}</span></div>
+        <div><div class="ac-rate">${fmtRate(ref.apy)}</div><div class="ac-ref">${esc(ref.label)}</div></div>
+      </div>
+      <div class="ac-trend">
+        <div class="ac-spk">${pts.length > 1 ? spark(thin(pts.map(p => p.v), 84)) : '<span class="spk spk-empty"></span>'}</div>
+        <div class="ac-delta">${d7 == null ? '<span class="t-muted">—</span>' : deltaHtml(d7)}<small>sur 7 jours</small>${range}</div>
+      </div>
+      ${bestHtml}
+      <ul class="pools">${rows}</ul>
+      ${all.length > 5 ? `<button class="more" type="button" data-more="${g.key}">${state.aaveOpen[g.key] ? 'Réduire' : `Voir les ${all.length} pools`}</button>` : ''}
+    </article>`;
+  }).join('');
+
+  const nChains = new Set(state.aaveRows.map(r => r.chain)).size;
+  $('#aave-foot').textContent = ` · ${state.aaveRows.length} pools avec au moins 1 M$ emprunté sur ${nChains} chaînes · courbe et écart 7 jours du pool principal · maj ${hhmm(state.aaveAt)}`;
+}
+
+/* ================= Actualités ================= */
+async function loadNews() {
+  if (location.protocol === 'file:') {
+    state.newsErr = 'Le fil des médias est produit à la publication sur GitHub. Ouvre la page en ligne, ou utilise l’onglet TradingView.';
+    renderNews(); return;
+  }
+  try {
+    const j = await getJSON('news.json?v=' + Math.floor(Date.now() / 120000), { cache: 'no-store' });
+    state.news = Array.isArray(j.items) ? j.items : [];
+    state.newsGen = Date.parse(j.generated) || null;
+    state.newsSources = Array.isArray(j.sources) ? j.sources : [];
+    state.newsErr = state.news.length ? null : 'Le fil des médias est vide pour le moment.';
+    state.newsAt = Date.now();
+  } catch {
+    if (!state.news.length) state.newsErr = 'Le fil des médias n’est pas encore disponible. L’onglet TradingView affiche les actus en direct.';
+  }
+  renderNews();
+}
+
+function coinMatchers() {
+  return state.watch.map(w => {
+    const names = ALIASES[w.id] || [w.name.replace(/\s+(Protocol|Network|Token|Coin|Chain)$/i, ''), w.sym];
+    const res = [...new Set(names.filter(Boolean))].map(a => {
+      const e = a.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const caseSensitive = a === a.toUpperCase();
+      return new RegExp(`(?<![\\p{L}\\p{N}])\\$?${e}(?![\\p{L}\\p{N}])`, caseSensitive ? 'u' : 'iu');
+    });
+    return { w, res };
+  });
+}
+
+function renderNews() {
+  $('#news-coins').innerHTML = `<button class="chip" type="button" data-ncoin="all" aria-pressed="${state.newsCoin === 'all'}">Toutes</button>` +
+    state.watch.map(w => `<button class="chip" type="button" data-ncoin="${esc(w.id)}" aria-pressed="${state.newsCoin === w.id}">${esc(w.sym)}</button>`).join('');
+  $$('[data-nsrc]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nsrc === state.newsSrc)));
+  $$('[data-nlang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nlang === state.newsLang)));
+  const tvMode = state.newsSrc === 'tv';
+  $('#news-list').hidden = tvMode;
+  $('#tv-news-wrap').hidden = !tvMode;
+  $('#news-lang').hidden = tvMode;
+  const foot = $('#news-foot');
+  if (tvMode) {
+    foot.innerHTML = 'Fil d’actualités <a href="https://fr.tradingview.com/news/" target="_blank" rel="noopener">TradingView News</a>, en direct.';
+    ensureWidgets();
+    return;
+  }
+  const list = $('#news-list');
+  if (!state.news.length) {
+    list.innerHTML = state.newsErr
+      ? `<li class="empty">${esc(state.newsErr)}<br><button class="btn" type="button" data-nsrc="tv" style="margin-top:10px">Voir TradingView News</button></li>`
+      : Array.from({ length: 5 }, () => '<li class="ni"><div style="padding:13px 0"><span class="skel" style="width:40%;height:11px"></span><br><span class="skel" style="width:95%;height:15px;margin-top:8px"></span><br><span class="skel" style="width:70%;height:15px;margin-top:4px"></span></div></li>').join('');
+    foot.textContent = '';
+    return;
+  }
+  const ms = coinMatchers();
+  let items = state.news.map(it => {
+    const txt = (it.t || '') + ' ' + (it.x || '');
+    return { ...it, tags: ms.filter(m => m.res.some(re => re.test(txt))).map(m => m.w) };
+  });
+  if (state.newsLang !== 'all') items = items.filter(i => i.l === state.newsLang);
+  if (state.newsCoin !== 'all') items = items.filter(i => i.tags.some(w => w.id === state.newsCoin));
+  const html = items.slice(0, 90).map(it => {
+    const u = safeUrl(it.u);
+    if (!u) return '';
+    const img = safeUrl(it.i);
+    const t = Date.parse(it.d);
+    const fresh = isFinite(t) && Date.now() - t < 3600000;
+    return `<li class="ni"><a href="${esc(u)}" target="_blank" rel="noopener noreferrer">
+      <div style="min-width:0">
+        <div class="ni-meta"><span class="ni-src">${esc(it.s)}</span><span class="ni-lang">${esc(String(it.l || '').toUpperCase())}</span>${isFinite(t) ? `<time datetime="${esc(it.d)}" data-t="${t}">${ago(t)}</time>` : ''}${fresh ? '<span class="ni-new">Nouveau</span>' : ''}</div>
+        <h3 class="ni-title">${esc(it.t)}</h3>
+        ${it.x ? `<p class="ni-sum">${esc(it.x)}</p>` : ''}
+        ${it.tags.length ? `<div class="ni-tags">${it.tags.map(w => `<span class="tag">${esc(w.sym)}</span>`).join('')}</div>` : ''}
+      </div>
+      ${img ? `<img class="ni-img" src="${esc(img)}" alt="" width="78" height="58" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
+    </a></li>`;
+  }).join('');
+  list.innerHTML = html || '<li class="empty">Aucun article récent pour ce filtre.</li>';
+  const ok = state.newsSources.filter(s => s.ok).length;
+  foot.textContent = `${items.length} article${items.length > 1 ? 's' : ''} · ${ok} médias (CoinDesk, Cointelegraph, The Block, Cryptoast…) · fil régénéré toutes les 30 min, dernière fois ${ago(state.newsGen)}`;
+}
+
+/* ================= Navigation et planification ================= */
+const VIEWS = ['marches', 'graphique', 'aave', 'news'];
+function route() {
+  const v = location.hash.slice(1);
+  const view = VIEWS.includes(v) ? v : 'marches';
+  const changed = document.body.dataset.view !== view;
+  document.body.dataset.view = view;
+  $$('.bottom-nav a').forEach(a => {
+    if (a.getAttribute('href') === '#' + view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
+  if (changed && !isDesk()) window.scrollTo(0, 0);
+  ensureWidgets();
+  tick(false);
+}
+
+const jobs = {
+  markets: { every: 60000, run: loadMarkets, last: 0 },
+  global: { every: 300000, run: loadGlobal, last: 0 },
+  fng: { every: 1800000, run: loadFng, last: 0 },
+  aave: { every: 300000, run: loadAave, last: 0, view: 'aave' },
+  news: { every: 300000, run: loadNews, last: 0, view: 'news' }
+};
+const running = {};
+const viewActive = v => isDesk() || document.body.dataset.view === v;
+function tick(force) {
+  if (document.hidden) return;
+  const now = Date.now();
+  for (const [k, j] of Object.entries(jobs)) {
+    if (running[k]) continue;
+    if (j.view && !viewActive(j.view)) continue;
+    if (!force && j.last && now - j.last < j.every) continue;
+    j.last = now; running[k] = true;
+    Promise.resolve().then(j.run).catch(() => {}).finally(() => { running[k] = false; });
+  }
+}
+
+function selectCoin(id, go) {
+  state.selected = id;
+  store.set('cd.selected', id);
+  renderWatch(); renderAssetHead();
+  if (go && !isDesk()) location.hash = '#graphique';
+  else ensureWidgets();
+}
+
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(t._h);
+  t._h = setTimeout(() => { t.hidden = true; }, 2800);
+}
+
+/* ================= Ajout / retrait de cryptos ================= */
+const addDlg = $('#add-dlg'), symDlg = $('#sym-dlg');
+function resItem(c, sub) {
+  state.searchRes.set(c.id, c);
+  const has = state.watch.some(w => w.id === c.id);
+  return `<li><button class="res" type="button" data-add="${esc(c.id)}" ${has ? 'disabled style="opacity:.5;cursor:default"' : ''}>
+    ${safeUrl(c.img) ? `<img src="${esc(c.img)}" alt="" width="30" height="30" loading="lazy">` : `<span class="coin-ava">${esc(c.sym[0])}</span>`}
+    <span style="min-width:0"><b>${esc(c.sym)}</b><span class="t-muted">${esc(c.name)}</span></span>
+    <em>${has ? 'déjà suivi' : esc(sub || '')}</em></button></li>`;
+}
+function showSuggestions() {
+  $('#add-results').innerHTML = '<li class="res-title">Suggestions</li>' + SUGGESTIONS.map(c => resItem(c, 'Ajouter')).join('');
+}
+let qTimer = null, qSeq = 0;
+async function searchCoins(q) {
+  const seq = ++qSeq, res = $('#add-results');
+  res.innerHTML = '<li class="hint" style="padding:10px 4px">Recherche…</li>';
+  try {
+    const j = await getJSON(`${CG}/search?query=${encodeURIComponent(q)}`);
+    if (seq !== qSeq) return;
+    const coins = (j.coins || []).slice(0, 12).map(c => ({ id: c.id, sym: String(c.symbol || '').toUpperCase(), name: c.name, img: c.large || c.thumb, rank: c.market_cap_rank }));
+    res.innerHTML = coins.length ? coins.map(c => resItem(c, c.rank ? '#' + c.rank : '')).join('') : '<li class="hint" style="padding:10px 4px">Aucun résultat.</li>';
+  } catch {
+    if (seq === qSeq) res.innerHTML = '<li class="hint" style="padding:10px 4px">Recherche indisponible (CoinGecko). Réessaie dans un instant.</li>';
+  }
+}
+async function resolveTv(sym) {
+  const s = sym.replace(/[^A-Z0-9]/g, '');
+  if (!s) return { tv: '', bn: null };
+  try { const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}USDT`); if (r.ok) return { tv: `BINANCE:${s}USDT`, bn: `${s}USDT` }; } catch {}
+  try {
+    const j = await getJSON(`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${s}USDT`, { timeout: 8000 });
+    if (j.retCode === 0 && j.result?.list?.length) return { tv: `BYBIT:${s}USDT`, bn: null };
+  } catch {}
+  return { tv: `CRYPTO:${s}USD`, bn: null };
+}
+async function addCoin(id) {
+  const c = state.searchRes.get(id);
+  if (!c || state.watch.some(w => w.id === id)) return;
+  toast(`Recherche du graphique ${c.sym}…`);
+  const { tv, bn } = await resolveTv(c.sym);
+  state.watch.push({ id: c.id, sym: c.sym, name: c.name, tv, bn, img: c.img || '' });
+  saveWatch();
+  addDlg.close();
+  toast(`${c.sym} ajouté · graphique ${tv}`);
+  renderAll(); connectLive(); ensureWidgets(); jobs.markets.last = 0; tick(false);
+}
+function openSymDialog() {
+  const w = selectedWatch();
+  if (!w) return;
+  const s = w.sym.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+  $('#sym-input').value = w.tv;
+  $('#sym-picks').innerHTML = [`BINANCE:${s}USDT`, `BYBIT:${s}USDT`, `OKX:${s}USDT`, `COINBASE:${s}USD`, `CRYPTO:${s}USD`]
+    .map(p => `<button class="chip" type="button" data-sympick="${esc(p)}">${esc(p)}</button>`).join('');
+  symDlg.showModal();
+}
+$('#sym-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const w = selectedWatch();
+  const v = $('#sym-input').value.trim().toUpperCase().replace(/\s+/g, '');
+  if (!w || !/^[A-Z0-9_.!-]+:[A-Z0-9_.!-]+$/.test(v)) { toast('Format attendu : PLACE:PAIRE, par exemple BINANCE:BTCUSDT'); return; }
+  w.tv = v;
+  const m = v.match(/^BINANCE:([A-Z0-9]+)$/);
+  w.bn = m ? m[1] : null;
+  saveWatch(); symDlg.close();
+  renderAll(); connectLive(); ensureWidgets();
+  toast('Symbole enregistré : ' + v);
+});
+
+/* ================= Événements ================= */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, a');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.id) return selectCoin(d.id, true);
+  if (d.pick) return selectCoin(d.pick, false);
+  if (d.remove) {
+    const w = state.watch.find(x => x.id === d.remove);
+    state.watch = state.watch.filter(x => x.id !== d.remove);
+    if (state.selected === d.remove) state.selected = state.watch[0]?.id || '';
+    if (state.newsCoin === d.remove) state.newsCoin = 'all';
+    saveWatch(); renderAll(); connectLive(); ensureWidgets();
+    if (w) toast(w.sym + ' retiré de la liste');
+    return;
+  }
+  if (d.add) return addCoin(d.add);
+  if (d.sympick) { $('#sym-input').value = d.sympick; return; }
+  if (d.chain) { state.aaveChain = d.chain; store.set('cd.aaveChain', d.chain); state.aaveOpen = {}; renderAave(); loadAaveHist(); return; }
+  if (d.asort) { state.aaveSort = d.asort; store.set('cd.aaveSort', d.asort); renderAave(); loadAaveHist(); return; }
+  if (d.more) { state.aaveOpen[d.more] = !state.aaveOpen[d.more]; renderAave(); loadAaveHist(); return; }
+  if (d.ncoin) { state.newsCoin = d.ncoin; renderNews(); return; }
+  if (d.nlang) { state.newsLang = d.nlang; store.set('cd.newsLang', d.nlang); renderNews(); return; }
+  if (d.nsrc) { state.newsSrc = d.nsrc; store.set('cd.newsSrc', d.nsrc); renderNews(); ensureWidgets(); return; }
+  if (d.retry) { jobs[d.retry].last = 0; state.aaveErr = null; renderAave(); tick(false); return; }
+  if ('close' in d) { t.closest('dialog')?.close(); return; }
+  if (t.id === 'tv-sym-btn') return openSymDialog();
+});
+for (const dlg of [addDlg, symDlg]) dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+$('#btn-add').addEventListener('click', () => {
+  $('#add-q').value = '';
+  showSuggestions();
+  addDlg.showModal();
+  if (isDesk()) $('#add-q').focus();
+});
+$('#add-q').addEventListener('input', e => {
+  clearTimeout(qTimer);
+  const q = e.target.value.trim();
+  if (q.length < 2) { qSeq++; showSuggestions(); return; }
+  qTimer = setTimeout(() => searchCoins(q), 350);
+});
+$('#btn-edit').addEventListener('click', () => { state.editing = !state.editing; renderWatch(); });
+$('#btn-reset').addEventListener('click', () => {
+  state.watch = DEFAULT_WATCH.map(w => ({ ...w }));
+  state.selected = 'bitcoin'; state.newsCoin = 'all'; state.editing = false;
+  saveWatch(); renderAll(); connectLive(); jobs.markets.last = 0; tick(false); ensureWidgets();
+  toast('Liste d’origine rétablie');
+});
+$('#btn-theme').addEventListener('click', () => {
+  const t = tvTheme() === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = t;
+  try { localStorage.setItem('cd.theme', t); } catch {}
+  syncThemeMeta();
+  ensureWidgets();
+});
+$('#btn-refresh').addEventListener('click', () => {
+  const b = $('#btn-refresh');
+  b.classList.remove('spin'); void b.offsetWidth; b.classList.add('spin');
+  for (const k in state.aaveHist) state.aaveHist[k].at = 0;
+  tick(true);
+  if (!state.wsUp) connectLive();
+  toast('Actualisation…');
+});
+function syncThemeMeta() {
+  $('#meta-theme').setAttribute('content', tvTheme() === 'dark' ? '#070B12' : '#EEF1F6');
+}
+matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+  let saved = null;
+  try { saved = localStorage.getItem('cd.theme'); } catch {}
+  if (saved) return;
+  document.documentElement.dataset.theme = e.matches ? 'light' : 'dark';
+  syncThemeMeta(); ensureWidgets();
+});
+
+addEventListener('hashchange', route);
+MQ_DESK.addEventListener('change', () => { renderWatch(); ensureWidgets(); tick(false); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  tick(false);
+  if (!ws || ws.readyState > 1) connectLive();
+});
+addEventListener('online', () => { updateLiveBadge(); tick(true); connectLive(); });
+addEventListener('offline', updateLiveBadge);
+setInterval(() => tick(false), 10000);
+setInterval(() => {
+  for (const el of $$('time[data-t]')) el.textContent = ago(+el.dataset.t);
+  updateLiveBadge();
+}, 30000);
+
+function renderAll() { renderKpis(); renderWatch(); renderAssetHead(); renderAave(); renderNews(); }
+
+/* ================= Démarrage ================= */
+if (!state.watch.some(w => w.id === state.selected)) state.selected = state.watch[0]?.id || '';
+syncThemeMeta();
+renderAll();
+updateLiveBadge();
+connectLive();
+route();
+</script>
+</body>
+</html>
