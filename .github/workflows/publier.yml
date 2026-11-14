@@ -1,7 +1,7 @@
-name: Publier Crypto Desk
+name: Publier Kryptopsy
 
-# Publie le dossier site/ sur GitHub Pages et régénère site/news.json
-# (flux RSS des médias crypto) à chaque envoi de fichiers et toutes les 30 minutes.
+# Publie le dossier site/ sur GitHub Pages à chaque envoi de fichiers et toutes les 30 minutes,
+# en régénérant site/news.json (flux RSS des médias crypto) et site/whales.json (classement Hyperliquid).
 on:
   push:
     branches: [main]
@@ -30,6 +30,9 @@ jobs:
 
       - name: Récupérer les actualités crypto
         run: python3 scripts/fetch_news.py site/news.json
+
+      - name: Récupérer les whales Hyperliquid
+        run: python3 scripts/fetch_whales.py site/whales.json
 
       - name: Préparer GitHub Pages
         uses: actions/configure-pages@v5
