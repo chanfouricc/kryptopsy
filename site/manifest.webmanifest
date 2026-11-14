@@ -1,7 +1,7 @@
 {
-  "name": "Crypto Desk",
-  "short_name": "Crypto Desk",
-  "description": "Cours TradingView, taux d'emprunt Aave v3 et actualités crypto.",
+  "name": "Kryptopsy",
+  "short_name": "Kryptopsy",
+  "description": "Cours TradingView, taux et positions Aave v3, whales Hyperliquid et actualités crypto.",
   "lang": "fr",
   "start_url": "./#marches",
   "scope": "./",

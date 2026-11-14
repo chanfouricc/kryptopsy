@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Construit news.json pour Crypto Desk en agrégeant les flux RSS de médias crypto.
+"""Construit news.json pour Kryptopsy en agrégeant les flux RSS de médias crypto.
 
 Les navigateurs ne peuvent pas lire ces flux directement (pas d'en-têtes CORS) :
 GitHub Actions lance ce script toutes les 30 minutes et publie le résultat à côté

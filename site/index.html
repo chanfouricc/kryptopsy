@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Crypto Desk</title>
-<meta name="description" content="Cours TradingView, taux d'emprunt Aave v3 et actualités crypto, pensé pour le téléphone.">
+<title>Kryptopsy</title>
+<meta name="description" content="Cours TradingView, taux et positions Aave v3, whales Hyperliquid et actualités crypto, pensé pour le téléphone.">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#070B12" id="meta-theme">
 <meta name="mobile-web-app-capable" content="yes">
@@ -131,6 +131,7 @@ h1, h2, h3 { text-wrap: balance; }
 body[data-view="marches"] #marches,
 body[data-view="graphique"] #graphique,
 body[data-view="aave"] #aave,
+body[data-view="whales"] #whales,
 body[data-view="news"] #news { display: block; }
 
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); }
@@ -313,18 +314,129 @@ body[data-view="news"] #news { display: block; }
 .ni-img { width: 78px; height: 58px; border-radius: 10px; object-fit: cover; background: var(--raise); }
 .tv-news { height: calc(100dvh - var(--topbar-h) - var(--nav-h) - 190px); min-height: 460px; }
 
+/* ---------- Aave : adresses suivies ---------- */
+.seg-wide { display: flex; width: 100%; }
+.seg-wide button { flex: 1; min-width: 0; padding: 0 6px; }
+.mode-bar { margin-bottom: 14px; }
+.alert { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; padding: 11px 13px; margin-bottom: 12px; border-radius: 12px; background: var(--down-soft); font-size: 13.5px; line-height: 1.45; }
+.alert b { color: var(--down); }
+.addr-form { display: grid; gap: 8px; margin-bottom: 14px; }
+.wcard { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 14px; margin-bottom: 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
+.wc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.wc-id { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.wc-id b { font: 700 16px/1.2 var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.addr-chip { align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 9px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); font: 500 12px/1 var(--font-mono); cursor: pointer; white-space: nowrap; }
+.addr-chip svg { width: 12px; height: 12px; }
+.wc-net { text-align: right; flex: none; }
+.wc-net b { display: block; margin-top: 5px; font: 600 22px/1.1 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.minis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.mini { min-width: 0; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); }
+.mini > span { display: block; font: 700 10px/1.2 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini > b { display: block; margin-top: 5px; font: 600 14px/1.2 var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hf { display: inline-flex; align-items: center; padding: 4px 7px; border-radius: 7px; font: 700 12px/1 var(--font-mono); white-space: nowrap; }
+.hf.ok { color: var(--up); background: var(--up-soft); }
+.hf.warn { color: var(--warn); background: var(--warn-soft); }
+.hf.hot { color: var(--down); background: var(--down-soft); }
+.hf.none { color: var(--muted); background: var(--raise); }
+.wm { display: flex; flex-direction: column; gap: 9px; padding-top: 12px; border-top: 1px solid var(--line); }
+.wm-head { display: flex; align-items: center; gap: 8px; }
+.wm-head img { width: 20px; height: 20px; border-radius: 6px; flex: none; }
+.wm-head b { font-size: 14.5px; font-weight: 800; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wm-head .hf { margin-left: auto; }
+.wm-stats { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 500 12px/1.45 var(--font-mono); color: var(--muted); }
+.wm-stats b { font-weight: 600; color: var(--fg-2); }
+.usage { display: flex; align-items: center; gap: 8px; font: 500 12px var(--font-mono); color: var(--muted); }
+.usage .ubar { flex: 1; width: auto; }
+.lines h4 { margin: 6px 0 0; font: 700 10.5px/1.2 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.line { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 1px 10px; align-items: center; padding: 7px 0; }
+.line > img, .line > .coin-ava { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; background: var(--raise); }
+.line .nm { min-width: 0; display: flex; align-items: center; gap: 6px; }
+.line .nm b { font-size: 14px; font-weight: 700; }
+.line .amt { font: 600 13.5px var(--font-mono); text-align: right; white-space: nowrap; }
+.line small { font: 500 11.5px var(--font-mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.line small.r { text-align: right; }
+.badge { font: 700 10px/1 var(--font-body); padding: 3px 6px; border-radius: 5px; background: var(--aave-soft); color: var(--aave); white-space: nowrap; }
+.wc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; }
+.wc-foot a { color: var(--fg-2); font-weight: 700; }
+.btn.sm { height: 34px; padding: 0 11px; font-size: 12.5px; }
+.btn.danger { color: var(--down); background: transparent; border-color: var(--down-soft); }
+
+/* ---------- Whales Hyperliquid ---------- */
+.whale-panel { padding: 16px; container: whales / inline-size; }
+.expo { margin: 14px 0 6px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); }
+.expo:empty { display: none; }
+.expo-head { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 10px; flex-wrap: wrap; margin-bottom: 6px; }
+.expo-head b { font: 700 14px/1.2 var(--font-display); }
+.expo-head span { font-size: 11.5px; color: var(--muted); }
+.expo-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 3px 10px; align-items: center; padding: 6px 0; }
+.expo-row > b { font: 700 12.5px var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ls { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--raise); }
+.ls i { display: block; height: 100%; }
+.ls .l { background: var(--up); }
+.ls .s { background: var(--down); }
+.expo-row .net { font: 600 11.5px var(--font-mono); text-align: right; white-space: nowrap; }
+.expo-row small { grid-column: 1 / -1; font: 500 11px var(--font-mono); color: var(--muted); }
+.wlist { list-style: none; margin: 0; padding: 0; }
+.wrow {
+  display: grid; width: 100%; padding: 12px 2px; gap: 7px 10px; align-items: center;
+  grid-template-columns: 24px minmax(0, 1fr) auto; grid-template-areas: "rk id pnl" "rk pos pos";
+  border: 0; border-top: 1px solid var(--line); background: none; text-align: left; cursor: pointer;
+}
+.wlist li:first-child .wrow { border-top: 0; }
+.wrow:hover .wr-id b { color: var(--accent-strong); }
+.wr-rank { grid-area: rk; align-self: start; font: 700 13px/1.5 var(--font-mono); color: var(--muted); }
+.wr-id { grid-area: id; min-width: 0; display: flex; flex-direction: column; }
+.wr-id b { font: 700 14.5px/1.35 var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wr-id b.named { font-family: var(--font-display); }
+.wr-id small, .wr-pnl small { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
+.wr-pnl { grid-area: pnl; display: flex; flex-direction: column; align-items: flex-end; }
+.wr-pnl b { font: 600 14.5px/1.35 var(--font-mono); white-space: nowrap; }
+.wr-pos { grid-area: pos; display: flex; flex-wrap: wrap; gap: 5px; min-width: 0; }
+.pchip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 6px; font: 600 11px/1.2 var(--font-mono); white-space: nowrap; }
+.pchip.long { color: var(--up); background: var(--up-soft); }
+.pchip.short { color: var(--down); background: var(--down-soft); }
+.pchip.more { color: var(--muted); background: var(--raise); }
+@container whales (min-width: 760px) {
+  .wrow { grid-template-columns: 30px minmax(170px, 1fr) minmax(0, 2fr) auto; grid-template-areas: "rk id pos pnl"; }
+  .expo-rows { display: grid; grid-template-columns: 1fr 1fr; column-gap: 28px; }
+}
+
+/* Fiche d'une whale */
+.sheet-in.wide { max-height: 94dvh; }
+.sheet-body { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 18px; margin-inline: -4px; padding: 2px 4px 4px; }
+.wd-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.wd-chart { padding: 12px 12px 10px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); color: var(--accent); }
+.wd-chart .spk { --spk-h: 76px; margin-top: 8px; }
+.wd-chart header { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--muted); }
+.wd-chart header b { font: 600 13px var(--font-mono); }
+.wd-sec h3 { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin: 0 0 4px; font: 700 11px/1.2 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.wd-sec h3 span { font: 600 12px var(--font-mono); letter-spacing: 0; text-transform: none; color: var(--fg-2); }
+.prow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.prow .p-l { display: flex; align-items: center; gap: 7px; min-width: 0; flex-wrap: wrap; }
+.prow .p-l b { font: 700 14.5px var(--font-mono); }
+.prow .p-r { font: 600 14px var(--font-mono); text-align: right; white-space: nowrap; }
+.prow .p-d { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 3px 12px; font: 500 11.5px/1.45 var(--font-mono); color: var(--muted); }
+.prow .p-d b { font-weight: 600; color: var(--fg-2); }
+.side { padding: 4px 6px; border-radius: 5px; font: 700 10.5px/1 var(--font-body); letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; }
+.side.long { color: var(--up); background: var(--up-soft); }
+.side.short { color: var(--down); background: var(--down-soft); }
+.side.flat { color: var(--muted); background: var(--raise); }
+.wd-links { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; }
+.wd-links a { color: var(--fg-2); font-weight: 700; }
+
 /* ---------- Navigation basse (téléphone) ---------- */
 .bottom-nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
-  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 6px max(4px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(4px, env(safe-area-inset-left, 0px));
   background: var(--surface);
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
   border-top: 1px solid var(--line);
 }
-.bottom-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 54px; text-decoration: none; color: var(--muted); font: 700 11.5px/1 var(--font-body); }
-.nav-ic { display: grid; place-items: center; width: 58px; height: 30px; border-radius: 15px; }
+.bottom-nav a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; height: 54px; text-decoration: none; color: var(--muted); font: 700 11px/1 var(--font-body); white-space: nowrap; }
+.nav-ic { position: relative; display: grid; place-items: center; width: 52px; height: 30px; border-radius: 15px; }
+.nav-dot { position: absolute; top: 3px; right: 12px; width: 9px; height: 9px; border-radius: 50%; background: var(--down); border: 2px solid var(--surface); }
 .nav-ic svg { width: 22px; height: 22px; }
 .bottom-nav a[aria-current="page"] { color: var(--fg); }
 .bottom-nav a[aria-current="page"] .nav-ic { background: var(--accent-soft); color: var(--accent-strong); }
@@ -370,6 +482,9 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
   .aave-tools .chips { min-width: 0; }
   .sheet-in { left: 50%; right: auto; top: 10vh; bottom: auto; width: min(540px, 92vw); max-height: 78vh; transform: translateX(-50%); border-radius: 20px; padding-bottom: 18px; }
   .sheet-in::before { display: none; }
+  .sheet-in.wide { top: 5vh; width: min(900px, 94vw); max-height: 90vh; }
+  .wd-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .addr-form { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto; }
 }
 @media (min-width: 1024px) {
   .view { display: block; }
@@ -408,14 +523,14 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
 
 <header class="topbar">
   <div class="topbar-in">
-    <a class="brand" href="#marches" aria-label="Crypto Desk, accueil">
+    <a class="brand" href="#marches" aria-label="Kryptopsy, accueil">
       <svg viewBox="0 0 64 64" aria-hidden="true">
         <rect width="64" height="64" rx="16" style="fill:var(--surface-2);stroke:var(--line-strong)" stroke-width="2"/>
         <rect x="17" y="18" width="2.5" height="30" rx="1.25" style="fill:var(--up)"/><rect x="13" y="25" width="10.5" height="15" rx="2.5" style="fill:var(--up)"/>
         <rect x="30.75" y="10" width="2.5" height="40" rx="1.25" style="fill:var(--accent)"/><rect x="26.75" y="15" width="10.5" height="27" rx="2.5" style="fill:var(--accent)"/>
         <rect x="44.5" y="16" width="2.5" height="28" rx="1.25" style="fill:var(--down)"/><rect x="40.5" y="21" width="10.5" height="14" rx="2.5" style="fill:var(--down)"/>
       </svg>
-      <b>Crypto Desk</b>
+      <b>Kryptopsy</b>
     </a>
     <div class="top-actions">
       <span class="live" id="live" data-state="connecting" role="status"><i></i><span class="live-txt">Connexion</span></span>
@@ -480,11 +595,30 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
           <div class="aave-title">
             <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" style="fill:var(--aave-soft);stroke:var(--aave)" stroke-width="1.5"/><path d="M9.5 21.5 15 9.5h2l5.5 12" style="fill:none;stroke:var(--aave)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.5 17.5h9" style="stroke:var(--aave)" stroke-width="2.2" stroke-linecap="round"/></svg>
             <div>
-              <h2 id="h-aave">Emprunter sur Aave v3</h2>
-              <p class="sub">Taux variables d'emprunt, en direct de l'API Aave</p>
+              <h2 id="h-aave">Aave v3</h2>
+              <p class="sub" id="aave-sub">Taux variables d'emprunt, en direct de l'API Aave</p>
             </div>
           </div>
         </div>
+        <div class="alert" id="aave-alert" role="alert" hidden></div>
+        <div class="seg seg-wide mode-bar" role="group" aria-label="Affichage Aave">
+          <button type="button" data-amode="rates" aria-pressed="true">Taux d'emprunt</button>
+          <button type="button" data-amode="wallets" aria-pressed="false">Mes adresses</button>
+        </div>
+
+        <div id="aave-wallets" hidden>
+          <form class="addr-form" id="aw-form" autocomplete="off">
+            <label class="sr" for="aw-addr">Adresse à suivre</label>
+            <input class="field mono" id="aw-addr" type="text" placeholder="Adresse 0x…" spellcheck="false" autocapitalize="off" enterkeyhint="next">
+            <label class="sr" for="aw-label">Nom de l'adresse</label>
+            <input class="field" id="aw-label" type="text" placeholder="Nom (facultatif)" maxlength="40" enterkeyhint="done">
+            <button class="btn primary" type="submit" style="justify-content:center;height:50px">Suivre</button>
+          </form>
+          <div id="aw-list"></div>
+          <p class="sec-foot" id="aw-foot"></p>
+        </div>
+
+        <div id="aave-rates">
         <div class="aave-tools">
           <div class="chips" id="aave-chains" role="group" aria-label="Filtrer par chaîne"></div>
           <div class="seg" role="group" aria-label="Trier les pools">
@@ -501,6 +635,34 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
           </div>
           <span id="aave-foot"></span>
         </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Whales Hyperliquid -->
+    <section class="view" id="whales" aria-labelledby="h-whales">
+      <div class="panel whale-panel">
+        <div class="sec-head">
+          <div class="aave-title">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" style="fill:var(--accent-soft);stroke:var(--accent)" stroke-width="1.5"/><path d="M7 14.5c2 0 2.8-2 4.5-2s2.5 2 4.5 2 2.8-2 4.5-2 2.5 2 4.5 2M7 19.5c2 0 2.8-2 4.5-2s2.5 2 4.5 2 2.8-2 4.5-2 2.5 2 4.5 2" style="fill:none;stroke:var(--accent)" stroke-width="2" stroke-linecap="round"/></svg>
+            <div>
+              <h2 id="h-whales">Whales Hyperliquid</h2>
+              <p class="sub">Plus gros traders : positions, spot et ordres en direct</p>
+            </div>
+          </div>
+          <button class="btn" id="btn-follow-add" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Suivre une adresse
+          </button>
+        </div>
+        <div class="seg seg-wide" role="group" aria-label="Classement des whales">
+          <button type="button" data-wrank="value" aria-pressed="true">Plus gros</button>
+          <button type="button" data-wrank="month" aria-pressed="false">Top 30 j</button>
+          <button type="button" data-wrank="week" aria-pressed="false">Top 7 j</button>
+          <button type="button" data-wrank="follow" aria-pressed="false">Suivis</button>
+        </div>
+        <div class="expo" id="w-expo"></div>
+        <ol class="wlist" id="w-list"></ol>
+        <p class="sec-foot" id="w-foot"></p>
       </div>
     </section>
   </div>
@@ -533,7 +695,8 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
 
   <footer class="site-foot">
     Données : graphiques, bandeau, signal et fil d'actus <a href="https://fr.tradingview.com/" target="_blank" rel="noopener">TradingView</a> ·
-    prix en direct Binance · marché CoinGecko · taux <a href="https://app.aave.com/" target="_blank" rel="noopener">Aave v3</a> ·
+    prix en direct Binance · marché CoinGecko · taux et positions <a href="https://app.aave.com/" target="_blank" rel="noopener">Aave v3</a> ·
+    whales <a href="https://app.hyperliquid.xyz/" target="_blank" rel="noopener">Hyperliquid</a> ·
     Fear &amp; Greed alternative.me · articles des médias cités.
     Informations de marché, pas un conseil en investissement.
   </footer>
@@ -542,7 +705,8 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
 <nav class="bottom-nav" aria-label="Sections">
   <a href="#marches" aria-current="page"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="m7 15 4-5 3 3 5-6"/></svg></span>Marchés</a>
   <a href="#graphique"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v18M17 5v14"/><rect x="4.5" y="7" width="5" height="8" rx="1.2" fill="currentColor"/><rect x="14.5" y="9" width="5" height="6" rx="1.2"/></svg></span>Graphique</a>
-  <a href="#aave"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/><path d="M18.5 5.5l-13 13"/></svg></span>Aave</a>
+  <a href="#aave"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="7.5" cy="7.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/><path d="M18.5 5.5l-13 13"/></svg><i class="nav-dot" id="aave-dot" hidden></i></span>Aave</a>
+  <a href="#whales"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 10c2.2 0 3-2.2 4.8-2.2s2.6 2.2 4.7 2.2 2.9-2.2 4.7-2.2 2.6 2.2 4.8 2.2M2.5 16.5c2.2 0 3-2.2 4.8-2.2s2.6 2.2 4.7 2.2 2.9-2.2 4.7-2.2 2.6 2.2 4.8 2.2"/></svg></span>Whales</a>
   <a href="#news"><span class="nav-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M7.5 9h9M7.5 12.5h9M7.5 16h5"/></svg></span>Actus</a>
 </nav>
 
@@ -570,6 +734,37 @@ dialog.sheet::backdrop { background: rgba(4, 7, 12, .58); }
     <input class="field mono" id="sym-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="done">
     <div class="sym-picks" id="sym-picks"></div>
     <button class="btn primary" type="submit" style="justify-content:center;height:46px">Enregistrer</button>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="whale-dlg" aria-labelledby="wd-title">
+  <div class="sheet-in wide">
+    <div class="sheet-head">
+      <div style="min-width:0;display:flex;flex-direction:column;gap:6px">
+        <h2 id="wd-title">Whale</h2>
+        <div id="wd-addr"></div>
+      </div>
+      <div class="btn-row" style="align-self:flex-start">
+        <button class="btn sm" id="wd-follow" type="button" aria-pressed="false">☆ Suivre</button>
+        <button class="icon-btn" type="button" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+    </div>
+    <div class="sheet-body" id="wd-body"></div>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="follow-dlg" aria-labelledby="follow-title">
+  <form class="sheet-in" id="follow-form" autocomplete="off">
+    <div class="sheet-head">
+      <h2 id="follow-title">Suivre une adresse Hyperliquid</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <label class="sr" for="follow-addr">Adresse Hyperliquid</label>
+    <input class="field mono" id="follow-addr" type="text" placeholder="Adresse 0x…" spellcheck="false" autocapitalize="off" enterkeyhint="next">
+    <label class="sr" for="follow-label">Nom</label>
+    <input class="field" id="follow-label" type="text" placeholder="Nom (facultatif)" maxlength="40" enterkeyhint="done">
+    <p class="hint">L'adresse apparaît dans l'onglet « Suivis », avec ses positions, son spot et ses ordres. Elle reste enregistrée sur ce téléphone.</p>
+    <button class="btn primary" type="submit" style="justify-content:center;height:46px">Suivre</button>
   </form>
 </dialog>
 
@@ -692,8 +887,15 @@ const state = {
   aaveChain: store.get('cd.aaveChain', 'all'), aaveSort: store.get('cd.aaveSort', 'size'), aaveOpen: {},
   news: [], newsGen: null, newsSources: [], newsErr: null, newsAt: 0,
   newsSrc: store.get('cd.newsSrc', 'agg'), newsCoin: 'all', newsLang: store.get('cd.newsLang', 'all'),
-  searchRes: new Map()
+  searchRes: new Map(),
+  aaveMode: store.get('cd.aaveMode', 'rates'), aaveMarkets: null,
+  awallets: store.get('cd.aaveWallets', []), awData: {}, awAt: 0,
+  whales: null, whalesAt: 0, whalesErr: null,
+  hlRank: store.get('cd.hlRank', 'value'), hlFollow: store.get('cd.hlFollow', []),
+  hl: {}, hlAt: 0, hlOpen: null, hlDetail: {}, spotMeta: null, mids: null, midsAt: 0
 };
+if (!Array.isArray(state.awallets)) state.awallets = [];
+if (!Array.isArray(state.hlFollow)) state.hlFollow = [];
 const saveWatch = () => store.set('cd.watch', state.watch);
 const selectedWatch = () => state.watch.find(w => w.id === state.selected) || state.watch[0] || null;
 const liveOf = w => { const l = w.bn && state.live[w.bn]; return l && Date.now() - l.ts < 30000 ? l : null; };
@@ -1000,6 +1202,7 @@ async function loadAave() {
       reserves { underlyingToken { symbol address imageUrl } isFrozen isPaused
         supplyInfo { apy { value } }
         borrowInfo { apy { value } total { usd } utilizationRate { value } availableLiquidity { usd } borrowingState } } } }`);
+    state.aaveMarkets = (d.markets || []).map(m => ({ address: m.address, chainId: m.chain.chainId, chain: m.chain.name, icon: m.chain.icon, label: marketLabel(m.name, m.chain.name) }));
     const rows = [];
     for (const mk of d.markets || []) {
       for (const r of mk.reserves || []) {
@@ -1228,8 +1431,486 @@ function renderNews() {
   foot.textContent = `${items.length} article${items.length > 1 ? 's' : ''} · ${ok} médias (CoinDesk, Cointelegraph, The Block, Cryptoast…) · fil régénéré toutes les 30 min, dernière fois ${ago(state.newsGen)}`;
 }
 
+/* ================= Outils communs (adresses, quantités) ================= */
+const shortAddr = a => a ? a.slice(0, 6) + '…' + a.slice(-4) : '';
+const COPY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+const addrChip = a => `<button class="addr-chip" type="button" data-copy="${esc(a)}" title="Copier l'adresse">${esc(shortAddr(a))}${COPY_ICON}</button>`;
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); toast('Adresse copiée'); }
+  catch { toast(t); }
+}
+function fmtQty(v) {
+  if (v == null || !isFinite(v)) return '—';
+  const a = Math.abs(v);
+  if (a >= 1e9) return nf(0, 2).format(v / 1e9) + NBSP + 'Md';
+  if (a >= 1e6) return nf(0, 2).format(v / 1e6) + NBSP + 'M';
+  if (a >= 1000) return nf(0, 0).format(v);
+  if (a >= 1) return nf(0, 3).format(v);
+  return new Intl.NumberFormat('fr-FR', { maximumSignificantDigits: 4 }).format(v);
+}
+const signedUsd = v => (v == null || !isFinite(v)) ? '—' : sign(v) + fmtUsdC(Math.abs(v));
+function tokenImg(src, sym) {
+  const u = safeUrl(src);
+  return u ? `<img src="${esc(u)}" alt="" width="26" height="26" loading="lazy" referrerpolicy="no-referrer">` : `<span class="coin-ava">${esc((sym || '?')[0])}</span>`;
+}
+async function pool(items, n, fn) {
+  const queue = [...items];
+  await Promise.all(Array.from({ length: Math.min(n, queue.length) }, async () => {
+    while (queue.length) await fn(queue.shift());
+  }));
+}
+
+/* ================= Aave : adresses suivies ================= */
+async function ensureAaveMarkets() {
+  if (state.aaveMarkets) return state.aaveMarkets;
+  if (!state.aaveChains) {
+    const c = await gql('{ chains { name chainId icon isTestnet } }');
+    state.aaveChains = c.chains.filter(x => !x.isTestnet);
+  }
+  const ids = state.aaveChains.map(c => +c.chainId).filter(Number.isFinite).join(',');
+  const d = await gql(`{ markets(request:{chainIds:[${ids}]}) { name address chain { name chainId icon } } }`);
+  state.aaveMarkets = (d.markets || []).map(m => ({ address: m.address, chainId: m.chain.chainId, chain: m.chain.name, icon: m.chain.icon, label: marketLabel(m.name, m.chain.name) }));
+  return state.aaveMarkets;
+}
+
+async function loadWallet(addr) {
+  const prev = state.awData[addr];
+  try {
+    const mks = (await ensureAaveMarkets()).filter(m => isAddr(m.address));
+    const list = mks.map(m => `{address:"${m.address}", chainId:${+m.chainId}}`).join(',');
+    const pos = 'market { name address chain { name chainId icon } } currency { symbol imageUrl }';
+    const d = await gql(`{
+      s: userSupplies(request:{markets:[${list}], user:"${addr}", collateralsOnly:false, orderBy:{balance:DESC}}) { ${pos} balance { amount { value } usd } apy { value } isCollateral }
+      b: userBorrows(request:{markets:[${list}], user:"${addr}", orderBy:{debt:DESC}}) { ${pos} debt { amount { value } usd } apy { value } } }`);
+    const byMarket = new Map();
+    const marketOf = m => {
+      const k = m.chain.chainId + ':' + String(m.address).toLowerCase();
+      if (!byMarket.has(k)) byMarket.set(k, { address: m.address, chainId: m.chain.chainId, chain: m.chain.name, icon: m.chain.icon, label: marketLabel(m.name, m.chain.name), supplies: [], borrows: [], st: null });
+      return byMarket.get(k);
+    };
+    for (const s of d.s || []) {
+      const usd = +s.balance.usd;
+      if (!(usd >= 0.01)) continue;
+      marketOf(s.market).supplies.push({ sym: s.currency.symbol, img: s.currency.imageUrl, amt: +s.balance.amount.value, usd, apy: +s.apy.value, coll: !!s.isCollateral });
+    }
+    for (const b of d.b || []) {
+      const usd = +b.debt.usd;
+      if (!(usd >= 0.01)) continue;
+      marketOf(b.market).borrows.push({ sym: b.currency.symbol, img: b.currency.imageUrl, amt: +b.debt.amount.value, usd, apy: +b.apy.value });
+    }
+    const markets = [...byMarket.values()].filter(m => isAddr(m.address));
+    for (let i = 0; i < markets.length; i += 10) {
+      const lot = markets.slice(i, i + 10);
+      const q = '{ ' + lot.map((m, j) => `m${j}: userMarketState(request:{market:"${m.address}", user:"${addr}", chainId:${+m.chainId}}) { netWorth netAPY { value } healthFactor totalCollateralBase totalDebtBase availableBorrowsBase ltv { value } eModeEnabled }`).join(' ') + ' }';
+      try { const r = await gql(q, { partial: true }); lot.forEach((m, j) => { m.st = r?.['m' + j] || null; }); } catch {}
+    }
+    let sup = 0, debt = 0, hfMin = null, hfMarket = null;
+    for (const m of markets) {
+      m.sup = m.supplies.reduce((a, x) => a + x.usd, 0);
+      m.debt = m.borrows.reduce((a, x) => a + x.usd, 0);
+      m.hf = m.st && m.st.healthFactor != null ? +m.st.healthFactor : null;
+      sup += m.sup; debt += m.debt;
+      if (m.debt > 0 && m.hf != null && (hfMin == null || m.hf < hfMin)) { hfMin = m.hf; hfMarket = m.label; }
+    }
+    markets.sort((a, b) => (b.sup + b.debt) - (a.sup + a.debt));
+    state.awData[addr] = { at: Date.now(), err: null, markets, sup, debt, net: sup - debt, hfMin, hfMarket };
+  } catch {
+    state.awData[addr] = { ...(prev || {}), err: 'Positions Aave indisponibles pour le moment.' };
+  }
+}
+
+async function loadWallets() {
+  if (!state.awallets.length) return;
+  await pool(state.awallets.map(w => w.addr), 2, loadWallet);
+  state.awAt = Date.now();
+  renderWallets(); updateAlerts();
+}
+
+function hfInfo(hf, debt) {
+  if (!(debt > 0) || hf == null) return { cls: 'none', txt: 'Pas de dette' };
+  return { cls: hf < 1.1 ? 'hot' : hf < 1.5 ? 'warn' : 'ok', txt: 'HF ' + (hf >= 100 ? '> 100' : nf(2, 2).format(hf)) };
+}
+
+function lineHtml(x, kind) {
+  return `<div class="line">${tokenImg(x.img, x.sym)}
+    <span class="nm"><b>${esc(x.sym)}</b>${kind === 's' && x.coll ? '<span class="badge">Collatéral</span>' : ''}</span>
+    <span class="amt">${fmtUsdC(x.usd)}</span>
+    <small>APY ${fmtRate(x.apy)}</small><small class="r">${fmtQty(x.amt)} ${esc(x.sym)}</small></div>`;
+}
+
+function walletMarketHtml(m) {
+  const st = m.st, hf = hfInfo(m.hf, m.debt);
+  const cap = st ? +st.totalCollateralBase * +st.ltv.value : 0;
+  const used = cap > 0 && m.debt > 0 ? m.debt / cap * 100 : null;
+  const icon = safeUrl(m.icon) ? `<img src="${esc(m.icon)}" alt="" width="20" height="20" loading="lazy">` : '';
+  return `<section class="wm">
+    <div class="wm-head">${icon}<b>${esc(m.label)}</b><span class="hf ${hf.cls}">${hf.txt}</span></div>
+    <div class="wm-stats"><span>Net <b>${fmtUsdC(m.sup - m.debt)}</b></span>
+      ${st ? `<span>APY net <b class="${clsOf(+st.netAPY.value)}">${fmtPct(+st.netAPY.value * 100)}</b></span><span>Encore empruntable <b>${fmtUsdC(+st.availableBorrowsBase)}</b></span>` : ''}
+      ${st && st.eModeEnabled ? '<span class="badge">E-Mode</span>' : ''}</div>
+    ${used != null ? `<div class="usage"><span>Capacité d'emprunt utilisée</span><span class="ubar ${used >= 90 ? 'hot' : used >= 75 ? 'warn' : ''}"><i style="--u:${Math.min(100, used).toFixed(1)}%"></i></span><b>${nf(0, 0).format(used)}${NNBSP}%</b></div>` : ''}
+    <div class="lines">
+      ${m.supplies.length ? '<h4>Dépôts</h4>' + m.supplies.map(x => lineHtml(x, 's')).join('') : ''}
+      ${m.borrows.length ? '<h4>Emprunts</h4>' + m.borrows.map(x => lineHtml(x, 'b')).join('') : ''}
+    </div></section>`;
+}
+
+function walletHtml(w) {
+  const d = state.awData[w.addr];
+  const ok = d && d.markets;
+  const head = `<div class="wc-head"><div class="wc-id"><b>${esc(w.label || 'Adresse suivie')}</b>${addrChip(w.addr)}</div>
+    <div class="wc-net"><span class="kpi-l">Valeur nette</span><b>${ok ? fmtUsdC(d.net) : '<span class="skel">0,00 M$</span>'}</b></div></div>`;
+  const foot = `<div class="wc-foot"><span><a href="https://debank.com/profile/${esc(w.addr)}" target="_blank" rel="noopener">Tout son DeFi sur DeBank</a></span>
+    <button class="btn sm danger" type="button" data-wremove="${esc(w.addr)}">Ne plus suivre</button></div>`;
+  if (!d) return `<article class="wcard">${head}<p class="hint">Chargement des positions sur toutes les chaînes Aave…</p>${foot}</article>`;
+  if (!ok) return `<article class="wcard">${head}<div class="err">${esc(d.err)}<button class="btn sm" type="button" data-wretry="${esc(w.addr)}">Réessayer</button></div>${foot}</article>`;
+  const hf = hfInfo(d.hfMin, d.debt);
+  const hfShort = hf.cls === 'none' ? '∞' : (d.hfMin >= 100 ? '> 100' : nf(2, 2).format(d.hfMin));
+  const hfColor = { none: 't-muted', ok: 't-up', warn: 't-warn', hot: 't-down' }[hf.cls];
+  const minis = `<div class="minis"><div class="mini"><span>Déposé</span><b>${fmtUsdC(d.sup)}</b></div><div class="mini"><span>Emprunté</span><b>${fmtUsdC(d.debt)}</b></div><div class="mini" title="Health factor le plus bas, liquidation sous 1"><span>Santé (HF)</span><b class="${hfColor}">${hfShort}</b></div></div>`;
+  const body = d.markets.length ? d.markets.map(walletMarketHtml).join('') : '<p class="empty" style="padding:4px 0">Aucune position Aave v3 sur cette adresse.</p>';
+  return `<article class="wcard">${head}${minis}${body}${d.err ? `<p class="hint">${esc(d.err)} Dernières données affichées.</p>` : ''}${foot}</article>`;
+}
+
+function renderWallets() {
+  const list = $('#aw-list');
+  if (!state.awallets.length) {
+    list.innerHTML = '<p class="empty">Ajoute une adresse 0x pour suivre ses dépôts, ses emprunts et son health factor sur Aave v3, toutes chaînes confondues. Les adresses restent enregistrées sur ce téléphone.</p>';
+    $('#aw-foot').textContent = '';
+    return;
+  }
+  list.innerHTML = state.awallets.map(walletHtml).join('');
+  $('#aw-foot').textContent = `Positions lues sur l'API Aave v3, rafraîchies toutes les 3 minutes${state.awAt ? ' · maj ' + hhmm(state.awAt) : ''}. HF : health factor, liquidation sous 1.`;
+}
+
+function updateAlerts() {
+  const risky = state.awallets.map(w => ({ w, d: state.awData[w.addr] }))
+    .filter(({ d }) => d && d.debt > 0 && d.hfMin != null && d.hfMin < 1.25);
+  const el = $('#aave-alert');
+  el.hidden = !risky.length;
+  el.innerHTML = risky.length
+    ? 'Risque de liquidation : ' + risky.map(({ w, d }) => `<span><b>HF ${nf(2, 2).format(d.hfMin)}</b> sur ${esc(w.label || shortAddr(w.addr))} (${esc(d.hfMarket || '')})</span>`).join(' · ')
+    : '';
+  $('#aave-dot').hidden = !risky.length;
+}
+
+function renderAaveMode() {
+  $$('[data-amode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.amode === state.aaveMode)));
+  $('#aave-rates').hidden = state.aaveMode !== 'rates';
+  $('#aave-wallets').hidden = state.aaveMode !== 'wallets';
+  $('#aave-sub').textContent = state.aaveMode === 'rates'
+    ? 'Taux variables d\'emprunt, en direct de l\'API Aave'
+    : 'Dépôts, emprunts et santé des adresses que tu suis';
+}
+
+/* ================= Hyperliquid : whales ================= */
+const HL = 'https://api.hyperliquid.xyz/info';
+const hlPost = (body, timeout = 20000) => getJSON(HL, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), timeout });
+const followOf = a => state.hlFollow.find(f => f.addr === a);
+const whaleMeta = a => state.whales?.whales?.[a] || null;
+const whaleName = a => followOf(a)?.label || whaleMeta(a)?.name || '';
+
+async function loadWhalesFile() {
+  if (location.protocol === 'file:') { state.whalesErr = 'Le classement est produit à la publication sur GitHub.'; return; }
+  try {
+    const j = await getJSON('whales.json?v=' + Math.floor(Date.now() / 300000), { cache: 'no-store' });
+    if (j.error || !j.rankings) state.whalesErr = 'Le classement Hyperliquid n’a pas pu être récupéré à la dernière mise à jour.';
+    else { state.whales = j; state.whalesErr = null; }
+  } catch {
+    if (!state.whales) state.whalesErr = 'Le classement des whales n’est pas encore disponible.';
+  }
+  state.whalesAt = Date.now();
+}
+
+function whaleList() {
+  if (state.hlRank === 'follow') return state.hlFollow.map(f => f.addr);
+  return (state.whales?.rankings?.[state.hlRank] || []).slice(0, 30);
+}
+
+let whaleRenderTimer = null;
+const scheduleWhaleRender = () => { clearTimeout(whaleRenderTimer); whaleRenderTimer = setTimeout(renderWhales, 120); };
+
+async function loadWhales() {
+  if (!state.whales || Date.now() - state.whalesAt > 10 * 60000) await loadWhalesFile();
+  renderWhales();
+  await pool(whaleList(), 4, async a => {
+    try { state.hl[a] = { at: Date.now(), ch: await hlPost({ type: 'clearinghouseState', user: a }) }; }
+    catch { state.hl[a] = { ...(state.hl[a] || {}), err: true }; }
+    scheduleWhaleRender();
+  });
+  state.hlAt = Date.now();
+  renderWhales();
+}
+
+function perpPositions(ch) {
+  return (ch?.assetPositions || []).map(p => p.position).filter(Boolean).map(p => {
+    const sz = +p.szi, val = Math.abs(+p.positionValue);
+    return {
+      coin: p.coin, sz, long: sz > 0, ntl: val, entry: +p.entryPx, mark: sz ? val / Math.abs(sz) : null,
+      upnl: +p.unrealizedPnl, roe: +p.returnOnEquity, lev: p.leverage?.value, levType: p.leverage?.type,
+      liq: p.liquidationPx != null ? +p.liquidationPx : null, margin: +p.marginUsed,
+      funding: p.cumFunding ? +p.cumFunding.sinceOpen : null
+    };
+  }).sort((a, b) => b.ntl - a.ntl);
+}
+
+function renderExpo(list) {
+  const el = $('#w-expo');
+  const agg = {};
+  let n = 0;
+  for (const a of list) {
+    const ch = state.hl[a]?.ch;
+    if (!ch) continue;
+    n++;
+    for (const p of perpPositions(ch)) {
+      const e = agg[p.coin] ||= { coin: p.coin, L: 0, S: 0, nl: 0, ns: 0 };
+      if (p.long) { e.L += p.ntl; e.nl++; } else { e.S += p.ntl; e.ns++; }
+    }
+  }
+  const rows = Object.values(agg).sort((a, b) => (b.L + b.S) - (a.L + a.S)).slice(0, 8);
+  if (!n || !rows.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="expo-head"><b>Exposition des whales</b><span>positions perp de ${n} compte${n > 1 ? 's' : ''} de ce classement</span></div><div class="expo-rows">` +
+    rows.map(r => {
+      const tot = r.L + r.S, lp = tot ? r.L / tot * 100 : 0, net = r.L - r.S;
+      return `<div class="expo-row"><b title="${esc(r.coin)}">${esc(r.coin)}</b>
+        <span class="ls" aria-hidden="true"><i class="l" style="width:${lp.toFixed(1)}%"></i><i class="s" style="width:${(100 - lp).toFixed(1)}%"></i></span>
+        <span class="net ${net >= 0 ? 't-up' : 't-down'}">${net >= 0 ? 'Net long' : 'Net short'} ${fmtUsdC(Math.abs(net))}</span>
+        <small>Long ${fmtUsdC(r.L)} (${r.nl}) · Short ${fmtUsdC(r.S)} (${r.ns})</small></div>`;
+    }).join('') + '</div>';
+}
+
+function whaleRowHtml(a, i) {
+  const meta = whaleMeta(a), name = whaleName(a);
+  const live = state.hl[a], ch = live?.ch;
+  const av = ch ? +ch.marginSummary.accountValue : null, ntl = ch ? +ch.marginSummary.totalNtlPos : null;
+  const win = state.hlRank === 'week' ? 'week' : 'month';
+  const p = meta?.perf?.[win];
+  const pos = ch ? perpPositions(ch) : null;
+  let chips;
+  if (pos) chips = pos.length
+    ? pos.slice(0, 4).map(x => `<span class="pchip ${x.long ? 'long' : 'short'}">${x.long ? '▲' : '▼'} ${esc(x.coin)} ${fmtUsdC(x.ntl)}</span>`).join('') + (pos.length > 4 ? `<span class="pchip more">+${pos.length - 4}</span>` : '')
+    : '<span class="pchip more">Aucune position perp ouverte</span>';
+  else chips = live?.err ? '<span class="pchip more">Positions indisponibles</span>' : '<span class="skel" style="width:70%;height:20px"></span>';
+  const sub = [meta ? 'Compte ' + fmtUsdC(meta.value) : av != null ? 'Compte perp ' + fmtUsdC(av) : '',
+    ntl > 0 && av > 0 ? 'levier ' + nf(1, 1).format(ntl / av) + '×' : ''].filter(Boolean).join(' · ');
+  const right = p
+    ? `<b class="${clsOf(p.pnl)}">${signedUsd(p.pnl)}</b><small>PnL ${win === 'week' ? '7 j' : '30 j'} · ROI ${fmtPct(p.roi * 100, 0)}</small>`
+    : av != null ? `<b>${fmtUsdC(av)}</b><small>compte perp</small>` : '';
+  return `<li><button class="wrow" type="button" data-whale="${esc(a)}" aria-label="Voir le détail de ${esc(name || shortAddr(a))}">
+    <span class="wr-rank">${state.hlRank === 'follow' ? '★' : i + 1}</span>
+    <span class="wr-id"><b class="${name ? 'named' : ''}">${esc(name || shortAddr(a))}</b><small>${esc(sub)}</small></span>
+    <span class="wr-pnl">${right}</span>
+    <span class="wr-pos">${chips}</span></button></li>`;
+}
+
+function renderWhales() {
+  $$('[data-wrank]').forEach(b => {
+    b.setAttribute('aria-pressed', String(b.dataset.wrank === state.hlRank));
+    if (b.dataset.wrank === 'follow') b.textContent = state.hlFollow.length ? `Suivis (${state.hlFollow.length})` : 'Suivis';
+  });
+  const listEl = $('#w-list'), foot = $('#w-foot');
+  const list = whaleList();
+  if (state.hlRank === 'follow' && !list.length) {
+    $('#w-expo').innerHTML = '';
+    listEl.innerHTML = '<li class="empty">Aucune adresse suivie. Touche « Suivre une adresse », ou ouvre une whale du classement puis « Suivre ».</li>';
+    foot.textContent = '';
+    return;
+  }
+  if (!list.length) {
+    $('#w-expo').innerHTML = '';
+    listEl.innerHTML = state.whalesErr
+      ? `<li class="err">${esc(state.whalesErr)}<button class="btn sm" type="button" data-retry="whales">Réessayer</button></li>`
+      : Array.from({ length: 6 }, () => '<li style="padding:14px 0;border-top:1px solid var(--line)"><span class="skel" style="width:45%;height:15px"></span><br><span class="skel" style="width:80%;height:20px;margin-top:8px"></span></li>').join('');
+    foot.textContent = '';
+    return;
+  }
+  renderExpo(list);
+  listEl.innerHTML = list.map(whaleRowHtml).join('');
+  const parts = [];
+  if (state.whales && state.hlRank !== 'follow') {
+    parts.push(`Classement Hyperliquid de ${nf(0, 0).format(state.whales.active || state.whales.accounts)} comptes actifs sur 30 jours, résumé ${ago(Date.parse(state.whales.generated))}`);
+    if (state.hlRank === 'value') parts.push('comptes ayant tradé au moins 1 M$ sur 30 jours');
+    else parts.push('comptes de plus de 100 k$');
+  }
+  if (state.hlAt) parts.push('positions en direct, maj ' + hhmm(state.hlAt));
+  foot.textContent = parts.join(' · ');
+}
+
+/* Fiche d'une whale */
+async function ensureSpotMeta() {
+  if (state.spotMeta) return;
+  const m = await hlPost({ type: 'spotMeta' });
+  const tok = {}, pairOfToken = {}, pairName = {};
+  for (const t of m.tokens || []) tok[t.index] = t.name;
+  for (const u of m.universe || []) {
+    const base = tok[u.tokens[0]], quote = tok[u.tokens[1]];
+    pairName[u.name] = base && quote ? base + '/' + quote : u.name;
+    if (u.tokens[1] === 0 && !(u.tokens[0] in pairOfToken)) pairOfToken[u.tokens[0]] = u.name;
+  }
+  state.spotMeta = { tok, pairOfToken, pairName };
+}
+async function loadMids() {
+  if (state.mids && Date.now() - state.midsAt < 30000) return;
+  state.mids = await hlPost({ type: 'allMids' });
+  state.midsAt = Date.now();
+}
+const coinLabel = c => (c && c.startsWith('@') && state.spotMeta?.pairName[c]) || c;
+function spotValue(b) {
+  if (b.coin === 'USDC') return +b.total;
+  const pair = state.spotMeta?.pairOfToken[b.token];
+  const px = pair && state.mids?.[pair];
+  return px ? +b.total * +px : null;
+}
+
+async function loadWhaleDetail(a) {
+  const d = state.hlDetail[a] ||= {};
+  const tasks = [
+    hlPost({ type: 'clearinghouseState', user: a }).then(ch => { state.hl[a] = { at: Date.now(), ch }; }),
+    hlPost({ type: 'spotClearinghouseState', user: a }).then(s => { d.spot = s.balances || []; }),
+    hlPost({ type: 'frontendOpenOrders', user: a }).then(o => { d.orders = Array.isArray(o) ? o : []; }),
+    ensureSpotMeta(), loadMids()
+  ];
+  if (!d.portfolio || Date.now() - (d.portAt || 0) > 10 * 60000) {
+    tasks.push(hlPost({ type: 'portfolio', user: a }).then(p => { d.portfolio = p; d.portAt = Date.now(); }));
+  }
+  const res = await Promise.allSettled(tasks);
+  d.err = res.slice(0, 3).every(r => r.status === 'rejected') ? 'Hyperliquid ne répond pas pour le moment.' : null;
+  d.at = Date.now();
+  if (state.hlOpen === a) renderWhaleDetail();
+}
+
+async function loadFills(a) {
+  const d = state.hlDetail[a] ||= {};
+  d.fillsLoading = true; renderWhaleDetail();
+  try {
+    const f = await hlPost({ type: 'userFillsByTime', user: a, startTime: Date.now() - 7 * 86400000, aggregateByTime: true }, 30000);
+    d.fills = (Array.isArray(f) ? f : []).sort((x, y) => y.time - x.time).slice(0, 40);
+  } catch { d.fills = null; toast('Derniers trades indisponibles pour le moment'); }
+  d.fillsLoading = false;
+  if (state.hlOpen === a) renderWhaleDetail();
+}
+
+const ORDER_TYPES = { 'Limit': 'Limite', 'Stop Market': 'Stop marché', 'Stop Limit': 'Stop limite', 'Take Profit Market': 'Take profit marché', 'Take Profit Limit': 'Take profit limite' };
+const FILL_DIRS = { 'Open Long': 'Ouverture long', 'Close Long': 'Clôture long', 'Open Short': 'Ouverture short', 'Close Short': 'Clôture short', 'Buy': 'Achat', 'Sell': 'Vente', 'Long > Short': 'Bascule long → short', 'Short > Long': 'Bascule short → long' };
+const dateTime = t => new Date(t).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+function renderWhaleDetail() {
+  const a = state.hlOpen;
+  if (!a) return;
+  const meta = whaleMeta(a), name = whaleName(a), fl = followOf(a);
+  const ch = state.hl[a]?.ch, d = state.hlDetail[a] || {};
+  $('#wd-title').textContent = name || 'Whale ' + shortAddr(a);
+  $('#wd-addr').innerHTML = addrChip(a);
+  const fb = $('#wd-follow');
+  fb.textContent = fl ? '★ Suivi' : '☆ Suivre';
+  fb.setAttribute('aria-pressed', String(!!fl));
+  const body = $('#wd-body');
+  if (!ch && !d.at) { body.innerHTML = '<p class="hint">Chargement des positions, du spot et des ordres…</p>'; return; }
+
+  const ms = ch?.marginSummary;
+  const av = ms ? +ms.accountValue : null, ntl = ms ? +ms.totalNtlPos : null;
+  const perf = meta?.perf || {};
+  const k = (l, v, c = '') => `<div class="mini"><span>${l}</span><b class="${c}">${v}</b></div>`;
+  let html = `<div class="wd-kpis">
+    ${k('Compte perp', fmtUsdC(av))}${k('Exposition', fmtUsdC(ntl))}${k('Levier effectif', av > 0 && ntl != null ? nf(1, 1).format(ntl / av) + '×' : '—')}${k('Retirable', fmtUsdC(ch ? +ch.withdrawable : null))}
+    ${meta ? k('PnL 24 h', signedUsd(perf.day?.pnl), clsOf(perf.day?.pnl)) + k('PnL 7 j', signedUsd(perf.week?.pnl), clsOf(perf.week?.pnl)) + k('PnL 30 j', signedUsd(perf.month?.pnl), clsOf(perf.month?.pnl)) + k('PnL total', signedUsd(perf.allTime?.pnl), clsOf(perf.allTime?.pnl)) : ''}
+    ${meta ? k('Valeur totale', fmtUsdC(meta.value)) + k('ROI 30 j', fmtPct((perf.month?.roi || 0) * 100, 1), clsOf(perf.month?.roi)) + k('Volume 30 j', fmtUsdC(perf.month?.vlm)) + k('Volume total', fmtUsdC(perf.allTime?.vlm)) : ''}
+  </div>`;
+
+  const month = Array.isArray(d.portfolio) ? d.portfolio.find(x => x[0] === 'month')?.[1] : null;
+  // PnL cumulé plutôt que valeur du compte : les dépôts et retraits faussent la valeur.
+  const hist = (month?.pnlHistory || []).map(x => +x[1]).filter(isFinite);
+  if (hist.length > 1) {
+    const ch30 = hist[hist.length - 1] - hist[0];
+    html += `<div class="wd-chart"><header><span>PnL cumulé sur 30 jours</span><b class="${clsOf(ch30)}">${signedUsd(ch30)}</b></header>${spark(hist)}</div>`;
+  }
+
+  const pos = ch ? perpPositions(ch) : [];
+  html += `<section class="wd-sec"><h3>Positions perp ouvertes <span>${pos.length}</span></h3>` + (pos.length ? pos.map(p => `
+    <div class="prow"><div class="p-l"><span class="side ${p.long ? 'long' : 'short'}">${p.long ? 'Long' : 'Short'}${p.lev ? ' ×' + p.lev : ''}</span><b>${esc(p.coin)}</b><small class="t-muted">${p.levType === 'isolated' ? 'isolé' : 'cross'}</small></div>
+      <div class="p-r">${fmtUsdC(p.ntl)}</div>
+      <div class="p-d"><span>Taille <b>${fmtQty(Math.abs(p.sz))} ${esc(p.coin)}</b></span><span>Entrée <b>${fmtPrice(p.entry)}</b></span><span>Prix <b>${fmtPrice(p.mark)}</b></span>
+        <span>PnL <b class="${clsOf(p.upnl)}">${signedUsd(p.upnl)} (${fmtPct(p.roe * 100, 1)})</b></span>
+        <span>Liquidation <b>${p.liq ? fmtPrice(p.liq) : 'aucune'}</b></span><span>Marge <b>${fmtUsdC(p.margin)}</b></span>
+        ${p.funding ? `<span>Funding ${p.funding > 0 ? 'payé' : 'reçu'} <b>${fmtUsdC(Math.abs(p.funding))}</b></span>` : ''}</div></div>`).join('')
+    : '<p class="empty" style="padding:6px 0">Aucune position perp ouverte.</p>') + '</section>';
+
+  if (d.spot) {
+    const sp = d.spot.map(b => ({ ...b, val: spotValue(b), cost: +b.entryNtl })).filter(b => +b.total > 0)
+      .sort((x, y) => (y.val ?? y.cost ?? 0) - (x.val ?? x.cost ?? 0));
+    const shown = sp.filter(b => (b.val ?? b.cost) >= 1).slice(0, 25);
+    const tot = sp.reduce((s, b) => s + (b.val || 0), 0);
+    html += `<section class="wd-sec"><h3>Spot <span>${fmtUsdC(tot)}</span></h3>` + (shown.length ? shown.map(b => {
+      const pnl = b.val != null && b.cost > 0 ? b.val - b.cost : null;
+      return `<div class="prow"><div class="p-l"><b>${esc(b.coin)}</b></div><div class="p-r">${b.val != null ? fmtUsdC(b.val) : '—'}</div>
+        <div class="p-d"><span>Quantité <b>${fmtQty(+b.total)}</b></span>${b.cost > 0 ? `<span>Coût d'entrée <b>${fmtUsdC(b.cost)}</b></span>` : ''}${pnl != null ? `<span>PnL <b class="${clsOf(pnl)}">${signedUsd(pnl)}</b></span>` : ''}${+b.hold > 0 ? `<span>Bloqué en ordres <b>${fmtQty(+b.hold)}</b></span>` : ''}</div></div>`;
+    }).join('') + (sp.length > shown.length ? `<p class="hint" style="padding-top:6px">${sp.length - shown.length} autre${sp.length - shown.length > 1 ? 's' : ''} solde${sp.length - shown.length > 1 ? 's' : ''} de moins de 1 $.</p>` : '')
+      : '<p class="empty" style="padding:6px 0">Aucun solde spot.</p>') + '</section>';
+  }
+
+  if (d.orders) {
+    const ords = [...d.orders].sort((x, y) => (+y.sz * +y.limitPx) - (+x.sz * +x.limitPx));
+    html += `<section class="wd-sec"><h3>Ordres ouverts <span>${ords.length}</span></h3>` + (ords.length ? ords.slice(0, 40).map(o => {
+      const buy = o.side === 'B';
+      return `<div class="prow"><div class="p-l"><span class="side ${buy ? 'long' : 'short'}">${buy ? 'Achat' : 'Vente'}</span><b>${esc(coinLabel(o.coin))}</b><small class="t-muted">${esc(ORDER_TYPES[o.orderType] || o.orderType || '')}</small></div>
+        <div class="p-r">${fmtUsdC(+o.sz * +o.limitPx)}</div>
+        <div class="p-d"><span>Prix <b>${fmtPrice(+o.limitPx)}</b></span><span>Taille <b>${fmtQty(+o.sz)}</b></span>
+          ${o.isTrigger ? `<span>Déclenchement <b>${esc(o.triggerCondition || fmtPrice(+o.triggerPx))}</b></span>` : ''}
+          ${o.reduceOnly ? '<span><b>Reduce only</b></span>' : ''}${o.isPositionTpsl ? '<span><b>TP/SL de position</b></span>' : ''}
+          <span>${ago(o.timestamp)}</span></div></div>`;
+    }).join('') + (ords.length > 40 ? `<p class="hint" style="padding-top:6px">Les 40 plus gros sur ${ords.length}.</p>` : '')
+      : '<p class="empty" style="padding:6px 0">Aucun ordre ouvert.</p>') + '</section>';
+  }
+
+  html += `<section class="wd-sec"><h3>Derniers trades <span>7 jours</span></h3>`;
+  if (d.fills) {
+    html += d.fills.length ? d.fills.map(f => {
+      const pnl = +f.closedPnl;
+      const buy = f.side === 'B';
+      return `<div class="prow"><div class="p-l"><span class="side ${buy ? 'long' : 'short'}">${esc(FILL_DIRS[f.dir] || f.dir || (buy ? 'Achat' : 'Vente'))}</span><b>${esc(coinLabel(f.coin))}</b></div>
+        <div class="p-r">${fmtUsdC(+f.px * +f.sz)}</div>
+        <div class="p-d"><span>Prix <b>${fmtPrice(+f.px)}</b></span><span>Taille <b>${fmtQty(+f.sz)}</b></span>
+          ${pnl ? `<span>PnL réalisé <b class="${clsOf(pnl)}">${signedUsd(pnl)}</b></span>` : ''}<span>${dateTime(f.time)}</span></div></div>`;
+    }).join('') : '<p class="empty" style="padding:6px 0">Aucun trade sur 7 jours.</p>';
+  } else {
+    html += `<button class="btn" type="button" data-fills="${esc(a)}" ${d.fillsLoading ? 'disabled' : ''}>${d.fillsLoading ? 'Chargement…' : 'Charger les 40 derniers trades'}</button>`;
+  }
+  html += '</section>';
+
+  html += `<div class="wd-links"><a href="https://app.hyperliquid.xyz/explorer/address/${esc(a)}" target="_blank" rel="noopener">Explorateur Hyperliquid</a>
+    <a href="https://hypurrscan.io/address/${esc(a)}" target="_blank" rel="noopener">Hypurrscan</a></div>
+    <p class="hint">${d.err ? esc(d.err) + ' ' : ''}Données publiques Hyperliquid, rafraîchies toutes les 30 secondes${d.at ? ' · maj ' + new Date(d.at).toLocaleTimeString('fr-FR') : ''}.</p>`;
+  const top = body.scrollTop;
+  body.innerHTML = html;
+  body.scrollTop = top;
+}
+
+let whaleTimer = null;
+const whaleDlg = $('#whale-dlg'), followDlg = $('#follow-dlg');
+function openWhale(a) {
+  state.hlOpen = a;
+  $('#wd-body').scrollTop = 0;
+  renderWhaleDetail();
+  if (!whaleDlg.open) whaleDlg.showModal();
+  loadWhaleDetail(a);
+  clearInterval(whaleTimer);
+  whaleTimer = setInterval(() => { if (!document.hidden && state.hlOpen === a) loadWhaleDetail(a); }, 30000);
+}
+whaleDlg.addEventListener('close', () => { clearInterval(whaleTimer); state.hlOpen = null; });
+function toggleFollow(a) {
+  if (followOf(a)) {
+    state.hlFollow = state.hlFollow.filter(f => f.addr !== a);
+    toast('Adresse retirée des suivis');
+  } else {
+    state.hlFollow.push({ addr: a, label: whaleMeta(a)?.name || '' });
+    toast('Adresse ajoutée aux suivis');
+  }
+  store.set('cd.hlFollow', state.hlFollow);
+  renderWhaleDetail(); renderWhales();
+}
+
 /* ================= Navigation et planification ================= */
-const VIEWS = ['marches', 'graphique', 'aave', 'news'];
+const VIEWS = ['marches', 'graphique', 'aave', 'whales', 'news'];
 function route() {
   const v = location.hash.slice(1);
   const view = VIEWS.includes(v) ? v : 'marches';
@@ -1247,7 +1928,9 @@ const jobs = {
   markets: { every: 60000, run: loadMarkets, last: 0 },
   global: { every: 300000, run: loadGlobal, last: 0 },
   fng: { every: 1800000, run: loadFng, last: 0 },
-  aave: { every: 300000, run: loadAave, last: 0, view: 'aave' },
+  aave: { every: 300000, run: loadAave, last: 0, view: 'aave', when: () => isDesk() || state.aaveMode === 'rates' },
+  wallets: { every: 180000, run: loadWallets, last: 0, when: () => state.awallets.length > 0 },
+  whales: { every: 120000, run: loadWhales, last: 0, view: 'whales' },
   news: { every: 300000, run: loadNews, last: 0, view: 'news' }
 };
 const running = {};
@@ -1258,6 +1941,7 @@ function tick(force) {
   for (const [k, j] of Object.entries(jobs)) {
     if (running[k]) continue;
     if (j.view && !viewActive(j.view)) continue;
+    if (j.when && !j.when()) continue;
     if (!force && j.last && now - j.last < j.every) continue;
     j.last = now; running[k] = true;
     Promise.resolve().then(j.run).catch(() => {}).finally(() => { running[k] = false; });
@@ -1372,11 +2056,65 @@ document.addEventListener('click', e => {
   if (d.ncoin) { state.newsCoin = d.ncoin; renderNews(); return; }
   if (d.nlang) { state.newsLang = d.nlang; store.set('cd.newsLang', d.nlang); renderNews(); return; }
   if (d.nsrc) { state.newsSrc = d.nsrc; store.set('cd.newsSrc', d.nsrc); renderNews(); ensureWidgets(); return; }
-  if (d.retry) { jobs[d.retry].last = 0; state.aaveErr = null; renderAave(); tick(false); return; }
+  if (d.retry) {
+    jobs[d.retry].last = 0;
+    if (d.retry === 'aave') { state.aaveErr = null; renderAave(); }
+    if (d.retry === 'whales') { state.whalesErr = null; state.whalesAt = 0; renderWhales(); }
+    tick(false); return;
+  }
+  if (d.copy) return copyText(d.copy);
+  if (d.amode) {
+    state.aaveMode = d.amode; store.set('cd.aaveMode', d.amode); renderAaveMode();
+    if (d.amode === 'wallets') { renderWallets(); if (Date.now() - state.awAt > 60000) { jobs.wallets.last = Date.now(); loadWallets(); } }
+    else tick(false);
+    return;
+  }
+  if (d.wretry) { loadWallet(d.wretry).then(() => { renderWallets(); updateAlerts(); }); return; }
+  if (d.wremove) {
+    state.awallets = state.awallets.filter(w => w.addr !== d.wremove);
+    delete state.awData[d.wremove];
+    store.set('cd.aaveWallets', state.awallets);
+    renderWallets(); updateAlerts(); toast('Adresse retirée');
+    return;
+  }
+  if (d.wrank) { state.hlRank = d.wrank; store.set('cd.hlRank', d.wrank); renderWhales(); jobs.whales.last = Date.now(); loadWhales(); return; }
+  if (d.whale) return openWhale(d.whale);
+  if (d.fills) return loadFills(d.fills);
   if ('close' in d) { t.closest('dialog')?.close(); return; }
   if (t.id === 'tv-sym-btn') return openSymDialog();
+  if (t.id === 'wd-follow' && state.hlOpen) return toggleFollow(state.hlOpen);
+  if (t.id === 'btn-follow-add') {
+    $('#follow-addr').value = ''; $('#follow-label').value = '';
+    followDlg.showModal();
+    if (isDesk()) $('#follow-addr').focus();
+  }
 });
-for (const dlg of [addDlg, symDlg]) dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+for (const dlg of [addDlg, symDlg, whaleDlg, followDlg]) dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+$('#aw-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const a = $('#aw-addr').value.trim().toLowerCase();
+  if (!isAddr(a)) { toast('Adresse invalide : 0x suivi de 40 caractères'); return; }
+  if (state.awallets.some(w => w.addr === a)) { toast('Cette adresse est déjà suivie'); return; }
+  state.awallets.push({ addr: a, label: $('#aw-label').value.trim().slice(0, 40) });
+  store.set('cd.aaveWallets', state.awallets);
+  $('#aw-addr').value = ''; $('#aw-label').value = '';
+  renderWallets();
+  loadWallet(a).then(() => { state.awAt = Date.now(); renderWallets(); updateAlerts(); });
+});
+$('#follow-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const a = $('#follow-addr').value.trim().toLowerCase();
+  if (!isAddr(a)) { toast('Adresse invalide : 0x suivi de 40 caractères'); return; }
+  if (!followOf(a)) {
+    state.hlFollow.push({ addr: a, label: $('#follow-label').value.trim().slice(0, 40) });
+    store.set('cd.hlFollow', state.hlFollow);
+  }
+  followDlg.close();
+  state.hlRank = 'follow'; store.set('cd.hlRank', 'follow');
+  renderWhales(); loadWhales();
+  toast('Adresse suivie');
+});
 
 $('#btn-add').addEventListener('click', () => {
   $('#add-q').value = '';
@@ -1438,7 +2176,9 @@ setInterval(() => {
   updateLiveBadge();
 }, 30000);
 
-function renderAll() { renderKpis(); renderWatch(); renderAssetHead(); renderAave(); renderNews(); }
+function renderAll() {
+  renderKpis(); renderWatch(); renderAssetHead(); renderAaveMode(); renderAave(); renderWallets(); updateAlerts(); renderWhales(); renderNews();
+}
 
 /* ================= Démarrage ================= */
 if (!state.watch.some(w => w.id === state.selected)) state.selected = state.watch[0]?.id || '';
