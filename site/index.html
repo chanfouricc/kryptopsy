@@ -366,12 +366,15 @@ a.pool-name:hover, .wm-head a:hover, .line .nm a:hover { color: var(--aave); tex
 .lines h4 { margin: 6px 0 0; font: 700 10.5px/1.2 var(--font-body); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
 .line { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 1px 10px; align-items: center; padding: 7px 0; }
 .line > img, .line > .coin-ava { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; background: var(--raise); }
-.line .nm { min-width: 0; display: flex; align-items: center; gap: 6px; }
+.line .nm { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
 .line .nm b { font-size: 14px; font-weight: 700; }
 .line .amt { font: 600 13.5px var(--font-mono); text-align: right; white-space: nowrap; }
 .line small { font: 500 11.5px var(--font-mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.line small:not(.r) { white-space: normal; overflow-wrap: anywhere; }
+.line .amt.is-sim { color: var(--accent-strong); }
 .line small.r { text-align: right; }
-.badge { font: 700 10px/1 var(--font-body); padding: 3px 6px; border-radius: 5px; background: var(--aave-soft); color: var(--aave); white-space: nowrap; }
+.badge { font: 700 10px/1.25 var(--font-body); padding: 3px 6px; border-radius: 5px; background: var(--aave-soft); color: var(--aave); white-space: nowrap; }
+.line .nm .badge { white-space: normal; min-width: 0; }
 .wc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; }
 .wc-foot a { color: var(--fg-2); font-weight: 700; }
 .btn.sm { height: 34px; padding: 0 11px; font-size: 12.5px; }
@@ -382,7 +385,9 @@ a.pool-name:hover, .wm-head a:hover, .line .nm a:hover { color: var(--aave); tex
 .wc-toggle { justify-content: center; width: 100%; }
 .hfgauge { display: flex; flex-direction: column; gap: 4px; }
 .hfg-bar { position: relative; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--down) 0%, var(--warn) 22%, var(--up) 50%, var(--up) 100%); }
-.hfg-bar i { position: absolute; top: 50%; width: 13px; height: 13px; border-radius: 50%; background: var(--fg); border: 2px solid var(--surface-2); transform: translate(-50%, -50%); }
+.hfg-bar i { position: absolute; top: 50%; width: 13px; height: 13px; border-radius: 50%; background: var(--fg); border: 2px solid var(--surface-2); transform: translate(-50%, -50%); transition: left .12s ease-out; }
+.hfg-bar.is-sim i.cur { opacity: .35; }
+.hfg-bar i.simpt { width: 15px; height: 15px; background: var(--accent); border-color: var(--surface-2); box-shadow: 0 0 0 2px var(--accent-soft); }
 .hfg-scale { display: flex; justify-content: space-between; font: 500 10px/1 var(--font-mono); color: var(--muted); }
 .risk-sum { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .shock, .liq { display: inline-block; padding: 5px 8px; border-radius: 8px; font: 500 12px/1.4 var(--font-mono); }
@@ -392,15 +397,28 @@ a.pool-name:hover, .wm-head a:hover, .line .nm a:hover { color: var(--aave); tex
 .shock.ok, .liq.ok { color: var(--fg-2); background: var(--raise); }
 .liq.none { padding: 0; color: var(--muted); background: transparent; font-size: 11.5px; }
 .line .liq { grid-column: 2 / -1; justify-self: start; margin-top: 5px; white-space: normal; }
-.simhf { font: 500 12px/1.4 var(--font-mono); color: var(--fg-2); }
-.simhf:empty { display: none; }
-.sim { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
-.sim label { font: 700 10.5px/1.2 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.sim-row { display: flex; align-items: center; gap: 12px; }
-.sim input[type="range"] { flex: 1; min-width: 0; height: 30px; accent-color: var(--accent); }
-.sim output { min-width: 58px; text-align: right; font-weight: 600; font-size: 15px; }
-.sim .hint { font-size: 11.5px; }
-.sim select.sel { height: 42px; padding: 0 10px; font-size: 14px; }
+.wsum, .wbody { display: contents; }
+.sim-flag { margin: 0; padding: 7px 10px; border-radius: 8px; font: 600 12px/1.4 var(--font-body); color: var(--accent-strong); background: var(--accent-soft); }
+.minis.is-sim .mini { border-color: var(--accent-soft); }
+.sim { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.sim-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.sim-title { font: 700 10.5px/1.2 var(--font-body); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sim-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 2px 10px; }
+.sim .sim-lab { display: flex; align-items: baseline; gap: 8px; min-width: 0; font: 700 14px/1.2 var(--font-body); color: var(--fg); }
+.sim-lab small { font: 500 12px var(--font-mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sim-line output { font: 600 13.5px/1.2 var(--font-mono); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sim-ctl { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; }
+.sim-ctl input[type="range"] { flex: 1; min-width: 0; height: 32px; margin: 0; accent-color: var(--accent); }
+.sim-step { flex: none; width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-2); font: 600 18px/1 var(--font-mono); cursor: pointer; }
+.sim-step:hover { border-color: var(--line-strong); }
+.sim-presets { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.sim-presets > span { flex: none; font: 600 12px var(--font-body); color: var(--muted); }
+.sim-presets .chips { min-width: 0; flex-wrap: wrap; overflow: visible; }
+.sim-presets { align-items: flex-start; }
+.sim-presets > span { padding-top: 9px; }
+.sim-note { grid-column: 1 / -1; font: 500 11.5px/1.4 var(--font-body); color: var(--muted); }
+.sim-sub { margin: 4px 0 0; padding-top: 10px; border-top: 1px dashed var(--line); font: 600 12px/1.4 var(--font-body); color: var(--muted); }
+.sim .hint { margin: 0; font-size: 11.5px; }
 .wm > .hint { margin: 0; font-size: 12px; line-height: 1.5; }
 @media (min-width: 700px) { .minis.four { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
@@ -1038,7 +1056,18 @@ const EN = {
   'Aucun article récent pour ce filtre.': 'No recent articles for this filter.', 'Le fil des médias est vide pour le moment.': 'The outlets feed is empty for now.',
   'Le fil des médias n’est pas encore disponible. L’onglet TradingView affiche les actus en direct.': 'The outlets feed is not available yet. The TradingView tab shows live news.',
   'Le fil des médias est produit à la publication sur GitHub. Ouvre la page en ligne, ou utilise l’onglet TradingView.': 'The outlets feed is built when the site is published on GitHub. Open the online page, or use the TradingView tab.',
-  'Voir TradingView News': 'Open TradingView News', 'Fil d’actualités': 'Live feed from', ', en direct.': '.'
+  'Voir TradingView News': 'Open TradingView News', 'Fil d’actualités': 'Live feed from', ', en direct.': '.',
+  'Simuler les prix': 'Simulate prices', 'Réinitialiser': 'Reset', 'Tout bouger :': 'Move all:', 'Variations rapides': 'Quick moves',
+  'Diminuer': 'Decrease', 'Augmenter': 'Increase', 'oracle': 'oracle', 'Dépassé': 'Exceeded',
+  'Écart de l\'oracle d\'un collatéral face à son actif de base (boucles, PT Pendle)': 'Gap between a collateral\'s oracle and its base asset (loops, Pendle PTs)',
+  'Prix d\'oracle Aave : les dérivés suivent leur actif de base (wstETH suit ETH) ; les dollars, dollars à rendement et fonds tokenisés ne bougent pas. Toute la carte se recalcule en direct.':
+    'Aave oracle prices: derivatives follow their base asset (wstETH follows ETH); dollars, yield-bearing dollars and tokenized funds do not move. The whole card recalculates live.',
+  'Simulation en cours : chiffres recalculés aux prix simulés.': 'Simulation on: figures recalculated at the simulated prices.',
+  'Liquidable à ces prix': 'Liquidatable at these prices', 'Liquidable dès maintenant': 'Liquidatable now', 'Liquidable dans cette simulation': 'Liquidatable in this simulation',
+  'Toutes les cryptos ensemble : liquidation à': 'All cryptos together: liquidation at', 'depuis ces prix': 'from these prices',
+  'Pas de liquidation par le prix d\'une seule famille d\'actifs': 'No liquidation from the price of a single asset family',
+  'Liquidation la plus proche : oracle de': 'Nearest liquidation: oracle of', 'sous': 'below', 'au-dessus de': 'above',
+  'Baisse de l\'oracle du collatéral face à la dette qui déclencherait une liquidation': 'Drop of the collateral oracle against the debt that would trigger a liquidation'
 };
 
 // Phrases avec valeurs. Les fonctions évitent toute interprétation des « $ » dans les montants.
@@ -1060,6 +1089,14 @@ const EN_RE = [
   [/^Aucun pool (.+) empruntable sur cette chaîne\.$/, (m, a) => `No borrowable ${a} pool on this chain.`],
   [/^dépôt (.+)$/, (m, a) => `supply ${a}`],
   [/^de (.+) à (.+)$/, (m, a, b) => `from ${a} to ${b}`],
+  // Phrases en « sur … » : les plus précises d'abord, sinon « sur (.+) » les capte.
+  [/^sur l'oracle de (.+?) face à la dette \((.+)\)$/, (m, a, b) => `on the ${a} oracle against the debt (${b})`],
+  [/^sur l'oracle de (.+?) \(encore (.+)\)$/, (m, a, b) => `on the ${a} oracle (${b} more)`],
+  [/^sur l'oracle de (.+)$/, (m, a) => `on the ${a} oracle`],
+  [/^sur (.+?) \((.+?)\), oracle de (.+) à (.+)$/, (m, a, b, c, d) => `on ${a} (${b}), ${c} oracle at ${d}`],
+  [/^sur (.+?) \((.+?)\), (.+) au-dessus de (.+)$/, (m, a, b, c, d) => `on ${a} (${b}), ${c} above ${d}`],
+  [/^sur (.+?) \((.+?)\), (.+) sous (.+)$/, (m, a, b, c, d) => `on ${a} (${b}), ${c} below ${d}`],
+  [/^sur (.+?) \((.+?)\), liquidable$/, (m, a, b) => `on ${a} (${b}), liquidatable`],
   [/^sur (.+?) \((.+?)\), (.+) liquidé à (.+)$/, (m, a, b, c, d) => `on ${a} (${b}), ${c} liquidated at ${d}`],
   [/^sur (.+?) \((.+?)\)$/, (m, a, b) => `on ${a} (${b})`],
   [/^sur (.+)$/, (m, a) => `on ${a}`],
@@ -1071,7 +1108,16 @@ const EN_RE = [
   [/^Collatéral · seuil (.+) · pénalité (.+)$/, (m, a, b) => `Collateral · threshold ${a} · penalty ${b}`],
   [/^Collatéral · seuil (.+)$/, (m, a) => `Collateral · threshold ${a}`],
   [/^Liquidation si l'oracle de (.+) recule de$/, (m, a) => `Liquidation if the ${a} oracle falls by`],
-  [/^sur l'oracle de (.+)$/, (m, a) => `on the ${a} oracle`],
+  [/^(.+) : liquidation si le prix tombe sous$/, (m, a) => `${a}: liquidation if the price falls below`],
+  [/^(.+) : liquidation si le prix dépasse$/, (m, a) => `${a}: liquidation if the price rises above`],
+  [/^\((.+) · encore (.+)\)$/, (m, a, b) => `(${a} · ${b} more)`],
+  [/^jusqu'à (.+) de la dette \((.+) sur les lignes de moins de 2 000 \$\), pénalité ≈ (.+)$/, (m, a, b, c) => `up to ${a} of the debt (${b} on lines under $2,000), penalty ≈ ${c}`],
+  [/^jusqu'à (.+) de la dette \((.+) sur les lignes de moins de 2 000 \$\)$/, (m, a, b) => `up to ${a} of the debt (${b} on lines under $2,000)`],
+  [/^jusqu'à (.+) de la dette, pénalité ≈ (.+)$/, (m, a, b) => `up to ${a} of the debt, penalty ≈ ${b}`],
+  [/^jusqu'à (.+) de la dette$/, (m, a) => `up to ${a} of the debt`],
+  [/^Variation du prix (.+)$/, (m, a) => `${a} price change`],
+  [/^Collatéral et dette en (.+) : ce curseur change les montants, pas le HF\.$/, (m, a) => `Collateral and debt both in ${a}: this slider changes the amounts, not the HF.`],
+  [/^Écart de l'oracle de (.+)$/, (m, a) => `${a} oracle gap`],
   [/^liquidable, jusqu'à (.+) de la dette \((.+) sur les lignes de moins de 2 000 \$\), pénalité ≈ (.+)$/, (m, a, b, c) => `liquidatable, up to ${a} of the debt (${b} on lines under $2,000), penalty ≈ ${c}`],
   [/^face à la dette \((.+)\)$/, (m, a) => `against the debt (${a})`],
   [/^Liquidation à (.+) dans ce scénario$/, (m, a) => `Liquidation at ${a} in this scenario`],
@@ -1267,7 +1313,7 @@ const state = {
   newsSrc: store.get('cd.newsSrc', 'agg'), newsCoin: 'all', newsLang: store.get('cd.newsLang', 'all'),
   searchRes: new Map(),
   aaveMode: store.get('cd.aaveMode', 'rates'), aaveMarkets: null,
-  awallets: store.get('cd.aaveWallets', []), awData: {}, awAt: 0, awOpen: {}, awSim: {}, awScen: {}, aaveRisk: null,
+  awallets: store.get('cd.aaveWallets', []), awData: {}, awAt: 0, awOpen: {}, awMult: {}, aaveRisk: null,
   whales: null, whalesAt: 0, whalesErr: null,
   hlRank: store.get('cd.hlRank', 'value'), hlFollow: store.get('cd.hlFollow', []),
   hl: {}, hlAt: 0, hlOpen: null, hlDetail: {}, spotMeta: null, mids: null, midsAt: 0,
@@ -1885,7 +1931,6 @@ async function ensureAaveMarkets() {
  * de Horizon (USTB, JAAA…) leur valeur liquidative. Un mouvement de marché se simule donc par famille
  * d'actif de référence, pas par une liste de stablecoins.
  */
-const FAMILY_LABEL = { ETH: 'ETH et dérivés', BTC: 'BTC et dérivés' };
 const RWA_USD = /^(USTB|USYC|JTRSY|JAAA|VBILL|BUIDL|USCC|ACRED|MGLOBAL|BENJI|OUSG|USDY|STBT|TBILL|WTGXX)$/;
 const RWA_EUR = /^(EUTBL)$/;                                    // fonds monétaire en euros (Spiko)
 // Jetons Pendle PT : leur oracle suit le taux implicite du marché Pendle, donc un prix de marché.
@@ -2045,11 +2090,6 @@ function scenarioParts(m, sc) {
   for (const b of m.borrows) { if (inScenario(b, sc)) d1 += b.usd; else d0 += b.usd; }
   return { c0, c1, d0, d1 };
 }
-function hfScenario(m, sc, s) {
-  const p = scenarioParts(m, sc);
-  const den = p.d0 + p.d1 * (1 + s);
-  return den > 0 ? (p.c0 + p.c1 * (1 + s)) / den : null;
-}
 // Mouvement qui amène le HF à 1 dans ce scénario : c0 + c1(1+s) = d0 + d1(1+s).
 function scenarioShock(m, sc) {
   const p = scenarioParts(m, sc);
@@ -2058,20 +2098,6 @@ function scenarioShock(m, sc) {
   const f = (p.d0 - p.c0) / (p.c1 - p.d1);
   return f > 0 && f < 1e3 ? f - 1 : null;
 }
-function scenarioOptions(d) {
-  const fams = new Set(), syms = new Map();
-  for (const m of d.markets || []) {
-    if (!(m.debt > 0)) continue;
-    for (const x of [...m.supplies.filter(s => s.coll), ...m.borrows]) { fams.add(x.fam); syms.set(normSym(x.sym), x.sym); }
-  }
-  const opts = [];
-  const cryptoFams = [...fams].filter(isCryptoFam);
-  if (cryptoFams.length) opts.push(['crypto', 'Toutes les cryptos ensemble']);
-  for (const f of cryptoFams) if (FAMILY_LABEL[f]) opts.push(['fam:' + f, FAMILY_LABEL[f]]);
-  for (const [k, sym] of syms) opts.push(['sym:' + k, `${sym} seul`]);
-  return opts;
-}
-
 async function loadWallet(addr) {
   const prev = state.awData[addr];
   try {
@@ -2134,7 +2160,9 @@ async function loadWallets() {
   if (!state.awallets.length) return;
   await pool(state.awallets.map(w => w.addr), 2, loadWallet);
   state.awAt = Date.now();
-  renderWallets(); updateAlerts();
+  if (document.activeElement?.matches?.('input[data-simaddr]')) state.awallets.forEach(w => updateSimView(w.addr));
+  else renderWallets();
+  updateAlerts();
 }
 
 function hfInfo(hf, debt) {
@@ -2145,118 +2173,322 @@ function hfInfo(hf, debt) {
 const distCls = dist => { const a = Math.abs(dist); return a < 0.15 ? 'hot' : a < 0.3 ? 'warn' : 'ok'; };
 const pctAbs = (v, d = 1) => nf(0, d).format(Math.abs(v * 100)) + PCT();
 
-// Prix de liquidation d'un actif seul (les autres prix constants). Dans une boucle corrélée, ce prix est
-// celui de l'oracle (taux de change, valeur liquidative), pas un prix de marché.
-function liqHtml(x, kind, m) {
-  if ((m.alreadyLiq || (m.hf != null && m.hf < 1)) && m.debt > 0) return kind === 's' && !x.coll ? '<span class="liq none">Non utilisé comme collatéral</span>' : '';
-  if (kind === 's') {
-    if (!x.coll) return '<span class="liq none">Non utilisé comme collatéral</span>';
-    if (x.liq == null) return '';
-    if (x.liq === 0) return '<span class="liq none">Ne peut pas déclencher seul la liquidation</span>';
-    if (m.kind && m.kind !== 'price') {
-      return `<span class="liq ${distCls(x.dist)}">Liquidation si l'oracle de ${esc(x.sym)} recule de <b>${pctAbs(x.dist)}</b> face à la dette (${fmtPrice(x.liq)})</span>`;
-    }
-    return `<span class="liq ${distCls(x.dist)}">Liquidation à <b>${fmtPrice(x.liq)}</b> · ${x.dist < 0 ? 'baisse' : 'hausse'} de ${pctAbs(x.dist)}</span>`;
+/* ================= Simulateur de prix =================
+ * Le prix de chaque famille (ETH et ses dérivés, BTC et ses wrappers, AAVE, euro…) est multiplié par
+ * (1 + variation). Pour les boucles et les PT Pendle, un second réglage fait s'écarter l'oracle d'un
+ * collatéral de son actif de base (taux de change, erreur d'oracle, taux implicite). Tout ce qui dépend
+ * des prix est recalculé à chaque mouvement : HF, jauge, valeurs, prix de liquidation, résumé. Les
+ * curseurs eux-mêmes ne sont jamais redessinés pendant le glissement.
+ */
+const simOf = addr => (addr ? state.awMult[addr] : null) || null;
+function multOf(addr, x) {
+  const s = simOf(addr);
+  if (!s) return 1;
+  return (1 + (s.fam[x.fam] || 0) / 100) * (1 + (s.asset[normSym(x.sym)] || 0) / 100);
+}
+const famMult = (addr, F) => 1 + ((simOf(addr)?.fam[F]) || 0) / 100;
+const assetMult = (addr, k) => 1 + ((simOf(addr)?.asset[k]) || 0) / 100;
+const simActive = addr => { const s = simOf(addr); return !!s && [...Object.values(s.fam), ...Object.values(s.asset)].some(v => v); };
+const simReady = m => m.debt > 0 && m.Cw > 0;
+// Collatéraux dont l'oracle peut s'écarter de leur actif de base : boucles et jetons PT Pendle.
+const oracleColl = m => m.supplies.filter(s => s.coll && s.w && ((m.kind && m.kind !== 'price') || s.pt));
+
+// Familles de prix des marchés endettés (hors dollar), ETH et BTC d'abord.
+function simFamilies(d) {
+  const set = new Set();
+  for (const m of d?.markets || []) {
+    if (!simReady(m)) continue;
+    for (const x of [...m.supplies.filter(s => s.coll && s.w), ...m.borrows]) if (x.fam !== 'USD') set.add(x.fam);
   }
-  if (x.liq) return `<span class="liq ${distCls(x.dist)}">Liquidation si le prix dépasse <b>${fmtPrice(x.liq)}</b> · hausse de ${pctAbs(x.dist)}</span>`;
-  return '';
+  const rank = f => (f === 'ETH' ? 0 : f === 'BTC' ? 1 : 2);
+  return [...set].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+}
+function simAssets(d) {
+  const map = new Map();
+  for (const m of d?.markets || []) if (simReady(m)) for (const s of oracleColl(m)) map.set(normSym(s.sym), s.sym);
+  return [...map];
+}
+// Prix de référence d'une famille : ETH et BTC au cours du marché (Binance, sinon CoinGecko), sinon
+// l'oracle Aave de WETH / WBTC / cbBTC / EURC / XAUT, sinon celui du premier actif de la famille.
+function famRef(F, d) {
+  const mk = F === 'ETH' ? ['ethereum', 'ETHUSDT'] : F === 'BTC' ? ['bitcoin', 'BTCUSDT'] : null;
+  const label = ['ETH', 'BTC', 'EUR'].includes(F) ? F : F === 'GOLD' ? (LANG === 'en' ? 'Gold' : 'Or') : null;
+  if (mk) {
+    const l = state.live[mk[1]];
+    const px = l && Date.now() - l.ts < 120000 ? l.price : state.market[mk[0]]?.current_price;
+    if (px > 0) return { label, px };
+  }
+  const all = (d?.markets || []).flatMap(m => [...m.supplies, ...m.borrows]).filter(x => x.fam === F && x.px > 0);
+  const pref = all.find(x => /^(WETH|WBTC|CBBTC|EURC|XAUT)$/.test(normSym(x.sym))) || all[0];
+  return { label: label || pref?.sym || F, px: pref ? pref.px : null };
 }
 
-function lineHtml(x, kind, m) {
+// État simulé d'un marché : collatéral pondéré C, dette D, HF ; pour chaque famille, le facteur de prix
+// supplémentaire f qui ramène le HF à 1 (les autres prix restant au niveau simulé) ; idem pour toutes
+// les cryptos ensemble et pour l'oracle de chaque collatéral de boucle ou PT.
+function marketSim(m, addr) {
+  const mu = x => multOf(addr, x);
+  const coll = m.supplies.filter(s => s.coll && s.w);
+  let C = 0, D = 0;
+  for (const s of coll) C += s.w * mu(s);
+  for (const b of m.borrows) D += b.usd * mu(b);
+  const eps = 1e-9 * (C + D);
+  // c0 + c1·f = d0 + d1·f  →  f = (d0 − c0) / (c1 − d1), c1 et d1 : part des actifs retenus.
+  const solve = pick => {
+    let c1 = 0, d1 = 0;
+    for (const s of coll) if (pick(s)) c1 += s.w * mu(s);
+    for (const b of m.borrows) if (pick(b)) d1 += b.usd * mu(b);
+    if (Math.abs(c1 - d1) <= eps) return null;
+    const f = (D - d1 - (C - c1)) / (c1 - d1);
+    return f > 0 && f < 1e3 ? { f, up: c1 < d1 } : null;
+  };
+  const famLiq = [...new Set([...coll, ...m.borrows].map(x => x.fam))].filter(F => F !== 'USD')
+    .map(F => ({ F, ...(solve(x => x.fam === F) || { f: null }) }));
+  const all = solve(x => isCryptoFam(x.fam));
+  const oracle = [];
+  for (const k of new Set(oracleColl(m).map(s => normSym(s.sym)))) {
+    const r = solve(x => normSym(x.sym) === k);
+    if (!r || r.up) continue;
+    const s0 = coll.find(s => normSym(s.sym) === k);
+    oracle.push({ k, sym: s0.sym, f: r.f, dist: assetMult(addr, k) * r.f - 1, px: s0.px * mu(s0) * r.f });
+  }
+  return {
+    C, D, hf: D > 0 ? C / D : null, famLiq, oracle,
+    cryptoFams: famLiq.filter(x => isCryptoFam(x.F)).length,
+    shock: C <= D ? 0 : all ? all.f - 1 : null
+  };
+}
+
+// Conséquence d'une liquidation (Aave v3.3) : part de la dette et pénalité, sur les valeurs simulées.
+function liqConsequence(m, addr, hf) {
+  const mu = x => multOf(addr, x);
+  const coll = m.supplies.filter(x => x.coll && x.w);
+  const wsum = coll.reduce((a, x) => a + x.w * mu(x), 0);
+  const pen = wsum ? coll.reduce((a, x) => a + x.w * mu(x) * (x.pen || 0), 0) / wsum : 0;
+  const dSim = m.borrows.reduce((a, b) => a + b.usd * mu(b), 0);
+  const cSim = coll.reduce((a, x) => a + x.usd * mu(x), 0);
+  // 50 % de la dette par liquidation ; 100 % si HF ≤ 0,95 ou si la position passe sous 2 000 $ ;
+  // une ligne (dette ou collatéral) de moins de 2 000 $ peut aussi être liquidée en entier.
+  const full = hf <= 0.95 || dSim < 2000 || cSim < 2000;
+  const small = !full && (coll.some(x => x.usd * mu(x) < 2000) || m.borrows.some(b => b.usd * mu(b) < 2000));
+  const part = full ? `100${PCT()} de la dette` : small ? `50${PCT()} de la dette (100${PCT()} sur les lignes de moins de 2 000 $)` : `50${PCT()} de la dette`;
+  return `jusqu'à ${part}${pen ? ', pénalité ≈ ' + nf(0, 1).format(pen * 100) + PCT() : ''}`;
+}
+
+// Lignes de risque d'un marché : prix de liquidation par famille (« ETH : liquidation si le prix tombe
+// sous 1 701 $ (−10,8 %) »), mouvement commun des cryptos, marge de l'oracle des boucles.
+function famLiqHtml(m, addr, d, sim, active) {
+  if (sim.hf != null && sim.hf < 1) {
+    return `<span class="shock hot">${active ? 'Liquidable à ces prix' : 'Liquidable dès maintenant'} · ${liqConsequence(m, addr, sim.hf)}</span>`;
+  }
+  const out = sim.famLiq.filter(x => x.f != null).sort((a, b) => Math.abs(a.f - 1) - Math.abs(b.f - 1)).map(x => {
+    const ref = famRef(x.F, d), fm = famMult(addr, x.F), total = fm * x.f;
+    const rest = fm !== 1 ? ` · encore ${signedPct(x.f - 1)}` : '';
+    return `<span class="shock ${distCls(x.f - 1)}">${esc(ref.label)} : liquidation si le prix ${x.up ? 'dépasse' : 'tombe sous'} <b>${ref.px ? fmtPrice(ref.px * total) : '—'}</b> (${signedPct(total - 1)}${rest})</span>`;
+  });
+  if (sim.cryptoFams > 1 && sim.shock != null) {
+    out.push(`<span class="shock ${distCls(sim.shock)}">Toutes les cryptos ensemble : liquidation à <b>${signedPct(sim.shock)}</b>${active ? ' depuis ces prix' : ''}</span>`);
+  }
+  if (sim.oracle.length) {
+    const o = sim.oracle.reduce((a, x) => (Math.abs(x.dist) < Math.abs(a.dist) ? x : a));
+    const rest = assetMult(addr, o.k) !== 1 ? ` (encore ${signedPct(o.f - 1)})` : '';
+    out.push(`<span class="shock ${distCls(o.f - 1)}">Marge avant liquidation : <b>${signedPct(o.dist)}</b> sur l'oracle de ${esc(o.sym)}${rest}</span>`);
+  }
+  return out.join('') || '<span class="shock ok">Pas de liquidation par le prix d\'une seule famille d\'actifs</span>';
+}
+
+// Liquidation la plus proche d'une adresse, aux prix simulés (ou actuels si aucun réglage).
+function nearestLiq(d, addr) {
+  let best = null;
+  const take = c => { if (!best || Math.abs(c.rel) < Math.abs(best.rel)) best = c; };
+  for (const m of d?.markets || []) {
+    if (!simReady(m)) continue;
+    const sim = marketSim(m, addr);
+    if (sim.hf != null && sim.hf < 1) return { label: m.label, liquidable: true };
+    for (const x of sim.famLiq) {
+      if (x.f == null) continue;
+      const ref = famRef(x.F, d), total = famMult(addr, x.F) * x.f;
+      take({ label: m.label, fam: ref.label, up: x.up, px: ref.px ? ref.px * total : null, dist: total - 1, rel: x.f - 1 });
+    }
+    for (const o of sim.oracle) take({ label: m.label, oracle: o.sym, dist: o.dist, rel: o.f - 1 });
+  }
+  return best;
+}
+const nearShort = n => n.liquidable ? 'liquidable' : n.oracle ? `oracle de ${n.oracle} à ${signedPct(n.dist)}`
+  : `${n.fam} ${n.up ? 'au-dessus de' : 'sous'} ${n.px ? fmtPrice(n.px) : '—'}`;
+
+function liqHtml(x, kind, orc) {
+  if (kind === 's' && !x.coll) return '<span class="liq none">Non utilisé comme collatéral</span>';
+  const o = kind === 's' && orc ? orc.get(normSym(x.sym)) : null;
+  return o ? `<span class="liq ${distCls(o.f - 1)}">Liquidation à <b>${signedPct(o.dist)}</b> sur l'oracle de ${esc(x.sym)} face à la dette (${fmtPrice(o.px)})</span>` : '';
+}
+
+function lineHtml(x, kind, m, addr, orc) {
+  const mu = multOf(addr, x);
   const link = aaveReserveUrl(m.rawName, x.addr);
   const name = link ? `<a href="${esc(link)}" target="_blank" rel="noopener" title="Ouvrir ${esc(x.sym)} sur Aave">${esc(x.sym)}</a>` : esc(x.sym);
   const badge = kind === 's' && x.coll
     ? `<span class="badge">Collatéral${x.lt ? ' · seuil ' + nf(0, 0).format(x.lt * 100) + PCT() : ''}${x.pen ? ' · pénalité ' + nf(0, 1).format(x.pen * 100) + PCT() : ''}</span>` : '';
+  const px = x.px ? fmtPrice(x.px) + (mu !== 1 ? ' → ' + fmtPrice(x.px * mu) : '') : '';
   return `<div class="line">${tokenImg(x.img, x.sym)}
     <span class="nm"><b>${name}</b>${badge}</span>
-    <span class="amt">${fmtUsdC(x.usd)}</span>
-    <small>${fmtQty(x.amt)} ${esc(x.sym)}${x.px ? ' · ' + fmtPrice(x.px) : ''}</small><small class="r">APY ${fmtRate(x.apy)}</small>
-    ${liqHtml(x, kind, m)}</div>`;
+    <span class="amt${mu !== 1 ? ' is-sim' : ''}">${fmtUsdC(x.usd * mu)}</span>
+    <small>${fmtQty(x.amt)} ${esc(x.sym)}${px ? ' · ' + px : ''}</small><small class="r">APY ${fmtRate(x.apy)}</small>
+    ${liqHtml(x, kind, orc)}</div>`;
 }
 
-function hfGauge(hf) {
+// Jauge du HF : point plein = HF actuel ; point coloré = HF simulé.
+function hfGauge(hf, simHf) {
   if (hf == null) return '';
-  const pos = Math.max(0, Math.min(1, (hf - 1) / 2)) * 100;
-  return `<div class="hfgauge" aria-hidden="true"><span class="hfg-bar"><i style="left:${pos.toFixed(1)}%"></i></span>
-    <span class="hfg-scale"><span>1 liquidation</span><span>1,5</span><span>2</span><span>2,5</span><span>3+</span></span></div>`;
+  const pos = h => (Math.max(0, Math.min(1, (h - 1) / 2)) * 100).toFixed(1);
+  const moved = simHf != null && Math.abs(simHf - hf) > 1e-6;
+  return `<div class="hfgauge" aria-hidden="true"><span class="hfg-bar${moved ? ' is-sim' : ''}"><i class="cur" style="left:${pos(hf)}%"></i>${moved ? `<i class="simpt" style="left:${pos(simHf)}%"></i>` : ''}</span>
+    <span class="hfg-scale"><span>1 liquidation</span><span>${nf(1, 1).format(1.5)}</span><span>2</span><span>${nf(1, 1).format(2.5)}</span><span>3+</span></span></div>`;
 }
 
 const signedPct = v => (v < 0 ? '−' : v > 0 ? '+' : '') + pctAbs(v);
+const fmtHf = h => h == null ? '—' : h >= 100 ? '> 100' : nf(2, 2).format(Math.max(0, h));
 
-// Résultat du simulateur pour un marché : HF simulé, conséquence d'une liquidation, seuil du scénario.
-function simText(m, sc, s) {
-  if (!(m.debt > 0) || !m.supplies.some(x => x.coll && x.w)) return '';
-  const p = scenarioParts(m, sc);
-  if (!p.c1 && !p.d1) return '<span class="t-muted">Ce scénario ne touche pas ce marché</span>';
-  const sh = scenarioShock(m, sc);
-  if (!s && m.alreadyLiq) return '<b class="t-down">Déjà liquidable : HF sous 1</b>';
-  const seuil = sh != null ? `liquidation à ${signedPct(sh)}` : 'Pas de liquidation dans ce scénario';
-  if (!s) return sh != null ? `Liquidation à ${signedPct(sh)} dans ce scénario` : seuil;
-  const h = hfScenario(m, sc, s);
-  if (h == null) return '';
-  const c = h < 1.1 ? 't-down' : h < 1.5 ? 't-warn' : 't-up';
-  let txt = `À ${signedPct(s)} : HF <b class="${c}">${h >= 100 ? '> 100' : nf(2, 2).format(h)}</b>`;
-  if (h < 1) {
-    // Valeurs après le mouvement simulé.
-    const f = x => (inScenario(x, sc) ? 1 + s : 1);
-    const coll = m.supplies.filter(x => x.coll && x.w);
-    const wsum = coll.reduce((a, x) => a + x.w * f(x), 0);
-    const pen = wsum ? coll.reduce((a, x) => a + x.w * f(x) * (x.pen || 0), 0) / wsum : 0;
-    const dSim = m.borrows.reduce((a, b) => a + b.usd * f(b), 0);
-    const cSim = coll.reduce((a, x) => a + x.usd * f(x), 0);
-    // Aave v3.3 : 50 % de la dette par liquidation ; 100 % si HF ≤ 0,95 ou si la position passe sous 2 000 $ ;
-    // une ligne (dette ou collatéral) de moins de 2 000 $ peut aussi être liquidée en entier.
-    const full = h <= 0.95 || dSim < 2000 || cSim < 2000;
-    const smallLine = !full && (coll.some(x => x.usd * f(x) < 2000) || m.borrows.some(b => b.usd * f(b) < 2000));
-    const part = full ? `100${PCT()} de la dette` : smallLine ? `50${PCT()} de la dette (100${PCT()} sur les lignes de moins de 2 000 $)` : `50${PCT()} de la dette`;
-    txt += ` · liquidable, jusqu'à ${part}${pen ? ', pénalité ≈ ' + nf(0, 1).format(pen * 100) + PCT() : ''}`;
-  }
-  return sh != null ? `${txt} · ${seuil}` : txt;
-}
+const LOOP_NOTES = {
+  loopEthRate: '<p class="hint">Boucle ETH : sur Aave, les dérivés (wstETH, weETH, rsETH…) valent en général taux de change × prix de l\'ETH. Le prix de l\'ETH s\'annule alors entre collatéral et dette, et un décrochage sur le marché ne liquide pas tant que l\'oracle suit ce taux. Risques réels : baisse du taux de change (slashing), erreur ou plafond d\'oracle (le 10 mars 2026, 26 M$ de wstETH liquidés à tort), baisse de seuil par la gouvernance et intérêts d\'emprunt supérieurs au rendement.</p>',
+  loopUsd: '<p class="hint">Boucle en dollars : collatéral et dette suivent chacun leur oracle (prix de marché de l\'USDT ou de l\'USDC, taux de change, valeur liquidative des fonds). Risques réels : écart entre ces oracles (USDT contre USDC, décrochage d\'un stablecoin), baisse du taux de change ou de la valeur liquidative, baisse de seuil par la gouvernance et intérêts d\'emprunt supérieurs au rendement.</p>',
+  loopCorrelated: '<p class="hint">Boucle d\'actifs corrélés : collatéral et dette suivent le même actif de base, mais chacun avec son oracle (WBTC et cbBTC, euros…). Un écart entre ces oracles, une baisse de seuil par la gouvernance ou des intérêts d\'emprunt supérieurs au rendement peuvent liquider.</p>'
+};
+const PT_NOTE = '<p class="hint">Jetons PT Pendle : leur oracle suit le taux implicite du marché Pendle. Une hausse de ce taux fait baisser leur prix avant l\'échéance et peut liquider, même sans mouvement de l\'actif de base.</p>';
 
-function walletMarketHtml(m, addr) {
-  const st = m.st, hf = hfInfo(m.hf, m.debt);
-  const coll = st ? +st.totalCollateralBase : 0, maxLtv = st ? +st.ltv.value : 0;
-  const used = coll * maxLtv > 0 && m.debt > 0 ? m.debt / (coll * maxLtv) * 100 : null;
+function walletMarketHtml(m, addr, d) {
+  const st = m.st;
+  const active = simActive(addr);
+  const sim = simReady(m) ? marketSim(m, addr) : null;
+  const hf = hfInfo(sim && active ? sim.hf : m.hf, m.debt);
+  const pill = sim && active && m.hf != null ? `HF ${fmtHf(m.hf)} → ${fmtHf(sim.hf)}` : hf.txt;
   const icon = safeUrl(m.icon) ? `<img src="${esc(m.icon)}" alt="" width="20" height="20" loading="lazy">` : '';
   const mUrl = aaveMarketUrl(m.rawName);
+  const mu = x => multOf(addr, x);
+  const supSim = m.supplies.reduce((a, x) => a + x.usd * mu(x), 0);
+  const debtSim = m.borrows.reduce((a, x) => a + x.usd * mu(x), 0);
+  const collSim = m.supplies.filter(x => x.coll).reduce((a, x) => a + x.usd * mu(x), 0);
+  const maxLtv = st ? +st.ltv.value : 0;
+  const used = collSim * maxLtv > 0 && debtSim > 0 ? debtSim / (collSim * maxLtv) * 100 : null;
+  const liqTh = sim && collSim > 0 ? sim.C / collSim : st ? +st.currentLiquidationThreshold.value : 0;
   let risk = '';
   if (m.debt > 0) {
-    let lead, note = '';
-    if (m.alreadyLiq || (m.hf != null && m.hf < 1)) {
-      lead = '<span class="shock hot">Position liquidable dès maintenant : HF sous 1</span>';
-    } else if (m.kind === 'price') {
-      lead = m.shock != null
-        ? `<span class="shock ${distCls(m.shock)}">Liquidation si les cryptos ${m.shock < 0 ? 'baissent' : 'montent'} ensemble de <b>${pctAbs(m.shock)}</b></span>`
-        : '<span class="shock ok">Pas de liquidation par un mouvement d\'ensemble des cryptos</span>';
-      if (m.hasPt) note = '<p class="hint">Jetons PT Pendle : leur oracle suit le taux implicite du marché Pendle. Une hausse de ce taux fait baisser leur prix avant l\'échéance et peut liquider, même sans mouvement de l\'actif de base.</p>';
-    } else {
-      lead = m.margin
-        ? `<span class="shock ${distCls(m.margin.v)}">Marge avant liquidation : <b>${signedPct(m.margin.v)}</b> sur l'oracle de ${esc(m.margin.sym)}</span>`
-        : '<span class="shock ok">Pas de liquidation par un seul oracle</span>';
-      note = {
-        loopEthRate: '<p class="hint">Boucle ETH : sur Aave, les dérivés (wstETH, weETH, rsETH…) valent en général taux de change × prix de l\'ETH. Le prix de l\'ETH s\'annule alors entre collatéral et dette, et un décrochage sur le marché ne liquide pas tant que l\'oracle suit ce taux. Risques réels : baisse du taux de change (slashing), erreur ou plafond d\'oracle (le 10 mars 2026, 26 M$ de wstETH liquidés à tort), baisse de seuil par la gouvernance et intérêts d\'emprunt supérieurs au rendement.</p>',
-        loopUsd: '<p class="hint">Boucle en dollars : collatéral et dette suivent chacun leur oracle (prix de marché de l\'USDT ou de l\'USDC, taux de change, valeur liquidative des fonds). Risques réels : écart entre ces oracles (USDT contre USDC, décrochage d\'un stablecoin), baisse du taux de change ou de la valeur liquidative, baisse de seuil par la gouvernance et intérêts d\'emprunt supérieurs au rendement.</p>',
-        loopCorrelated: '<p class="hint">Boucle d\'actifs corrélés : collatéral et dette suivent le même actif de base, mais chacun avec son oracle (WBTC et cbBTC, euros…). Un écart entre ces oracles, une baisse de seuil par la gouvernance ou des intérêts d\'emprunt supérieurs au rendement peuvent liquider.</p>'
-      }[m.kind] || '';
-    }
-    const sc = currentScenario(addr);
-    risk = `${hfGauge(m.hf)}<div class="risk-sum">${lead}<span class="simhf" data-simfor="${esc(addr + '|' + m.key)}">${sc ? simText(m, sc, (state.awSim[addr] || 0) / 100) : ''}</span></div>${note}`;
+    const note = m.kind && m.kind !== 'price' ? (LOOP_NOTES[m.kind] || '') : m.hasPt ? PT_NOTE : '';
+    risk = `${hfGauge(m.hf, sim && active ? sim.hf : null)}${sim ? `<div class="risk-sum">${famLiqHtml(m, addr, d, sim, active)}</div>` : ''}${note}`;
   }
+  const orc = sim && !(sim.hf < 1) ? new Map(sim.oracle.map(o => [o.k, o])) : null;
   return `<section class="wm">
     <div class="wm-head">${icon}<b>${mUrl ? `<a href="${esc(mUrl)}" target="_blank" rel="noopener" title="Ouvrir ce marché sur Aave">${esc(m.label)}</a>` : esc(m.label)}</b>
-      ${m.emodeLabel ? `<span class="badge" title="Mode efficacité : seuils relevés entre actifs corrélés">E-Mode ${esc(m.emodeLabel)}</span>` : ''}<span class="hf ${hf.cls}">${hf.txt}</span></div>
+      ${m.emodeLabel ? `<span class="badge" title="Mode efficacité : seuils relevés entre actifs corrélés">E-Mode ${esc(m.emodeLabel)}</span>` : ''}<span class="hf ${hf.cls}">${pill}</span></div>
     ${risk}
-    <div class="wm-stats"><span>Net <b>${fmtUsdC(m.sup - m.debt)}</b></span>
+    <div class="wm-stats"><span>Net <b>${fmtUsdC(supSim - debtSim)}</b></span>
       <span>Intérêts nets <b class="${clsOf(m.yearly)}">${signedUsd(m.yearly)}/an</b></span>
       ${st ? `<span>APY net <b class="${clsOf(+st.netAPY.value)}">${fmtPct(+st.netAPY.value * 100)}</b></span>` : ''}
-      ${st && m.debt > 0 ? `<span>Encore empruntable <b>${fmtUsdC(+st.availableBorrowsBase)}</b></span>` : ''}</div>
+      ${st && m.debt > 0 && !active ? `<span>Encore empruntable <b>${fmtUsdC(+st.availableBorrowsBase)}</b></span>` : ''}</div>
     ${used != null ? `<div class="usage"><span>Capacité d'emprunt utilisée</span><span class="ubar ${used >= 90 ? 'hot' : used >= 75 ? 'warn' : ''}"><i style="--u:${Math.min(100, used).toFixed(1)}%"></i></span><b>${nf(0, 0).format(used)}${PCT()}</b></div>
-      <div class="wm-stats"><span>LTV actuel <b>${pctAbs(m.debt / coll)}</b></span><span>LTV max <b>${pctAbs(maxLtv)}</b></span><span>Seuil de liquidation <b>${pctAbs(+st.currentLiquidationThreshold.value)}</b></span></div>` : ''}
+      <div class="wm-stats"><span>LTV actuel <b>${pctAbs(debtSim / collSim)}</b></span><span>LTV max <b>${pctAbs(maxLtv)}</b></span><span>Seuil de liquidation <b>${pctAbs(liqTh)}</b></span></div>` : ''}
     <div class="lines">
-      ${m.supplies.length ? '<h4>Dépôts</h4>' + m.supplies.map(x => lineHtml(x, 's', m)).join('') : ''}
-      ${m.borrows.length ? '<h4>Emprunts</h4>' + m.borrows.map(x => lineHtml(x, 'b', m)).join('') : ''}
+      ${m.supplies.length ? '<h4>Dépôts</h4>' + m.supplies.map(x => lineHtml(x, 's', m, addr, orc)).join('') : ''}
+      ${m.borrows.length ? '<h4>Emprunts</h4>' + m.borrows.map(x => lineHtml(x, 'b', m, addr, orc)).join('') : ''}
     </div></section>`;
+}
+
+// Indicateurs du haut de la carte, aux prix simulés si un réglage est actif.
+function walletSummaryHtml(d, addr) {
+  const active = simActive(addr);
+  const mu = x => multOf(addr, x);
+  let sup = 0, debt = 0, hfMin = null, shock = null, margin = null;
+  for (const m of d.markets) {
+    sup += m.supplies.reduce((a, x) => a + x.usd * mu(x), 0);
+    debt += m.borrows.reduce((a, x) => a + x.usd * mu(x), 0);
+    if (!(m.debt > 0)) continue;
+    const sim = simReady(m) ? marketSim(m, addr) : null;
+    const h = sim && active ? sim.hf : m.hf;
+    if (h != null && (hfMin == null || h < hfMin)) hfMin = h;
+    if (!sim) continue;
+    if (sim.shock != null && (shock == null || Math.abs(sim.shock) < Math.abs(shock))) shock = sim.shock;
+    for (const o of sim.oracle) if (margin == null || Math.abs(o.dist) < Math.abs(margin)) margin = o.dist;
+  }
+  const hf = hfInfo(hfMin, debt);
+  const hfColor = { none: 't-muted', ok: 't-up', warn: 't-warn', hot: 't-down' }[hf.cls];
+  const r4 = shock != null ? { label: 'Choc toléré', v: shock, title: 'Mouvement commun des cryptos qui déclencherait une liquidation' }
+    : margin != null ? { label: 'Marge oracle', v: margin, title: 'Baisse de l\'oracle du collatéral face à la dette qui déclencherait une liquidation' } : null;
+  const near = nearestLiq(d, addr);
+  let nearHtml = '';
+  if (near?.liquidable) nearHtml = `<p class="nearest"><b class="t-down">${active ? 'Liquidable dans cette simulation' : 'Liquidable dès maintenant'}</b> · ${esc(near.label)}</p>`;
+  else if (near?.oracle) nearHtml = `<p class="nearest">Liquidation la plus proche : oracle de <b>${esc(near.oracle)}</b> à <b>${signedPct(near.dist)}</b> · ${esc(near.label)}</p>`;
+  else if (near) nearHtml = `<p class="nearest">Liquidation la plus proche : <b>${esc(near.fam)}</b> ${near.up ? 'au-dessus de' : 'sous'} <b>${near.px ? fmtPrice(near.px) : '—'}</b> (${signedPct(near.dist)}) · ${esc(near.label)}</p>`;
+  return `${active ? '<p class="sim-flag">Simulation en cours : chiffres recalculés aux prix simulés.</p>' : ''}<div class="minis four${active ? ' is-sim' : ''}">
+    <div class="mini"><span>Déposé</span><b>${fmtUsdC(sup)}</b></div>
+    <div class="mini"><span>Emprunté</span><b>${fmtUsdC(debt)}</b></div>
+    <div class="mini" title="Health factor le plus bas, liquidation sous 1"><span>Santé (HF)</span><b class="${hfColor}">${hf.cls === 'none' ? '∞' : fmtHf(hfMin)}</b></div>
+    <div class="mini" title="${r4 ? r4.title : ''}"><span>${r4 ? r4.label : 'Choc toléré'}</span><b class="${r4 ? 't-' + ({ hot: 'down', warn: 'warn', ok: 'up' })[distCls(r4.v)] : 't-muted'}">${hfMin != null && hfMin < 1 ? 'Dépassé' : r4 ? signedPct(r4.v) : (debt > 0 ? '—' : 'Aucun')}</b></div></div>${nearHtml}`;
+}
+
+function walletMarketsHtml(d, addr) {
+  return d.markets.length ? d.markets.map(m => walletMarketHtml(m, addr, d)).join('') : '<p class="empty" style="padding:4px 0">Aucune position Aave v3 sur cette adresse.</p>';
+}
+
+const SIM_ALL = [-50, -30, -20, -10, 10, 20];
+const famOut = (ref, v) => `${signedPct(v / 100)}${ref.px && v ? ' · ' + fmtPrice(ref.px * (1 + v / 100)) : ''}`;
+const allPressed = (d, s, v) => { const f = simFamilies(d); return f.length > 0 && f.every(F => (s.fam[F] || 0) === v); };
+
+// Réglages du simulateur.
+function simControlsHtml(d, addr, i) {
+  const fams = simFamilies(d), assets = simAssets(d);
+  if (!fams.length && !assets.length) return '';
+  const s = simOf(addr) || { fam: {}, asset: {} };
+  const a = esc(addr);
+  // Famille présente des deux côtés de chaque marché (boucle) : elle change les montants, pas le HF.
+  const neutral = F => d.markets.filter(simReady).every(m => [...m.supplies.filter(x => x.coll && x.w), ...m.borrows].every(x => x.fam === F));
+  const row = (kind, key, label, sub, min, max, step, v, out, aria, note = '') => {
+    const attr = `data-sim${kind === 'f' ? 'fam' : 'asset'}="${esc(key)}" data-simaddr="${a}"`;
+    const id = `s${kind}-${i}-${esc(key)}`;
+    return `<div class="sim-line">
+      <label class="sim-lab" for="${id}"><b>${label}</b><small>${sub}</small></label>
+      <output class="mono" for="${id}" data-${kind === 'f' ? 'famout' : 'assetout'}="${esc(addr + '|' + key)}">${out}</output>
+      <div class="sim-ctl"><button class="sim-step" type="button" data-simstep="-${step}" ${attr} aria-label="Diminuer">−</button>
+        <input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${v}" ${attr} aria-label="${aria}">
+        <button class="sim-step" type="button" data-simstep="${step}" ${attr} aria-label="Augmenter">+</button></div>${note}</div>`;
+  };
+  const famRows = fams.map(F => {
+    const ref = famRef(F, d), v = s.fam[F] || 0;
+    const note = neutral(F) ? `<small class="sim-note">Collatéral et dette en ${esc(ref.label)} : ce curseur change les montants, pas le HF.</small>` : '';
+    return row('f', F, esc(ref.label), ref.px ? fmtPrice(ref.px) : '', -80, 80, 1, v, famOut(ref, v), `Variation du prix ${esc(ref.label)}`, note);
+  }).join('');
+  const assetRows = assets.map(([k, sym]) => {
+    const v = s.asset[k] || 0;
+    return row('a', k, esc(sym), 'oracle', -20, 5, 0.5, v, signedPct(v / 100), `Écart de l'oracle de ${esc(sym)}`);
+  }).join('');
+  return `<div class="sim">
+    <div class="sim-top"><span class="sim-title">Simuler les prix</span><button class="btn sm ghost" type="button" data-simreset="${a}">Réinitialiser</button></div>
+    ${famRows}
+    ${fams.length ? `<div class="sim-presets"><span>Tout bouger :</span><div class="chips" role="group" aria-label="Variations rapides">${SIM_ALL.map(v => `<button class="chip" type="button" data-simall="${v}" data-simaddr="${a}" aria-pressed="${allPressed(d, s, v)}">${signedPct(v / 100)}</button>`).join('')}</div></div>` : ''}
+    ${assets.length ? `<p class="sim-sub">Écart de l'oracle d'un collatéral face à son actif de base (boucles, PT Pendle)</p>${assetRows}` : ''}
+    <p class="hint">Prix d'oracle Aave : les dérivés suivent leur actif de base (wstETH suit ETH) ; les dollars, dollars à rendement et fonds tokenisés ne bougent pas. Toute la carte se recalcule en direct.</p></div>`;
+}
+
+// Recalcul en direct de tout ce qui dépend des prix, pour une adresse (liste et fiche ouvertes).
+function updateSimView(addr) {
+  const d = state.awData[addr];
+  if (!d?.markets) return;
+  const q = CSS.escape(addr);
+  for (const el of $$(`[data-wsum="${q}"]`)) el.innerHTML = walletSummaryHtml(d, addr);
+  for (const el of $$(`[data-wbody="${q}"]`)) el.innerHTML = walletMarketsHtml(d, addr);
+  const s = simOf(addr) || { fam: {}, asset: {} };
+  for (const F of simFamilies(d)) for (const el of $$(`[data-famout="${CSS.escape(addr + '|' + F)}"]`)) el.textContent = famOut(famRef(F, d), s.fam[F] || 0);
+  for (const [k] of simAssets(d)) for (const el of $$(`[data-assetout="${CSS.escape(addr + '|' + k)}"]`)) el.textContent = signedPct((s.asset[k] || 0) / 100);
+  for (const r of $$(`input[data-simaddr="${q}"]`)) {
+    const v = r.dataset.simfam ? (s.fam[r.dataset.simfam] || 0) : (s.asset[r.dataset.simasset] || 0);
+    if (+r.value !== v) r.value = v;
+  }
+  for (const b of $$(`button[data-simall][data-simaddr="${q}"]`)) b.setAttribute('aria-pressed', String(allPressed(d, s, +b.dataset.simall)));
+}
+function setSim(addr, fn) {
+  const s = state.awMult[addr] || (state.awMult[addr] = { fam: {}, asset: {} });
+  fn(s);
+  if (!simActive(addr)) delete state.awMult[addr];
+  updateSimView(addr);
 }
 
 function walletHtml(w, i, opts = {}) {
@@ -2274,57 +2506,11 @@ function walletHtml(w, i, opts = {}) {
       : `<button class="btn sm danger" type="button" data-wremove="${esc(w.addr)}">Ne plus suivre</button>`}</div>`;
   if (!d) return `<article class="wcard">${head}<p class="hint">Chargement des positions sur toutes les chaînes Aave…</p>${foot}</article>`;
   if (!ok) return `<article class="wcard">${head}<div class="err">${esc(d.err)}<button class="btn sm" type="button" data-wretry="${esc(w.addr)}">Réessayer</button></div>${foot}</article>`;
-  const hf = hfInfo(d.hfMin, d.debt);
-  const hfShort = hf.cls === 'none' ? '∞' : (d.hfMin >= 100 ? '> 100' : nf(2, 2).format(d.hfMin));
-  const hfColor = { none: 't-muted', ok: 't-up', warn: 't-warn', hot: 't-down' }[hf.cls];
-  // 4e indicateur : choc commun des cryptos si la position y est exposée, sinon marge de l'oracle (boucles).
-  const risk4 = d.shock ? { label: 'Choc toléré', v: d.shock.v, title: 'Mouvement commun des cryptos qui déclencherait une liquidation' }
-    : d.margin ? { label: 'Marge oracle', v: d.margin.v, title: 'Baisse de l\'oracle du collatéral face à la dette qui déclencherait une liquidation' } : null;
-  const minis = `<div class="minis four">
-    <div class="mini"><span>Déposé</span><b>${fmtUsdC(d.sup)}</b></div>
-    <div class="mini"><span>Emprunté</span><b>${fmtUsdC(d.debt)}</b></div>
-    <div class="mini" title="Health factor le plus bas, liquidation sous 1"><span>Santé (HF)</span><b class="${hfColor}">${hfShort}</b></div>
-    <div class="mini" title="${risk4 ? risk4.title : ''}"><span>${risk4 ? risk4.label : 'Choc toléré'}</span><b class="${risk4 ? 't-' + ({ hot: 'down', warn: 'warn', ok: 'up' })[distCls(risk4.v)] : 't-muted'}">${risk4 ? signedPct(risk4.v) : (d.debt > 0 ? '—' : 'Aucun')}</b></div></div>`;
-  const near = d.nearest
-    ? `<p class="nearest">Liquidation la plus proche : <b>${esc(d.nearest.sym)}</b> à <b>${fmtPrice(d.nearest.liq)}</b> (${signedPct(d.nearest.dist)}) · ${esc(d.nearest.label)}</p>` : '';
-  const sim = state.awSim[w.addr] || 0;
-  const scOpts = scenarioOptions(d);
-  const sc = currentScenario(w.addr);
-  const simBox = d.debt > 0 && scOpts.length ? `<div class="sim">
-      <label for="wscen-${i}">Simuler un mouvement de prix</label>
-      <select class="field sel" id="wscen-${i}" data-wscen="${esc(w.addr)}">${scOpts.map(([k, l]) => `<option value="${esc(k)}"${k === sc ? ' selected' : ''}>${esc(l)}</option>`).join('')}</select>
-      <div class="sim-row"><input type="range" id="wsim-${i}" min="-90" max="100" step="1" value="${sim}" data-wsim="${esc(w.addr)}" aria-label="Variation de prix" aria-describedby="wsim-h-${i}">
-        <output class="mono" for="wsim-${i}">${signedPct(sim / 100)}</output></div>
-      <p class="hint" id="wsim-h-${i}">Prix d'oracle Aave : les dérivés suivent leur actif de base (wstETH suit ETH) ; les dollars, dollars à rendement et fonds tokenisés ne bougent pas avec les cryptos. Sous chaque marché : HF simulé et mouvement qui liquide dans ce scénario.</p></div>` : '';
-  const body = d.markets.length ? d.markets.map(m => walletMarketHtml(m, w.addr)).join('') : '<p class="empty" style="padding:4px 0">Aucune position Aave v3 sur cette adresse.</p>';
-  const toggle = d.markets.length && !opts.inDialog ? `<button class="btn sm ghost wc-toggle" type="button" data-wtoggle="${esc(w.addr)}" aria-expanded="${open}">${open ? 'Masquer le détail' : `Voir le détail (${d.markets.length} marché${d.markets.length > 1 ? 's' : ''})`}</button>` : '';
-  return `<article class="wcard">${head}${minis}${near}${open ? simBox + body : ''}${toggle}${d.err ? `<p class="hint">${esc(d.err)} Dernières données affichées.</p>` : ''}${foot}</article>`;
-}
-
-// Scénario retenu pour une adresse : celui choisi, s'il existe encore, sinon le premier proposé.
-function currentScenario(addr) {
-  const d = state.awData[addr];
-  if (!d?.markets) return null;
-  const opts = scenarioOptions(d);
-  const keep = opts.find(o => o[0] === state.awScen[addr]);
-  if (keep) return keep[0];
-  // Par défaut : toutes les cryptos si une position est exposée au prix ; pour des boucles seules,
-  // l'actif dont l'oracle est le plus proche de la liquidation.
-  const withDebt = d.markets.filter(m => m.debt > 0);
-  if (!withDebt.some(m => m.kind === 'price')) {
-    const tight = withDebt.filter(m => m.margin).sort((a, b) => Math.abs(a.margin.v) - Math.abs(b.margin.v))[0];
-    const pick = tight && opts.find(o => o[0] === 'sym:' + normSym(tight.margin.sym));
-    if (pick) return pick[0];
-  }
-  return (opts[0] || [null])[0];
-}
-function updateSim(addr) {
-  const d = state.awData[addr];
-  if (!d?.markets) return;
-  const sc = currentScenario(addr), s = (state.awSim[addr] || 0) / 100;
-  for (const m of d.markets) {
-    for (const el of $$(`[data-simfor="${CSS.escape(addr + '|' + m.key)}"]`)) el.innerHTML = sc ? simText(m, sc, s) : '';
-  }
+  const a = esc(w.addr);
+  const toggle = d.markets.length && !opts.inDialog ? `<button class="btn sm ghost wc-toggle" type="button" data-wtoggle="${a}" aria-expanded="${open}">${open ? 'Masquer le détail' : `Voir le détail (${d.markets.length} marché${d.markets.length > 1 ? 's' : ''})`}</button>` : '';
+  return `<article class="wcard">${head}<div class="wsum" data-wsum="${a}">${walletSummaryHtml(d, w.addr)}</div>`
+    + (open ? simControlsHtml(d, w.addr, i) + `<div class="wbody" data-wbody="${a}">${walletMarketsHtml(d, w.addr)}</div>` : '')
+    + `${toggle}${d.err ? `<p class="hint">${esc(d.err)} Dernières données affichées.</p>` : ''}${foot}</article>`;
 }
 
 function renderWallets() {
@@ -2338,11 +2524,11 @@ function renderWallets() {
   const maj = state.awAt ? hhmm(state.awAt) : '';
   $('#aw-foot').textContent = LANG === 'en'
     ? `Positions read from the Aave v3 API, refreshed every 3 minutes${maj ? ', updated ' + maj : ''}. HF: health factor, liquidation below 1 `
-      + '(up to 50% of the debt per liquidation, 100% at HF 0.95 or below or under $2,000). An asset\'s liquidation price assumes the other prices stay put; '
-      + 'the tolerated shock moves all cryptos together. Prices are Aave oracle prices; thresholds and penalties are those published by Aave, the active E-Mode category is inferred.'
+      + '(up to 50% of the debt per liquidation, 100% at HF 0.95 or below or under $2,000). Liquidation prices are given per price family (ETH and its derivatives, BTC and its wrappers…), '
+      + 'other prices staying put; the tolerated shock moves all cryptos together. Prices are Aave oracle prices; thresholds and penalties are those published by Aave, the active E-Mode category is inferred.'
     : `Positions lues sur l'API Aave v3, rafraîchies toutes les 3 minutes${maj ? ', maj ' + maj : ''}. HF : health factor, liquidation sous 1 `
-      + '(jusqu\'à 50 % de la dette par liquidation, 100 % à HF 0,95 ou moins ou sous 2 000 $). Le prix de liquidation d\'un actif suppose que les autres prix ne bougent pas ; '
-      + 'le choc toléré fait bouger toutes les cryptos ensemble. Prix d\'oracle Aave ; seuils et pénalités publiés par Aave, catégorie E-Mode active déduite.';
+      + '(jusqu\'à 50 % de la dette par liquidation, 100 % à HF 0,95 ou moins ou sous 2 000 $). Les prix de liquidation sont donnés par famille de prix (ETH et ses dérivés, BTC et ses wrappers…), '
+      + 'les autres prix restant fixes ; le choc toléré fait bouger toutes les cryptos ensemble. Prix d\'oracle Aave ; seuils et pénalités publiés par Aave, catégorie E-Mode active déduite.';
 }
 
 function updateAlerts() {
@@ -2352,7 +2538,7 @@ function updateAlerts() {
   el.hidden = !risky.length;
   el.innerHTML = risky.length
     ? 'Risque de liquidation : ' + risky.map(({ w, d }) => `<span><b>HF ${nf(2, 2).format(d.hfMin)}</b> sur ${esc(w.label || shortAddr(w.addr))} (${esc(d.hfMarket || '')})`
-      + (d.nearest ? `, ${esc(d.nearest.sym)} liquidé à ${fmtPrice(d.nearest.liq)}` : '') + '</span>').join(' · ')
+      + ((n => (n ? `, ${esc(nearShort(n))}` : ''))(nearestLiq(d, null))) + '</span>').join(' · ')
     : '';
   $('#aave-dot').hidden = !risky.length;
 }
@@ -2957,6 +3143,18 @@ document.addEventListener('click', e => {
   const t = e.target.closest('button, a');
   if (!t) return;
   const d = t.dataset;
+  if (d.simstep && d.simaddr) {
+    const fam = d.simfam, k = d.simasset, lim = fam ? [-80, 80] : [-20, 5];
+    return setSim(d.simaddr, s => {
+      const box = fam ? s.fam : s.asset, key = fam || k;
+      box[key] = Math.round(Math.min(lim[1], Math.max(lim[0], (box[key] || 0) + +d.simstep)) * 10) / 10;
+    });
+  }
+  if (d.simall && d.simaddr) {
+    const dd = state.awData[d.simaddr];
+    return setSim(d.simaddr, s => { for (const F of simFamilies(dd)) s.fam[F] = +d.simall; });
+  }
+  if (d.simreset) return setSim(d.simreset, s => { s.fam = {}; s.asset = {}; });
   if (d.id) return selectCoin(d.id, true);
   if (d.pick) return selectCoin(d.pick, false);
   if (d.remove) {
@@ -3031,24 +3229,13 @@ document.addEventListener('click', e => {
 });
 for (const dlg of [addDlg, symDlg, whaleDlg, followDlg, aaveDlg]) dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
 
-// Simulateur de mouvement de marché sur les adresses Aave : recalcul du HF sans tout redessiner.
-function onSimInput(e) {
-  const sel = e.target.closest('select[data-wscen]');
-  if (sel) {
-    state.awScen[sel.dataset.wscen] = sel.value;
-    updateSim(sel.dataset.wscen);
-    return;
-  }
-  const r = e.target.closest('input[data-wsim]');
+// Simulateur de prix des adresses Aave : recalcul en direct sans redessiner les curseurs.
+document.addEventListener('input', e => {
+  const r = e.target.closest('input[data-simaddr]');
   if (!r) return;
   const v = +r.value;
-  state.awSim[r.dataset.wsim] = v;
-  const out = r.parentElement.querySelector('output');
-  if (out) out.textContent = signedPct(v / 100);
-  updateSim(r.dataset.wsim);
-}
-document.addEventListener('input', onSimInput);
-document.addEventListener('change', e => { if (e.target.matches('select[data-wscen]')) onSimInput(e); });
+  setSim(r.dataset.simaddr, s => { if (r.dataset.simfam) s.fam[r.dataset.simfam] = v; else s.asset[r.dataset.simasset] = v; });
+});
 
 $('#aw-form').addEventListener('submit', e => {
   e.preventDefault();
